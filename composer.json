@@ -1,0 +1,42 @@
+{
+  "name": "trinity/widgets",
+  "description": "Trinity Widgets bundle",
+  "type": "symfony-bundle",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Trinity",
+      "email": "info@modpreneur.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.3.3",
+    "symfony/symfony": "~2",
+    "trinity/framework": "1.0.*",
+    "nette/utils": "~2.3",
+    "sensio/framework-extra-bundle": "~3.0"
+  },
+  "require-dev": {
+    "sensio/generator-bundle": "~2.3",
+    "phpunit/phpunit": "4.7.*",
+    "liip/functional-test-bundle": "^1.3@dev"
+  },
+  "autoload": {
+    "classmap": [
+      "WidgetsBundle/"
+    ]
+  },
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://tp.corp.modpreneur.com/repo/private/"
+    }
+  ],
+  "minimum-stability": "dev",
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0-dev"
+    }
+  },
+  "target-dir": "WidgetsBundle"
+}

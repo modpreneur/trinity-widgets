@@ -1,0 +1,10 @@
+liip_functional_test: ~
+
+framework:
+    secret: "Three can keep a secret, if two of them are dead. MUHEHE."
+    test: ~
+    session:
+        storage_id: session.storage.filesystem
+
+trinity_notification:
+    driver: api_driver
