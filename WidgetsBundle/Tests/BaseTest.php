@@ -4,7 +4,7 @@
  * This file is part of the Trinity project.
  */
 
-namespace Trinity\NotificationBundle\Tests;
+namespace Trinity\WidgetsBundle\Tests;
 
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use ReflectionClass;
@@ -28,8 +28,6 @@ abstract class BaseTest extends WebTestCase
     /** @var  Client */
     protected $clientObject;
 
-
-
     /**
      * @param string|object $class
      * @param string $name
@@ -45,8 +43,6 @@ abstract class BaseTest extends WebTestCase
         return $method;
     }
 
-
-
     /**
      * Create kernel.
      */
@@ -59,8 +55,6 @@ abstract class BaseTest extends WebTestCase
         $this->clientObject = self::createClient();
     }
 
-
-
     /**
      * Shutdown kernel.
      */
@@ -68,8 +62,6 @@ abstract class BaseTest extends WebTestCase
     {
         $this->kernelObject->shutdown();
     }
-
-
 
     /**
      * @param object $class
@@ -82,8 +74,6 @@ abstract class BaseTest extends WebTestCase
         $property->setAccessible(true);
         $property->setValue($class, $value);
     }
-
-
 
     /**
      * @return \Doctrine\ORM\EntityManager
