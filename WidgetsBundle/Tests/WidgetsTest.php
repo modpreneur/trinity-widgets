@@ -29,7 +29,7 @@ class WidgetsTest extends BaseTest
     public function testManager()
     {
         $manager = $this->getManager();
-        $widget = new Trinity\WidgetsBundle\Widget\Widget('test-id', null, 'Widget name', 'widget.html.twig', []);
+        $widget = new Trinity\WidgetsBundle\Widget\Widget('test-id', null, 'Widget name', 'widget.html.twig');
         $manager->addWidget($widget);
         $this->assertEquals($widget, $manager->getWidget('test-id'));
     }
@@ -57,7 +57,7 @@ class WidgetsTest extends BaseTest
     public function testAddWithError()
     {
         $manager = $this->getManager();
-        $widget = new Trinity\WidgetsBundle\Widget\Widget('test-id', null, 'Widget name', 'widget.html.twig', []);
+        $widget = new Trinity\WidgetsBundle\Widget\Widget('test-id', null, 'Widget name', 'widget.html.twig');
 
         $manager->addWidget($widget);
         $manager->addWidget($widget);
@@ -73,7 +73,7 @@ class WidgetsTest extends BaseTest
     public function testCreateWidgetWithNoExistsType()
     {
         $manager = $this->getManager();
-        $manager->createWidget('test-id', 'new-type', 'Widget name', 'widget.html.twig', []);
+        $manager->createWidget('test-id', 'new-type', 'Widget name', 'widget.html.twig');
     }
 
 
@@ -159,10 +159,10 @@ class WidgetsTest extends BaseTest
         $manager = $this->getManager();
         $type = $manager->createType('type', 'Type name');
 
-        $widget = $manager->createWidget('widget-id', $type, 'Widget type', 'widget.html.twig', []);
+        $widget = $manager->createWidget('widget-id', $type, 'Widget type', 'widget.html.twig');
         $this->assertInstanceOf('\\Trinity\\WidgetsBundle\\Widget\\Widget', $widget);
 
-        $widget = $manager->createWidget('widget-id-2', 'type', 'Widget type', 'widget.html.twig', []);
+        $widget = $manager->createWidget('widget-id-2', 'type', 'Widget type', 'widget.html.twig');
         $this->assertInstanceOf('\\Trinity\\WidgetsBundle\\Widget\\Widget', $widget);
 
         $this->assertInstanceOf('\\Trinity\\WidgetsBundle\\Widget\\WidgetType', $widget->getType());
@@ -174,7 +174,7 @@ class WidgetsTest extends BaseTest
     {
         $manager = $this->getManager();
         $type = $manager->createType('type', 'Type name');
-        $manager->createWidget('widget-id', $type, 'Widget type', 'widget.html.twig', []);
+        $manager->createWidget('widget-id', $type, 'Widget type', 'widget.html.twig');
 
         $this->assertEquals(['widget-id'], $manager->getWidgetsIdsByTypeId('type'));
     }

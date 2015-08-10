@@ -1,6 +1,3 @@
-imports:
-  - { resource: ../../Resources/config/services.yml}
-
 liip_functional_test: ~
 
 framework:
@@ -10,14 +7,3 @@ framework:
         storage_id: session.storage.filesystem
 
 
-services:
-    trinity.widgets_manager:
-      class: Trinity\WidgetsBundle\Widget\WidgetManager
-      arguments: ["@event_dispatcher"]
-
-
-    trinity.widgets.extension:
-      class: Trinity\WidgetsBundle\Twig\WidgetExtension
-      arguments: ["@service_container", "@trinity.widgets_manager"]
-      tags:
-        - {name: twig.extension}

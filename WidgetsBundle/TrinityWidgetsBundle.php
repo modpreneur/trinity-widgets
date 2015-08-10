@@ -11,7 +11,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 
 /**
- * Class NecktieNotificationBundle.
+ * Class TrinityWidgetsBundle.
  */
 class TrinityWidgetsBundle extends Bundle
 {
@@ -29,4 +29,5 @@ class TrinityWidgetsBundle extends Bundle
     {
         parent::build($container);
     }
+
 }
