@@ -61,22 +61,20 @@ class WidgetManager
      * @param WidgetType|string $type
      * @param string $name
      * @param string $template
-     * @param array $attributes
+     * @param callback|null $callback
      * @param bool $autoAdd
-     *
      * @return Widget
-     *
      * @throws WidgetException
      */
-    public function createWidget($id, $type, $name = '', $template = '', $attributes = [], $autoAdd = true)
+    public function createWidget($id, $type, $name = '', $template = '', $callback = null, $autoAdd = true)
     {
         if (is_string($type)) {
             $type = $this->getType($type);
         }
 
-        $widget = new Widget($id, $type, $name, $template, $attributes);
+        $widget = new Widget($id, $type, $name, $template);
         if ($autoAdd) {
-            $this->addWidget($widget);
+            $this->addWidget($widget, $callback);
         }
 
         return $widget;
@@ -120,7 +118,7 @@ class WidgetManager
 
     /**
      * @param Widget $widget
-     * @param null $callback
+     * @param callback|null $callback
      *
      * @throws WidgetException
      */
