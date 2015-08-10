@@ -9,8 +9,8 @@ namespace Trinity\WidgetsBundle\Widget;
 use Dmishh\Bundle\SettingsBundle\Manager\SettingsManager;
 use Symfony\Component\EventDispatcher\Debug\TraceableEventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Trinity\WidgetsBundle\Event\AppEvents;
 use Trinity\WidgetsBundle\Event\WidgetEvent;
+use Trinity\WidgetsBundle\Event\WidgetsEvents;
 use Trinity\WidgetsBundle\Exception\WidgetException;
 
 
@@ -47,8 +47,8 @@ class WidgetManager
         $this->settingsManager = $settingsManager;
 
         if (!$this->init) {
-            $this->eventDispatcher->dispatch(AppEvents::WIDGET_TYPE_INIT, new WidgetEvent($this));
-            $this->eventDispatcher->dispatch(AppEvents::WIDGET_INIT, new WidgetEvent($this));
+            $this->eventDispatcher->dispatch(WidgetsEvents::WIDGET_TYPE_INIT, new WidgetEvent($this));
+            $this->eventDispatcher->dispatch(WidgetsEvents::WIDGET_INIT, new WidgetEvent($this));
         }
 
         $this->init = true;
