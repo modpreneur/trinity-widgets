@@ -24,13 +24,11 @@ class WidgetType
     private $categoriesOrder = [];
 
 
-
     public function __construct($id, $name)
     {
         $this->id = $id;
         $this->name = $name;
     }
-
 
 
     /**
@@ -42,7 +40,6 @@ class WidgetType
     }
 
 
-
     /**
      * @param string $id
      */
@@ -50,7 +47,6 @@ class WidgetType
     {
         $this->id = $id;
     }
-
 
 
     /**
@@ -62,7 +58,6 @@ class WidgetType
     }
 
 
-
     /**
      * @param string $name
      */
@@ -72,7 +67,6 @@ class WidgetType
     }
 
 
-
     /**
      * @return array
      */
@@ -80,7 +74,6 @@ class WidgetType
     {
         return $this->categories;
     }
-
 
 
     /**
@@ -97,7 +90,6 @@ class WidgetType
     }
 
 
-
     /**
      * @param $categoryName
      * @param int $order
@@ -111,7 +103,6 @@ class WidgetType
 
         return $this;
     }
-
 
 
     /**

@@ -7,43 +7,37 @@
 namespace Trinity\WidgetsBundle\Widget;
 
 /**
- * Class Widget.
+ * Class AbstractWidget.
  */
-class Widget implements \ArrayAccess
+abstract class AbstractWidget implements \ArrayAccess
 {
-    /** @var  string */
-    private $id;
 
     /** @var  WidgetType */
-    private $type;
-
-    /** @var  string */
-    private $name;
-
-    /** @var  int */
-    private $order;
+    protected $type;
 
     /** @var string */
-    private $template;
+    protected $template;
 
+    /** @var int */
+    protected $size;
+
+    /** @var array */
+    protected $attributes;
 
 
     /**
-     * @param string $id
-     * @param WidgetType $type
-     * @param string $name
-     * @param string $template
+     * @param WidgetType|null $type
      * @param array $attributes
+     * @param string $template
      */
-    public function __construct($id, $type, $name = '', $template = '', $attributes = array())
+    public function __construct(WidgetType $type = null, $attributes = array(), $template = null)
     {
-        $this->id = $id;
-        $this->type = $type;
-        $this->name = $name;
-        $this->template = $template;
-        $this->attributes = $attributes;
-    }
+        $this->type = $type ? $type : $this->type;
+        $this->template = $template ? $template : $this->template;
+        $this->attributes = $attributes ? $attributes : $this->attributes;
 
+        $this->size = WidgetSizes::Def;
+    }
 
 
     /**
@@ -53,7 +47,6 @@ class Widget implements \ArrayAccess
     {
         return $this->type;
     }
-
 
 
     /**
@@ -69,79 +62,6 @@ class Widget implements \ArrayAccess
     }
 
 
-
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-
-
-    /**
-     * @param string $name
-     *
-     * @return $this
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-
-
-    /**
-     * @return int
-     */
-    public function getOrder()
-    {
-        return $this->order;
-    }
-
-
-
-    /**
-     * @param int $order
-     *
-     * @return $this
-     */
-    public function setOrder($order)
-    {
-        $this->order = $order;
-
-        return $this;
-    }
-
-
-
-    /**
-     * @param array $attributes
-     *
-     * @return $this
-     */
-    public function setAttributes(array $attributes)
-    {
-        $this->attributes = $attributes;
-
-        return $this;
-    }
-
-
-
-    /**
-     * @return string
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-
-
     /**
      * @return string
      */
@@ -151,7 +71,6 @@ class Widget implements \ArrayAccess
     }
 
 
-
     /**
      * @param string $template
      */
@@ -159,7 +78,6 @@ class Widget implements \ArrayAccess
     {
         $this->template = $template;
     }
-
 
 
     /**
@@ -182,7 +100,6 @@ class Widget implements \ArrayAccess
     }
 
 
-
     /**
      * @return array
      */
@@ -191,6 +108,18 @@ class Widget implements \ArrayAccess
         return $this->attributes;
     }
 
+
+    /**
+     * @param array $attributes
+     *
+     * @return $this
+     */
+    public function setAttributes(array $attributes)
+    {
+        $this->attributes = $attributes;
+
+        return $this;
+    }
 
 
     /**
@@ -210,7 +139,6 @@ class Widget implements \ArrayAccess
     }
 
 
-
     /**
      * @param $attribute
      *
@@ -224,7 +152,6 @@ class Widget implements \ArrayAccess
             return null;
         }
     }
-
 
 
     /**
@@ -245,7 +172,6 @@ class Widget implements \ArrayAccess
     }
 
 
-
     /**
      * @param $name
      * @param $attr
@@ -258,7 +184,6 @@ class Widget implements \ArrayAccess
 
         return $this;
     }
-
 
 
     /**
@@ -274,4 +199,32 @@ class Widget implements \ArrayAccess
     {
         unset($this->attributes[$offset]);
     }
+
+
+    /**
+     * @return int
+     */
+    public function getSize()
+    {
+        return $this->size;
+    }
+
+
+    /**
+     * @param int $size
+     */
+    public function setSize($size)
+    {
+        $this->size = $size;
+    }
+
+
+    /** @return string */
+    abstract function getName();
+
+
+    /**
+     * @param array $attributes
+     */
+    abstract function buildWidget(array $attributes = []);
 }

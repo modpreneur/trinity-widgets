@@ -9,7 +9,6 @@ namespace Trinity\WidgetsBundle\Tests;
 use Trinity\WidgetsBundle\Widget\WidgetType;
 
 
-
 /**
  * Class WidgetTypeTest.
  */

@@ -10,7 +10,6 @@ use Symfony\Component\EventDispatcher\Event;
 use Trinity\WidgetsBundle\Widget\WidgetManager;
 
 
-
 /**
  * Class WidgetEvent.
  */
@@ -20,7 +19,6 @@ class WidgetEvent extends Event
     protected $widgetManager;
 
 
-
     /**
      * @param WidgetManager $widgetManager
      */
@@ -28,7 +26,6 @@ class WidgetEvent extends Event
     {
         $this->widgetManager = $widgetManager;
     }
-
 
 
     /**

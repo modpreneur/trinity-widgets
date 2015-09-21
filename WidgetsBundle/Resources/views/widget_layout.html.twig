@@ -1,0 +1,35 @@
+{% block widget_start %}
+<section class="trinity-widget size-{{ size }}">
+    {% endblock %}
+
+    {% block widget_header %}
+        <header>
+            {% block widget_title %}
+                <h3> {{ title }} </h3>
+            {% endblock %}
+
+            {% block widget_remove %}
+                {% if removable %}
+                    <a href="#remove_widget"> <i class="tiecons tiecons-cross-angular"></i> </a>
+                {% endif %}
+            {% endblock %}
+        </header>
+    {% endblock %}
+
+
+    {% block widget_contnet_wrapper %}
+        <main>
+            {{ block('widget_contnet') }}
+        </main>
+    {% endblock %}
+
+
+    {% block widget_footer_wrapper %}
+        <footer>
+            {% block widget_footer %} {% endblock %}
+        </footer>
+    {% endblock %}
+
+    {% block widget_end %}
+</section>
+{% endblock %}

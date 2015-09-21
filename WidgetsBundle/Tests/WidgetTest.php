@@ -6,9 +6,8 @@
 
 namespace Trinity\WidgetsBundle\Tests;
 
-use Trinity\WidgetsBundle\Widget\Widget;
+use Trinity\WidgetsBundle\Tests\Widgets\TestWidget;
 use Trinity\WidgetsBundle\Widget\WidgetType;
-
 
 
 /**
@@ -21,21 +20,17 @@ class WidgetTest extends BaseTest
      */
     public function testWidget()
     {
-        $widget = new Widget('widget-id', new WidgetType('widget-id', 'Widget name'), 'Widget name');
+        $widget = new TestWidget(new WidgetType('widget-id', 'AbstractWidget name'));
 
-        $widget->setName('New name');
-        $this->assertEquals('New name', $widget->getName());
-
-        $widget->setOrder(0);
-        $this->assertEquals(0, $widget->getOrder());
+        $this->assertEquals('testWidget', $widget->getName());
 
         $widget->setAttributes(['title' => 'Widget title']);
         $this->assertEquals(['title' => 'Widget title'], $widget->getAttributes());
 
-        $widget->setTemplate('template.html.twig');
-        $this->assertEquals('template.html.twig', $widget->getTemplate());
+        //$widget->setTemplate('template.html.twig');
+        $this->assertEquals('widget.html.twig', $widget->getTemplate());
 
-        $this->assertEquals('Widget title', $widget->getAttribute('title'));
+        $this->assertEquals('AbstractWidget title', $widget->getAttribute('title'));
         $this->assertNull($widget->getAttribute('title-no-exists'));
 
         $type = new WidgetType('a', 'A');

@@ -4,9 +4,10 @@ namespace Trinity\WidgetsBundle\Twig;
 
 use Symfony\Component\HttpFoundation\Request;
 use Trinity\WidgetsBundle\Exception\WidgetException;
+use Trinity\WidgetsBundle\Widget\AbstractWidget;
+use Trinity\WidgetsBundle\Widget\IRemovable;
 use Trinity\WidgetsBundle\Widget\WidgetManager;
 use Twig_Environment;
-
 
 
 class WidgetExtension extends \Twig_Extension
@@ -16,7 +17,6 @@ class WidgetExtension extends \Twig_Extension
 
     /** @var  Request */
     private $request;
-
 
 
     /**
@@ -30,27 +30,24 @@ class WidgetExtension extends \Twig_Extension
     }
 
 
-
     /**
      * @return array
      */
     public function getFunctions()
     {
         return array(
-            new \Twig_SimpleFunction(
+            new \Twig_Function(
                 'renderWidget',
                 array($this, 'renderWidget'),
                 array('is_safe' => array('html'), 'needs_environment' => true)
             ),
-            new \Twig_SimpleFunction(
+            new \Twig_Function(
                 'renderWidgets',
                 array($this, 'renderWidgets'),
                 array('is_safe' => array('html'), 'needs_environment' => true)
             ),
-            new \Twig_SimpleFunction('get_widgets', array($this, 'getWidgets')),
         );
     }
-
 
 
     /**
@@ -82,7 +79,6 @@ class WidgetExtension extends \Twig_Extension
     }
 
 
-
     /**
      * @param Twig_Environment $env
      * @param string $widgetId
@@ -94,19 +90,22 @@ class WidgetExtension extends \Twig_Extension
      */
     public function renderWidget(Twig_Environment $env, $widgetId, $options = [])
     {
+        /** @var AbstractWidget $widget */
         $widget = $this->widgetManager->getWidget($widgetId);
         $template = $env->loadTemplate($widget->getTemplate());
+
+        $widget->buildWidget();
 
         return $template->render(
             [
                 'widget' => $widget,
-                'title' => $widget->getName(), // shortcut
-                'widget-id' => $widgetId,
+                'title' => $widget->getAttribute('title'),
+                'size' => $widget->getSize(),
                 'options' => $options,
+                'removable' => $widget instanceof IRemovable,
             ]
         );
     }
-
 
 
     /**
@@ -120,7 +119,6 @@ class WidgetExtension extends \Twig_Extension
 
         return $widgets;
     }
-
 
 
     /**

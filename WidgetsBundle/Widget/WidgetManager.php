@@ -12,7 +12,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Trinity\WidgetsBundle\Event\WidgetEvent;
 use Trinity\WidgetsBundle\Event\WidgetsEvents;
 use Trinity\WidgetsBundle\Exception\WidgetException;
-
+use Trinity\WidgetsBundle\Tests\Widgets\TestWidget;
 
 
 /**
@@ -20,7 +20,7 @@ use Trinity\WidgetsBundle\Exception\WidgetException;
  */
 class WidgetManager
 {
-    /** @var Widget[] */
+    /** @var AbstractWidget[] */
     private $widgets = [];
 
     /** @var WidgetType[] */
@@ -34,7 +34,6 @@ class WidgetManager
 
     /** @var  SettingsManager */
     private $settingsManager;
-
 
 
     /**
@@ -55,7 +54,6 @@ class WidgetManager
     }
 
 
-
     /**
      * @param string $id
      * @param WidgetType|string $type
@@ -63,7 +61,7 @@ class WidgetManager
      * @param string $template
      * @param callback|null $callback
      * @param bool $autoAdd
-     * @return Widget
+     * @return AbstractWidget
      * @throws WidgetException
      */
     public function createWidget($id, $type, $name = '', $template = '', $callback = null, $autoAdd = true)
@@ -72,14 +70,13 @@ class WidgetManager
             $type = $this->getType($type);
         }
 
-        $widget = new Widget($id, $type, $name, $template);
+        $widget = new TestWidget($type);
         if ($autoAdd) {
             $this->addWidget($widget, $callback);
         }
 
         return $widget;
     }
-
 
 
     /**
@@ -94,10 +91,9 @@ class WidgetManager
         if ($this->isWidgetTypeExists($type)) {
             return $this->widgetsTypes[$type];
         } else {
-            throw new WidgetException("Widget type '$type' doesn't exists.");
+            throw new WidgetException("AbstractWidget type '$type' doesn't exists.");
         }
     }
-
 
 
     /**
@@ -115,17 +111,16 @@ class WidgetManager
     }
 
 
-
     /**
-     * @param Widget $widget
+     * @param AbstractWidget $widget
      * @param callback|null $callback
      *
      * @throws WidgetException
      */
-    public function addWidget(Widget $widget, $callback = null)
+    public function addWidget(AbstractWidget $widget, $callback = null)
     {
-        if (!array_key_exists($widget->getId(), $this->widgets)) {
-            $this->widgets[$widget->getId()] = $widget;
+        if (!array_key_exists($widget->getName(), $this->widgets)) {
+            $this->widgets[$widget->getName()] = $widget;
         } else {
             throw new WidgetException('This widget is already exists.');
         }
@@ -136,11 +131,10 @@ class WidgetManager
     }
 
 
-
     /**
      * @param string $widgetId
      *
-     * @return Widget
+     * @return AbstractWidget
      *
      * @throws WidgetException
      */
@@ -151,7 +145,6 @@ class WidgetManager
         }
         throw new WidgetException('This widget not exists.');
     }
-
 
 
     /**
@@ -165,10 +158,9 @@ class WidgetManager
             $this->widgetsTypes[$type->getId()] = $type;
         } else {
             $id = $type->getId();
-            throw new WidgetException("Widget type '$id' already exists.");
+            throw new WidgetException("AbstractWidget type '$id' already exists.");
         }
     }
-
 
 
     /**
@@ -189,7 +181,6 @@ class WidgetManager
     }
 
 
-
     /**
      * @param string $typeId
      *
@@ -199,14 +190,13 @@ class WidgetManager
     {
         $widgetsIds = [];
         foreach ($this->widgets as $widget) {
-            if ($widget->getType()->getId() == $typeId) {
-                $widgetsIds[] = $widget->getId();
+            if ($widget->getType() && $widget->getType()->getId() == $typeId) {
+                $widgetsIds[] = $widget->getName();
             }
         }
 
         return $widgetsIds;
     }
-
 
 
     /**
