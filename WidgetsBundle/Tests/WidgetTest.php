@@ -30,7 +30,7 @@ class WidgetTest extends BaseTest
         //$widget->setTemplate('template.html.twig');
         $this->assertEquals('widget.html.twig', $widget->getTemplate());
 
-        $this->assertEquals('AbstractWidget title', $widget->getAttribute('title'));
+        $this->assertEquals('Widget title', $widget->getAttribute('title'));
         $this->assertNull($widget->getAttribute('title-no-exists'));
 
         $type = new WidgetType('a', 'A');

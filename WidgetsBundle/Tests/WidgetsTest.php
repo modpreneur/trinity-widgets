@@ -26,7 +26,7 @@ class WidgetsManagerTest extends BaseTest
     public function testManager()
     {
         $manager = $this->getManager();
-        $this->assertNotNull($manager->getWidget('testWidget'));
+        $this->assertNotNull($manager->createWidget('testWidget'));
     }
 
 

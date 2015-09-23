@@ -1,3 +1,38 @@
+parameters:
+    database_driver: pdo_pgsql
+    database_host: 127.0.0.1
+    database_port: 5432
+    database_name: trinity
+    database_user: tomas
+    database_password: null
+    mailer_transport: smtp
+    mailer_host: 127.0.0.1
+    mailer_port: 25
+    mailer_user: null
+    mailer_password: null
+    locale: en
+    secret: ThisTokenIsNotSoSecretChangeIt
+    debug_toolbar: true
+    debug_redirects: false
+    use_assetic_controller: true
+
+# Doctrine Configuration
+doctrine:
+    dbal:
+      driver:   "%database_driver%"
+      host:     "%database_host%"
+      port:     "%database_port%"
+      dbname:   "%database_name%"
+      user:     "%database_user%"
+      password: "%database_password%"
+      charset:  UTF8
+      mapping_types:
+        enum: string
+
+    orm:
+        auto_generate_proxy_classes: "%kernel.debug%"
+        auto_mapping: true
+
 liip_functional_test: ~
 
 framework:
@@ -5,8 +40,6 @@ framework:
     test: ~
     session:
         storage_id: session.storage.filesystem
-
-
 
 services:
    trinity.test_widget:

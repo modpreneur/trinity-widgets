@@ -81,17 +81,17 @@ class WidgetExtension extends \Twig_Extension
 
     /**
      * @param Twig_Environment $env
-     * @param string $widgetId
+     * @param string $widgetName
      * @param string[] $options
      *
      * @return string
      *
      * @throws WidgetException
      */
-    public function renderWidget(Twig_Environment $env, $widgetId, $options = [])
+    public function renderWidget(Twig_Environment $env, $widgetName, $options = [])
     {
         /** @var AbstractWidget $widget */
-        $widget = $this->widgetManager->getWidget($widgetId);
+        $widget = $this->widgetManager->createWidget($widgetName);
         $template = $env->loadTemplate($widget->getTemplate());
 
         $widget->buildWidget();

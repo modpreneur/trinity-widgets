@@ -55,27 +55,33 @@ class WidgetManager
 
 
     /**
-     * @param string $id
-     * @param WidgetType|string $type
-     * @param string $name
-     * @param string $template
-     * @param callback|null $callback
-     * @param bool $autoAdd
-     * @return AbstractWidget
+     * @param string $name widget name
+     * @param string|null $type
+     * @param bool $clone -> new instance of widget
+     * @return TestWidget
      * @throws WidgetException
      */
-    public function createWidget($id, $type, $name = '', $template = '', $callback = null, $autoAdd = true)
+    public function createWidget($name, $type = null, $clone = true)
     {
-        if (is_string($type)) {
-            $type = $this->getType($type);
-        }
+        /** @var AbstractWidget $widget */
+        $widget = $clone ? clone $this->getWidget($name) : $this->getWidget($name);
 
-        $widget = new TestWidget($type);
-        if ($autoAdd) {
-            $this->addWidget($widget, $callback);
+        if ($type && is_string($type)) {
+            $type = $this->getType($type);
+            $widget->setType($type);
         }
 
         return $widget;
+    }
+
+
+    /**
+     * @param string $name
+     * @return AbstractWidget
+     */
+    private function getWidget($name)
+    {
+        return $this->widgets[$name];
     }
 
 
@@ -128,22 +134,6 @@ class WidgetManager
         if ($callback && is_callable($callback)) {
             call_user_func($callback, $widget);
         }
-    }
-
-
-    /**
-     * @param string $widgetId
-     *
-     * @return AbstractWidget
-     *
-     * @throws WidgetException
-     */
-    public function getWidget($widgetId)
-    {
-        if (array_key_exists($widgetId, $this->widgets)) {
-            return $this->widgets[$widgetId];
-        }
-        throw new WidgetException('This widget not exists.');
     }
 
 

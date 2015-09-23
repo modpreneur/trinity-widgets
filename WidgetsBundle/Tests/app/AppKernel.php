@@ -17,7 +17,9 @@ class AppKernel extends Kernel
         return array(
             new \Liip\FunctionalTestBundle\LiipFunctionalTestBundle(),
             new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
+            new Trinity\FrameworkBundle\TrinityFrameworkBundle(),
             new \Trinity\WidgetsBundle\TrinityWidgetsBundle(),
+            new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
         );
     }
 
