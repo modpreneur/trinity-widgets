@@ -3,6 +3,7 @@
 namespace Trinity\WidgetsBundle\Twig;
 
 use Symfony\Component\HttpFoundation\Request;
+use Trinity\WidgetsBundle\Entity\WidgetsDashboard;
 use Trinity\WidgetsBundle\Exception\WidgetException;
 use Trinity\WidgetsBundle\Widget\AbstractWidget;
 use Trinity\WidgetsBundle\Widget\IRemovable;
@@ -56,38 +57,17 @@ class WidgetExtension extends \Twig_Extension
     }
 
 
-    public function renderDashboard(Twig_Environment $env, $userId)
+    public function renderDashboard(Twig_Environment $env, WidgetsDashboard $dashboard)
     {
 
-    }
+        $widgetsNames = $dashboard->getWidgets();
+        $render = '';
 
-
-    /**
-     * @param Twig_Environment $env
-     * @param string[] $widgets
-     *
-     * @return string
-     *
-     * @throws WidgetException
-     */
-    public function renderWidgets(Twig_Environment $env, array $widgets)
-    {
-        $result = '';
-        foreach ($widgets as $widget) {
-            if (!array_key_exists('id', $widget)) {
-                throw new WidgetException(
-                    "Define widgets array: [ 'id'=> 'widget-id', 'params' => ['key' => 'value'] ]"
-                );
-            }
-
-            $params = [];
-            if (array_key_exists('params', $widget)) {
-                $params = $widget['params'];
-            }
-            $result .= "\n".$this->renderWidget($env, $widget['id'], $params);
+        foreach ($widgetsNames as $wn) {
+            $render .= $this->renderWidget($env, $wn);
         }
 
-        return $result;
+        return $render;
     }
 
 
@@ -126,6 +106,35 @@ class WidgetExtension extends \Twig_Extension
         }
 
         return $template->render($context);
+    }
+
+
+    /**
+     * @param Twig_Environment $env
+     * @param string[] $widgets
+     *
+     * @return string
+     *
+     * @throws WidgetException
+     */
+    public function renderWidgets(Twig_Environment $env, array $widgets)
+    {
+        $result = '';
+        foreach ($widgets as $widget) {
+            if (!array_key_exists('id', $widget)) {
+                throw new WidgetException(
+                    "Define widgets array: [ 'id'=> 'widget-id', 'params' => ['key' => 'value'] ]"
+                );
+            }
+
+            $params = [];
+            if (array_key_exists('params', $widget)) {
+                $params = $widget['params'];
+            }
+            $result .= "\n".$this->renderWidget($env, $widget['id'], $params);
+        }
+
+        return $result;
     }
 
 

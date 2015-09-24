@@ -44,24 +44,6 @@ class WidgetsDashboard
 
 
     /**
-     * @var int
-     * @ORM\Column(type="integer", nullable=false)
-     *
-     */
-    private $userId;
-
-
-    /**
-     * ORM\ManyToMany(targetEntity="Trinity\FrameworkBundle\Entity\BaseUser")
-     * ORM\JoinTable(
-     *      joinColumns={@ORM\JoinColumn(name="widget_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")}
-     * )
-     */
-    private $user;
-
-
-    /**
      * @var DateTime
      * @ORM\Column(type="datetime")
      */
@@ -143,21 +125,4 @@ class WidgetsDashboard
         $this->updatedAt = $updatedAt;
     }
 
-
-    /**
-     * @return mixed
-     */
-    public function getUserId()
-    {
-        return $this->userId;
-    }
-
-
-    /**
-     * @param int $userId
-     */
-    public function setUserId($userId)
-    {
-        $this->userId = $userId;
-    }
 }
