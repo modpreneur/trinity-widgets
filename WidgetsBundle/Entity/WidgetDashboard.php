@@ -10,11 +10,11 @@ use Doctrine\ORM\Mapping as ORM;
  * Class WidgetsStorage
  * @package Trinity\WidgetsBundle\Entity
  *
- * @ORM\Table(name="base_widget_dashboard")
+ * @ORM\Table(name="widget_dashboard")
  * @ORM\Entity()
  *
  */
-class BaseWidgetsDashboard
+class WidgetsDashboard
 {
     /**
      * @var int
@@ -41,6 +41,24 @@ class BaseWidgetsDashboard
      * @ORM\Column(type="datetime")
      */
     private $createdAt;
+
+
+    /**
+     * @var int
+     * @ORM\Column(type="integer", nullable=false)
+     *
+     */
+    private $userId;
+
+
+    /**
+     * ORM\ManyToMany(targetEntity="Trinity\FrameworkBundle\Entity\BaseUser")
+     * ORM\JoinTable(
+     *      joinColumns={@ORM\JoinColumn(name="widget_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")}
+     * )
+     */
+    private $user;
 
 
     /**
@@ -129,9 +147,17 @@ class BaseWidgetsDashboard
     /**
      * @return mixed
      */
-    public function getUser()
+    public function getUserId()
     {
-        return $this->user;
+        return $this->userId;
     }
 
+
+    /**
+     * @param int $userId
+     */
+    public function setUserId($userId)
+    {
+        $this->userId = $userId;
+    }
 }

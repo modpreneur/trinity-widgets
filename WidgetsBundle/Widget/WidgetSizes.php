@@ -13,13 +13,12 @@ namespace Trinity\WidgetsBundle\Widget;
  */
 class WidgetSizes
 {
-    const Def = self::Small;
 
-    const Small = 2;
+    const Small = 6;
 
-    const Medium = 4;
+    const Medium = 12;
 
-    const Large = 8;
+    const Large = 18;
 
     const Full = 24;
 

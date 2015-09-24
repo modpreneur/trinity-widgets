@@ -35,7 +35,7 @@ class WidgetsManagerTest extends BaseTest
      */
     public function getManager()
     {
-        return $this->getContainer()->get('trinity.widgets_manager');
+        return $this->getContainer()->get('trinity.widgets.manager');
     }
 
 
@@ -60,11 +60,11 @@ class WidgetsManagerTest extends BaseTest
     public function getTwig()
     {
         $loader = new Twig_Loader_Filesystem([__DIR__.'/templates', __DIR__.'/../Resources/views/']);
-        $c = $this->getContainer();
+
         $twig = new Twig_Environment($loader, array('cache' => false, 'debug' => true));
         $twig->addExtension(new Twig_Extension_Debug());
         $twig->addExtension(new Twig_Extension_StringLoader());
-        $twig->addExtension($c->get('trinity.widgets.extension'));
+        $twig->addExtension($this->getContainer()->get('trinity.widgets.extension'));
         return $twig;
     }
 

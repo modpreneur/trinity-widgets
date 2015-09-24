@@ -42,7 +42,7 @@ framework:
         storage_id: session.storage.filesystem
 
 services:
-   trinity.test_widget:
+   trinity.widget.widget:
      class:  Trinity\WidgetsBundle\Tests\Widgets\TestWidget
      tags:
-        - { name:trinity.widget }
+        - { name: trinity.widget }

@@ -20,7 +20,7 @@ class WidgetCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        $definition = ($container->findDefinition('trinity.widgets_manager'));
+        $definition = ($container->findDefinition('trinity.widgets.manager'));
 
         $tagServices = $container->findTaggedServiceIds('trinity.widget');
 

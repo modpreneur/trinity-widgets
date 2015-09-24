@@ -20,12 +20,13 @@ class WidgetExtension extends \Twig_Extension
 
 
     /**
-     * @param $container
-     * @param $widgetManager
+     * WidgetExtension constructor.
+     * @param WidgetManager $widgetManager
      */
-    public function __construct($container, $widgetManager)
+    public function __construct(WidgetManager $widgetManager)
     {
         $this->widgetManager = $widgetManager;
+
         $this->request = null;
     }
 
@@ -36,17 +37,28 @@ class WidgetExtension extends \Twig_Extension
     public function getFunctions()
     {
         return array(
-            new \Twig_Function(
+            new \Twig_SimpleFunction(
                 'renderWidget',
                 array($this, 'renderWidget'),
                 array('is_safe' => array('html'), 'needs_environment' => true)
             ),
-            new \Twig_Function(
+            new \Twig_SimpleFunction(
                 'renderWidgets',
                 array($this, 'renderWidgets'),
                 array('is_safe' => array('html'), 'needs_environment' => true)
             ),
+            new \Twig_SimpleFunction(
+                'renderDashboard',
+                array($this, 'renderDashboard'),
+                array('is_safe' => array('html'), 'needs_environment' => true)
+            ),
         );
+    }
+
+
+    public function renderDashboard(Twig_Environment $env, $userId)
+    {
+
     }
 
 
@@ -80,6 +92,8 @@ class WidgetExtension extends \Twig_Extension
 
 
     /**
+     * {{ renderWidget("projects_list", {"title": "Products list"}) }}
+     *
      * @param Twig_Environment $env
      * @param string $widgetName
      * @param string[] $options
@@ -92,19 +106,26 @@ class WidgetExtension extends \Twig_Extension
     {
         /** @var AbstractWidget $widget */
         $widget = $this->widgetManager->createWidget($widgetName);
+        /** @var \Twig_TemplateInterface $template */
         $template = $env->loadTemplate($widget->getTemplate());
+        $wb = $widget->buildWidget();
 
-        $widget->buildWidget();
+        $context = [
+            'widget' => $widget,
+            'title' => $widget->getAttribute('title'),
+            'size' => $widget->getSize(),
+            'removable' => $widget instanceof IRemovable,
+        ];
 
-        return $template->render(
-            [
-                'widget' => $widget,
-                'title' => $widget->getAttribute('title'),
-                'size' => $widget->getSize(),
-                'options' => $options,
-                'removable' => $widget instanceof IRemovable,
-            ]
-        );
+        if ($wb && is_array($wb)) {
+            $context = array_merge($context, $wb);
+        }
+
+        if ($options && is_array($options) && count($options) > 0) {
+            $context = array_merge($context, $options);
+        }
+
+        return $template->render($context);
     }
 
 

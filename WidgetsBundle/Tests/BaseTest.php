@@ -66,6 +66,16 @@ abstract class BaseTest extends WebTestCase
     }
 
 
+    public function getWidgetExtension()
+    {
+        $em = $this->getMockBuilder('Trinity\WidgetsBundle\Twig\WidgetExtension')->setConstructorArgs(
+                [$this->getContainer()]
+            )->getMock();
+
+        return $em;
+    }
+
+
     /**
      * @param object $class
      * @param string $property
@@ -90,4 +100,5 @@ abstract class BaseTest extends WebTestCase
 
         return $em;
     }
+
 }

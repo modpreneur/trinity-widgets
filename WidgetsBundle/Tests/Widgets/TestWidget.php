@@ -20,10 +20,12 @@ class TestWidget extends AbstractWidget implements IRemovable
     protected $template = "widget.html.twig";
 
 
+    /** @inheritdoc */
     function buildWidget(array $attributes = [])
     {
-        $this['title'] = 'Test widget';
-        $this['options'] = $attributes;
+        return [
+            'title' => "Test widget",
+        ];
     }
 
 
