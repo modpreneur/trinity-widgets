@@ -1,0 +1,37 @@
+{% extends "TrinityWidgetsBundle::widget_layout.html.twig" %}
+
+
+{% block widget_contnet %}
+
+    {% block data_grid %}
+
+        <table class="data-grid">
+            {% block table_header %}
+                <thead>
+                <tr>
+                    {% for column in header %}
+                        <th {% if column.width is not empty %} width="{{ column.width }}"{% endif %}>
+                            {{ column.title }}
+                        </th>
+                    {% endfor %}
+                </tr>
+                </thead>
+            {% endblock %}
+
+            {% block table_body %}
+                <tbody>
+                {% for row in body %}
+                    <tr>
+                        {% for column in header %}
+                            <td> {{ renderTableCell(row, column.id) }} </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            {% endblock %}
+
+        </table>
+
+    {% endblock %}
+
+{% endblock %}

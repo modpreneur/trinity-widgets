@@ -51,6 +51,15 @@ class WidgetsDashboard
 
 
     /**
+     * WidgetsDashboard constructor.
+     */
+    public function __construct()
+    {
+        $this->prePersist();
+    }
+
+
+    /**
      * @ORM\PrePersist()
      */
     public function prePersist()
@@ -123,6 +132,28 @@ class WidgetsDashboard
     public function setUpdatedAt($updatedAt)
     {
         $this->updatedAt = $updatedAt;
+    }
+
+
+    /**
+     * @param string $name
+     *
+     * @return bool
+     */
+    public function removeWidget($name)
+    {
+        $widgetsName = $this->widgets;
+        $index = array_search($name, $widgetsName);
+
+        if ($index !== null) {
+            unset($widgetsName[$index]);
+
+            $this->setWidgets($widgetsName);
+
+            return true;
+        }
+
+        return false;
     }
 
 }

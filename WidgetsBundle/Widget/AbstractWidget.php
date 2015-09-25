@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of the Trinity project.
  */
@@ -9,8 +8,11 @@ namespace Trinity\WidgetsBundle\Widget;
 /**
  * Class AbstractWidget.
  */
-abstract class AbstractWidget implements \ArrayAccess
+abstract class AbstractWidget extends AbstractArrayWidget implements IWidget
 {
+
+    /** @var string */
+    protected $name;
 
     /** @var string */
     protected $template;
@@ -18,8 +20,29 @@ abstract class AbstractWidget implements \ArrayAccess
     /** @var int */
     protected $size = WidgetSizes::Small;
 
-    /** @var array */
-    protected $attributes = [];
+    /** @var  string */
+    protected $title;
+
+    /** @var  string dashboard, settings etc. */
+    protected $type;
+
+
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+
+    /**
+     * @param string $title
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
 
 
     /**
@@ -37,80 +60,6 @@ abstract class AbstractWidget implements \ArrayAccess
     public function setTemplate($template)
     {
         $this->template = $template;
-    }
-
-
-    /** @inheritdoc */
-    public function offsetExists($offset)
-    {
-        return array_key_exists($offset, $this->getAttributes());
-    }
-
-
-    /**
-     * @return array
-     */
-    public function getAttributes()
-    {
-        return $this->attributes;
-    }
-
-
-    /**
-     * @param array $attributes
-     *
-     * @return $this
-     */
-    public function setAttributes(array $attributes)
-    {
-        $this->attributes = $attributes;
-
-        return $this;
-    }
-
-
-    /** @inheritdoc */
-    public function offsetGet($offset)
-    {
-        return $this->getAttribute($offset);
-    }
-
-
-    /**
-     * @param $attribute
-     *
-     * @return string|null
-     */
-    public function getAttribute($attribute)
-    {
-        if (isset($this->attributes[$attribute])) {
-            return $this->attributes[$attribute];
-        } else {
-            return null;
-        }
-    }
-
-
-    /** @inheritdoc */
-    public function offsetSet($offset, $value)
-    {
-        $this->addAttributes($offset, $value);
-    }
-
-
-    /** @inheritdoc */
-    public function addAttributes($name, $attr)
-    {
-        $this->attributes[$name] = $attr;
-
-        return $this;
-    }
-
-
-    /** @inheritdoc */
-    public function offsetUnset($offset)
-    {
-        unset($this->attributes[$offset]);
     }
 
 
@@ -132,8 +81,40 @@ abstract class AbstractWidget implements \ArrayAccess
     }
 
 
-    /** @return string */
-    abstract function getName();
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+
+    /**
+     * @param string $type
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+
+    /**
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
 
 
     /**

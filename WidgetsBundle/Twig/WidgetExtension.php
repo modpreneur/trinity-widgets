@@ -2,15 +2,21 @@
 
 namespace Trinity\WidgetsBundle\Twig;
 
+use ReflectionObject;
 use Symfony\Component\HttpFoundation\Request;
 use Trinity\WidgetsBundle\Entity\WidgetsDashboard;
 use Trinity\WidgetsBundle\Exception\WidgetException;
 use Trinity\WidgetsBundle\Widget\AbstractWidget;
 use Trinity\WidgetsBundle\Widget\IRemovable;
+use Trinity\WidgetsBundle\Widget\IResizable;
 use Trinity\WidgetsBundle\Widget\WidgetManager;
 use Twig_Environment;
 
 
+/**
+ * Class WidgetExtension
+ * @package Trinity\WidgetsBundle\Twig
+ */
 class WidgetExtension extends \Twig_Extension
 {
     /** @var  WidgetManager */
@@ -53,57 +59,53 @@ class WidgetExtension extends \Twig_Extension
                 array($this, 'renderDashboard'),
                 array('is_safe' => array('html'), 'needs_environment' => true)
             ),
+            new \Twig_SimpleFunction(
+                'renderTableCell', [$this, 'renderTableCell'], ['is_safe' => array('html')]
+            ),
         );
+    }
+
+
+    /**
+     * @param $object
+     * @param $attribute
+     * @return string
+     * @throws \Exception
+     */
+    public function renderTableCell($object, $attribute)
+    {
+        $reflection = new ReflectionObject($object);
+        if (property_exists($object, $attribute)) {
+            $methods = ["get", "is", "has"];
+            foreach ($methods as $method) {
+                if (method_exists($object, $method.ucfirst($attribute))) {
+                    $method = $reflection->getMethod($method.ucfirst($attribute));
+
+                    return $method->invoke($object);
+                }
+            }
+        }
+
+        if (method_exists($object, $attribute)) {
+            $method = $reflection->getMethod($attribute);
+
+            return $method->invoke($object);
+        }
+
+        throw new \Exception("Attribute or method doesn't exists.");
     }
 
 
     public function renderDashboard(Twig_Environment $env, WidgetsDashboard $dashboard)
     {
-
         $widgetsNames = $dashboard->getWidgets();
-        $render = '';
 
-        foreach ($widgetsNames as $wn) {
-            $render .= $this->renderWidget($env, $wn);
-        }
-
-        return $render;
-    }
-
-
-    /**
-     * {{ renderWidget("projects_list", {"title": "Products list"}) }}
-     *
-     * @param Twig_Environment $env
-     * @param string $widgetName
-     * @param string[] $options
-     *
-     * @return string
-     *
-     * @throws WidgetException
-     */
-    public function renderWidget(Twig_Environment $env, $widgetName, $options = [])
-    {
-        /** @var AbstractWidget $widget */
-        $widget = $this->widgetManager->createWidget($widgetName);
         /** @var \Twig_TemplateInterface $template */
-        $template = $env->loadTemplate($widget->getTemplate());
-        $wb = $widget->buildWidget();
+        $template = $env->loadTemplate("TrinityWidgetsBundle::dashboard.html.twig");
 
         $context = [
-            'widget' => $widget,
-            'title' => $widget->getAttribute('title'),
-            'size' => $widget->getSize(),
-            'removable' => $widget instanceof IRemovable,
+            'widgets' => $widgetsNames,
         ];
-
-        if ($wb && is_array($wb)) {
-            $context = array_merge($context, $wb);
-        }
-
-        if ($options && is_array($options) && count($options) > 0) {
-            $context = array_merge($context, $options);
-        }
 
         return $template->render($context);
     }
@@ -135,6 +137,46 @@ class WidgetExtension extends \Twig_Extension
         }
 
         return $result;
+    }
+
+
+    /**
+     * {{ renderWidget("projects_list", {"title": "Products list"}) }}
+     *
+     * @param Twig_Environment $env
+     * @param string $widgetName
+     * @param string[] $options
+     *
+     * @return string
+     *
+     * @throws WidgetException
+     */
+    public function renderWidget(Twig_Environment $env, $widgetName, $options = [])
+    {
+        /** @var AbstractWidget $widget */
+        $widget = $this->widgetManager->createWidget($widgetName);
+        /** @var \Twig_TemplateInterface $template */
+        $template = $env->loadTemplate($widget->getTemplate());
+        $wb = $widget->buildWidget();
+
+        $context = [
+            'name' => $widget->getName(),
+            'widget' => $widget,
+            'title' => $widget->getTitle(),
+            'size' => $widget->getSize(),
+            'resizable' => $widget instanceof IResizable,
+            'removable' => $widget instanceof IRemovable,
+        ];
+
+        if ($wb && is_array($wb)) {
+            $context = array_merge($context, $wb);
+        }
+
+        if ($options && is_array($options) && count($options) > 0) {
+            $context = array_merge($context, $options);
+        }
+
+        return $template->render($context);
     }
 
 

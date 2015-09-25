@@ -21,13 +21,18 @@ class WidgetCompilerPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         $definition = ($container->findDefinition('trinity.widgets.manager'));
-
         $tagServices = $container->findTaggedServiceIds('trinity.widget');
 
-
         foreach ($tagServices as $id => $tags) {
-            $definition->addMethodCall('addWidget', [new Reference($id)]);
+            foreach ($tags as $attributes) {
+                $definition->addMethodCall(
+                    'addWidget',
+                    [
+                        new Reference($id),
+                        $attributes["alias"],
+                    ]
+                );
+            }
         }
-
     }
 }

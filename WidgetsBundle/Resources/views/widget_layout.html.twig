@@ -5,12 +5,13 @@
     {% block widget_header %}
         <header>
             {% block widget_title %}
-                <h3> {{ title }} </h3>
+                <h3 class="pull-left"> {{ title }} </h3>
             {% endblock %}
 
             {% block widget_remove %}
                 {% if removable %}
-                    <a href="#remove_widget"> <i class="tiecons tiecons-cross-angular"></i> </a>
+                    <a class="pull-right" href="{{ path('remove_widget', {'widgetName': name}) }}"> <i
+                                class="tiecons tiecons-cross-angular"></i> </a>
                 {% endif %}
             {% endblock %}
         </header>
