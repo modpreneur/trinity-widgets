@@ -1,6 +1,7 @@
 services:
     trinity.widgets.manager:
       class: Trinity\WidgetsBundle\Widget\WidgetManager
+      arguments: [ @service_container ]
 
 
     trinity.widgets.extension:

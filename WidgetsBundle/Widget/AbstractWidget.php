@@ -26,6 +26,27 @@ abstract class AbstractWidget extends AbstractArrayWidget implements IWidget
     /** @var  string dashboard, settings etc. */
     protected $type;
 
+    /** @var  WidgetManager */
+    protected $manager;
+
+
+    /**
+     * @return WidgetManager
+     */
+    public function getManager()
+    {
+        return $this->manager;
+    }
+
+
+    /**
+     * @param WidgetManager $manager
+     */
+    public function setManager($manager)
+    {
+        $this->manager = $manager;
+    }
+
 
     /**
      * @return string

@@ -22,7 +22,7 @@ abstract class TableWidget extends AbstractWidget
     /** @var  TableBody */
     protected $tableBody;
 
-
+    /** @var string */
     protected $template = "TrinityWidgetsBundle::widget_table_layout.html.twig";
 
 
@@ -34,7 +34,6 @@ abstract class TableWidget extends AbstractWidget
      */
     public function addColumn($id, $title, $width = null)
     {
-
         $column = new Column();
         $column->setId($id);
         $column->setTitle($title);

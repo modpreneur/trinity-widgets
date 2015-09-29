@@ -2,6 +2,7 @@
 
 namespace Trinity\WidgetsBundle\Twig;
 
+use Nette\Utils\Strings;
 use ReflectionObject;
 use Symfony\Component\HttpFoundation\Request;
 use Trinity\WidgetsBundle\Entity\WidgetsDashboard;
@@ -24,6 +25,9 @@ class WidgetExtension extends \Twig_Extension
 
     /** @var  Request */
     private $request;
+
+    /** @var  \Twig_TemplateInterface */
+    private $template;
 
 
     /**
@@ -54,6 +58,8 @@ class WidgetExtension extends \Twig_Extension
                 array($this, 'renderWidgets'),
                 array('is_safe' => array('html'), 'needs_environment' => true)
             ),
+            new \Twig_SimpleFunction('getWidgetUrl', [$this, 'getWidgetUrl'], ['is_safe' => ['html']]),
+
             new \Twig_SimpleFunction(
                 'renderDashboard',
                 array($this, 'renderDashboard'),
@@ -62,7 +68,41 @@ class WidgetExtension extends \Twig_Extension
             new \Twig_SimpleFunction(
                 'renderTableCell', [$this, 'renderTableCell'], ['is_safe' => array('html')]
             ),
+            new \Twig_SimpleFunction(
+                'widget_*', [$this, 'widget'], ['is_safe' => ['html'], 'needs_environment' => true]
+            ),
         );
+    }
+
+
+    /**
+     * @param string $section
+     * @param AbstractWidget $widget
+     * @return string
+     */
+    public function getWidgetUrl($section, AbstractWidget $widget)
+    {
+
+        $prefix = $this->widgetManager->getRouteUrl().(strpos(
+                $this->widgetManager->getRouteUrl(),
+                '?widget_'
+            ) ? '&' : '?widget_');
+        $url = '';
+
+        switch ($section) {
+            case 'remove':
+                $url = $prefix.'remove='.$widget->getName();
+                break;
+        }
+
+        return $url;
+
+    }
+
+
+    public function widget(Twig_Environment $env)
+    {
+
     }
 
 
@@ -74,25 +114,36 @@ class WidgetExtension extends \Twig_Extension
      */
     public function renderTableCell($object, $attribute)
     {
+        $result = null;
+
         $reflection = new ReflectionObject($object);
         if (property_exists($object, $attribute)) {
             $methods = ["get", "is", "has"];
             foreach ($methods as $method) {
                 if (method_exists($object, $method.ucfirst($attribute))) {
                     $method = $reflection->getMethod($method.ucfirst($attribute));
-
-                    return $method->invoke($object);
+                    $result = $method->invoke($object);
+                    break;
                 }
             }
-        }
-
-        if (method_exists($object, $attribute)) {
+        } elseif (method_exists($object, $attribute)) {
             $method = $reflection->getMethod($attribute);
-
-            return $method->invoke($object);
+            $result = $method->invoke($object);
         }
 
-        throw new \Exception("Attribute or method doesn't exists.");
+
+        if ($result instanceof \DateTime) $result = $this->template->renderBlock(
+            'widget_cell_datetime',
+            ['value' => $result, 'row' => $object]
+        ); elseif (is_bool($result)) {
+            $result = $this->template->renderBlock('widget_cell_boolean', ['value' => $result, 'row' => $object]);
+        } elseif (Strings::startsWith($result, "http") || Strings::startsWith($result, "www")) {
+            $result = $this->template->renderBlock('widget_cell_link', ['value' => $result, 'row' => $object]);
+        } else {
+            $result = $this->template->renderBlock('widget_cell_string', ['value' => $result, 'row' => $object]);
+        }
+
+        return $result;
     }
 
 
@@ -156,7 +207,8 @@ class WidgetExtension extends \Twig_Extension
         /** @var AbstractWidget $widget */
         $widget = $this->widgetManager->createWidget($widgetName);
         /** @var \Twig_TemplateInterface $template */
-        $template = $env->loadTemplate($widget->getTemplate());
+        $this->template = $template = $env->loadTemplate($widget->getTemplate());
+
         $wb = $widget->buildWidget();
 
         $context = [
