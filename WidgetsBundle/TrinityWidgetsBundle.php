@@ -7,7 +7,7 @@ namespace Trinity\WidgetsBundle;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
-
+use Trinity\WidgetsBundle\DependencyInjection\WidgetCompilerPass;
 
 
 /**
@@ -28,6 +28,8 @@ class TrinityWidgetsBundle extends Bundle
     public function build(ContainerBuilder $container)
     {
         parent::build($container);
+
+        $container->addCompilerPass(new WidgetCompilerPass());
     }
 
 }

@@ -1,0 +1,74 @@
+{% extends "TrinityWidgetsBundle::widget_layout.html.twig" %}
+
+
+{% block widget_contnet %}
+    {% block data_grid %}
+        <table class="data-grid">
+            {% block table_header %}
+                <thead>
+                <tr>
+                    {% for column in header %}
+                        <th {% if column.width is not empty %} width="{{ column.width }}"{% endif %}>
+                            {{ column.title }}
+                        </th>
+                    {% endfor %}
+                </tr>
+                </thead>
+            {% endblock %}
+
+            {% block table_body %}
+                <tbody>
+                {{ block("widget_table_rows") }}
+                </tbody>
+            {% endblock %}
+        </table>
+    {% endblock %}
+{% endblock %}
+
+
+{% block widget_table_rows %}
+
+    {% for row in body %}
+        <tr>
+            {% for column in header %}
+                <td class="widget_table_cell-{{ column.id }}">
+                    {{ renderTableCell(row, column.id) }}
+                </td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+
+{% endblock %}
+
+
+{# ---  cell type  --- #}
+
+{% block widget_cell_boolean %}
+
+    {% if value %}
+        <i class="tiecons tiecons-check"></i>
+    {% else %}
+        <i class="tiecons tiecons-cross-round"></i>
+    {% endif %}
+
+{% endblock %}
+
+
+{% block widget_cell_datetime %}
+    <span class="datetime">
+        {{ value|date('j.n. Y') }} <br>
+        {{ value|date('H:i') }}
+    </span>
+{% endblock %}
+
+
+{% block widget_cell_link %}
+    <a target="_blank" href="{{ value }}"> {{ value }} </a>
+{% endblock %}
+
+
+{% block widget_cell_string %}
+    {{ value }}
+{% endblock %}
+
+{# ---  cell type  --- #}

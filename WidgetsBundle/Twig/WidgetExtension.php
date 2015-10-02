@@ -2,13 +2,23 @@
 
 namespace Trinity\WidgetsBundle\Twig;
 
+use Nette\Utils\Strings;
+use ReflectionObject;
 use Symfony\Component\HttpFoundation\Request;
+use Trinity\FrameworkBundle\Entity\BaseUser;
+use Trinity\WidgetsBundle\Entity\WidgetsDashboard;
 use Trinity\WidgetsBundle\Exception\WidgetException;
+use Trinity\WidgetsBundle\Widget\AbstractWidget;
+use Trinity\WidgetsBundle\Widget\IRemovable;
+use Trinity\WidgetsBundle\Widget\IResizable;
 use Trinity\WidgetsBundle\Widget\WidgetManager;
 use Twig_Environment;
 
 
-
+/**
+ * Class WidgetExtension
+ * @package Trinity\WidgetsBundle\Twig
+ */
 class WidgetExtension extends \Twig_Extension
 {
     /** @var  WidgetManager */
@@ -17,18 +27,20 @@ class WidgetExtension extends \Twig_Extension
     /** @var  Request */
     private $request;
 
+    /** @var  \Twig_TemplateInterface */
+    private $template;
 
 
     /**
-     * @param $container
-     * @param $widgetManager
+     * WidgetExtension constructor.
+     * @param WidgetManager $widgetManager
      */
-    public function __construct($container, $widgetManager)
+    public function __construct(WidgetManager $widgetManager)
     {
         $this->widgetManager = $widgetManager;
+
         $this->request = null;
     }
-
 
 
     /**
@@ -47,10 +59,120 @@ class WidgetExtension extends \Twig_Extension
                 array($this, 'renderWidgets'),
                 array('is_safe' => array('html'), 'needs_environment' => true)
             ),
-            new \Twig_SimpleFunction('get_widgets', array($this, 'getWidgets')),
+            new \Twig_SimpleFunction('getWidgetUrl', [$this, 'getWidgetUrl'], ['is_safe' => ['html']]),
+
+            new \Twig_SimpleFunction(
+                'renderDashboard',
+                array($this, 'renderDashboard'),
+                array('is_safe' => array('html'), 'needs_environment' => true)
+            ),
+            new \Twig_SimpleFunction(
+                'renderTableCell', [$this, 'renderTableCell'], ['is_safe' => array('html')]
+            ),
+            new \Twig_SimpleFunction(
+                'widget_*', [$this, 'widget'], ['is_safe' => ['html'], 'needs_environment' => true]
+            ),
         );
     }
 
+
+    /**
+     * @param string $section
+     * @param AbstractWidget $widget
+     * @param BaseUser $user
+     * @return string
+     */
+    public function getWidgetUrl($section, AbstractWidget $widget, BaseUser $user)
+    {
+        $prefix = $this->widgetManager->getRouteUrl().(strpos(
+                $this->widgetManager->getRouteUrl(),
+                '?widget_'
+            ) ? '&' : '?widget_');
+        $url = '';
+
+        switch ($section) {
+            case WidgetManager::ACTION_REMOVE:
+                $url = $prefix.'&user='.$user->getId()."&".$section.'='.$widget->getName();
+                break;
+        }
+
+        $this->widgetManager->setUser($user);
+
+        return $url;
+    }
+
+
+    /**
+     * @param Twig_Environment $env
+     */
+    public function widget(Twig_Environment $env)
+    {
+
+    }
+
+
+    /**
+     * @param $object
+     * @param $attribute
+     * @return string
+     * @throws \Exception
+     */
+    public function renderTableCell($object, $attribute)
+    {
+        $result = null;
+
+        $reflection = new ReflectionObject($object);
+        if (property_exists($object, $attribute)) {
+            $methods = ["get", "is", "has"];
+            foreach ($methods as $method) {
+                if (method_exists($object, $method.ucfirst($attribute))) {
+                    $method = $reflection->getMethod($method.ucfirst($attribute));
+                    $result = $method->invoke($object);
+                    break;
+                }
+            }
+        } elseif (method_exists($object, $attribute)) {
+            $method = $reflection->getMethod($attribute);
+            $result = $method->invoke($object);
+        }
+
+        if ($this->template->hasBlock('widget_table_cell_'.$attribute)) {
+            $result = $this->template->renderBlock(
+                'widget_table_cell_'.$attribute,
+                ['value' => $result, 'row' => $object]
+            );
+
+            return $result;
+        } elseif ($result instanceof \DateTime) {
+            $result = $this->template->renderBlock('widget_cell_datetime', ['value' => $result, 'row' => $object]);
+        } elseif (is_bool($result)) {
+            $result = $this->template->renderBlock('widget_cell_boolean', ['value' => $result, 'row' => $object]);
+        } elseif (Strings::startsWith($result, "http") || Strings::startsWith($result, "www")) {
+            $result = $this->template->renderBlock('widget_cell_link', ['value' => $result, 'row' => $object]);
+        } else {
+            $result = $this->template->renderBlock('widget_cell_string', ['value' => $result, 'row' => $object]);
+        }
+
+        return $result;
+    }
+
+
+    public function renderDashboard(Twig_Environment $env, WidgetsDashboard $dashboard)
+    {
+        $widgetsNames = $dashboard->getWidgets();
+
+        /** @var \Twig_TemplateInterface $template */
+        $template = $env->loadTemplate("TrinityWidgetsBundle::dashboard.html.twig");
+        $form = $this->widgetManager->getForm();
+
+        $context = [
+            'widgets' => $widgetsNames,
+            'availableWidgets' => $this->widgetManager->getDashboardWidgets(),
+            'form' => $form->createView(),
+        ];
+
+        return $template->render($context);
+    }
 
 
     /**
@@ -82,31 +204,45 @@ class WidgetExtension extends \Twig_Extension
     }
 
 
-
     /**
+     * {{ renderWidget("projects_list", {"title": "Products list"}) }}
+     *
      * @param Twig_Environment $env
-     * @param string $widgetId
+     * @param string $widgetName
      * @param string[] $options
      *
      * @return string
      *
      * @throws WidgetException
      */
-    public function renderWidget(Twig_Environment $env, $widgetId, $options = [])
+    public function renderWidget(Twig_Environment $env, $widgetName, $options = [])
     {
-        $widget = $this->widgetManager->getWidget($widgetId);
-        $template = $env->loadTemplate($widget->getTemplate());
+        /** @var AbstractWidget $widget */
+        $widget = $this->widgetManager->createWidget($widgetName);
+        /** @var \Twig_TemplateInterface $template */
+        $this->template = $template = $env->loadTemplate($widget->getTemplate());
 
-        return $template->render(
-            [
-                'widget' => $widget,
-                'title' => $widget->getName(), // shortcut
-                'widget-id' => $widgetId,
-                'options' => $options,
-            ]
-        );
+        $wb = $widget->buildWidget();
+
+        $context = [
+            'name' => $widget->getName(),
+            'widget' => $widget,
+            'title' => $widget->getTitle(),
+            'size' => $widget->getSize(),
+            'resizable' => $widget instanceof IResizable,
+            'removable' => $widget instanceof IRemovable,
+        ];
+
+        if ($wb && is_array($wb)) {
+            $context = array_merge($context, $wb);
+        }
+
+        if ($options && is_array($options) && count($options) > 0) {
+            $context = array_merge($context, $options);
+        }
+
+        return $template->render($context);
     }
-
 
 
     /**
@@ -120,7 +256,6 @@ class WidgetExtension extends \Twig_Extension
 
         return $widgets;
     }
-
 
 
     /**

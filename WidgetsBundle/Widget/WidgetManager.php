@@ -6,13 +6,17 @@
 
 namespace Trinity\WidgetsBundle\Widget;
 
-use Dmishh\Bundle\SettingsBundle\Manager\SettingsManager;
-use Symfony\Component\EventDispatcher\Debug\TraceableEventDispatcher;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Trinity\WidgetsBundle\Event\WidgetEvent;
-use Trinity\WidgetsBundle\Event\WidgetsEvents;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Routing\Router;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use Trinity\FrameworkBundle\Entity\BaseUser;
+use Trinity\WidgetsBundle\Entity\IUserDashboard;
+use Trinity\WidgetsBundle\Entity\WidgetsDashboard;
 use Trinity\WidgetsBundle\Exception\WidgetException;
-
+use Trinity\WidgetsBundle\Tests\Widgets\TestWidget;
 
 
 /**
@@ -20,114 +24,191 @@ use Trinity\WidgetsBundle\Exception\WidgetException;
  */
 class WidgetManager
 {
-    /** @var Widget[] */
-    private $widgets = [];
 
-    /** @var WidgetType[] */
-    private $widgetsTypes = [];
+    const ACTION_REMOVE = 'remove';
 
-    /** @var bool */
-    private $init = false;
+    const ACTION_SMALLER = 'smaller';
 
-    /** @var  TraceableEventDispatcher */
-    private $eventDispatcher;
-
-    /** @var  SettingsManager */
-    private $settingsManager;
-
+    const ACTION_BIGGER = 'bigger';
 
 
     /**
-     * @param EventDispatcher $eventDispatcher
-     * @param $settingsManager
+     * @var string
      */
-    public function __construct($eventDispatcher, $settingsManager = null)
+    protected $routeUrl;
+    /**
+     * @var Request
+     */
+    protected $request;
+    /**
+     * @var Session;
+     */
+    protected $session;
+
+    /** @var TokenStorage */
+    protected $tokenStorage;
+
+    /** @var array */
+    protected $routeParameters;
+
+    /** @var bool */
+
+    /** @var bool */
+    protected $redirect = false;
+
+    /** @var array */
+    protected $requestData = [];
+
+    /** @var AbstractWidget[] */
+    protected $widgets = [];
+
+    /** @var  Router */
+    protected $router;
+
+    /** @var IUserDashboard */
+    protected $user;
+
+
+    /**
+     * WidgetManager constructor.
+     * @param ContainerInterface $container
+     */
+    public function __construct(ContainerInterface $container)
     {
-        $this->eventDispatcher = $eventDispatcher;
-        $this->settingsManager = $settingsManager;
+        $this->container = $container;
+        $this->router = $container->get('router');
+        $this->request = $container->get('request');
+        $this->session = $container->get('session');
+        $this->tokenStorage = $this->container->get('security.token_storage');
 
-        if (!$this->init) {
-            $this->eventDispatcher->dispatch(WidgetsEvents::WIDGET_TYPE_INIT, new WidgetEvent($this));
-            $this->eventDispatcher->dispatch(WidgetsEvents::WIDGET_INIT, new WidgetEvent($this));
+        $this->routeParameters = $this->request->attributes->all();
+        foreach (array_keys($this->routeParameters) as $key) {
+            if (substr($key, 0, 1) == '_') {
+                unset($this->routeParameters[$key]);
+            }
         }
-
-        $this->init = true;
     }
 
 
+    /**
+     * @param \Symfony\Component\HttpKernel\Event\FilterControllerEvent $event
+     */
+    public function onKernelController(\Symfony\Component\HttpKernel\Event\FilterControllerEvent $event)
+    {
+        $em = $this->container->get('doctrine')->getManager();
+        $redirectUrl = $this->getCurrentUri();
+
+        if ($this->tokenStorage && $this->tokenStorage->getToken()) {
+            $user = $this->tokenStorage->getToken()->getUser();
+
+            /** @var WidgetsDashboard $dashboard */
+            $dashboard = $user->getWidgetsDashboard();
+
+            if ($this->isRedirected()) {
+                $widget = null;
+
+                if (array_key_exists(self::ACTION_REMOVE, $this->requestData)) {
+                    $widget = ($this->getWidget($this->requestData[self::ACTION_REMOVE]));
+
+                    if ($widget instanceof IRemovable) {
+                        $widget->remove();
+                        $dashboard->removeWidget($widget);
+                        $em->persist($dashboard);
+                        $em->flush();
+                    }
+                }
+
+                $event->setController(
+                    function () use ($redirectUrl) {
+                        return new RedirectResponse($redirectUrl);
+                    }
+                );
+            }
+        }
+
+        if (($this->session->get('widget_redirect') && $this->session->get('widget_redirect') == '1')) {
+            $this->session->set('widget_redirect', '0');
+
+            $event->setController(
+                function () use ($redirectUrl) {
+                    return new RedirectResponse($redirectUrl);
+                }
+            );
+        }
+
+    }
+
 
     /**
-     * @param string $id
-     * @param WidgetType|string $type
-     * @param string $name
-     * @param string $template
-     * @param callback|null $callback
-     * @param bool $autoAdd
-     * @return Widget
-     * @throws WidgetException
+     * @return string
      */
-    public function createWidget($id, $type, $name = '', $template = '', $callback = null, $autoAdd = true)
+    public function getCurrentUri()
     {
-        if (is_string($type)) {
-            $type = $this->getType($type);
+        return $this->request->getScheme().'://'.$this->request->getHttpHost().$this->request->getBaseUrl(
+        ).$this->request->getPathInfo();
+    }
+
+
+    /**
+     * @return bool
+     */
+    public function isRedirected()
+    {
+        $choices = ['user', self::ACTION_REMOVE, self::ACTION_BIGGER, self::ACTION_SMALLER];
+
+        foreach ($choices as $hash) {
+            if ($this->request->get($hash)) {
+                $this->requestData[$hash] = $this->request->get($hash);
+            }
         }
 
-        $widget = new Widget($id, $type, $name, $template);
-        if ($autoAdd) {
-            $this->addWidget($widget, $callback);
+        if (count($this->requestData) > 1) {
+            $this->redirect = true;
         }
+
+        return $this->redirect;
+    }
+
+
+    /**
+     * @param string $name
+     * @return AbstractWidget
+     */
+    private function getWidget($name)
+    {
+        return $this->widgets[$name];
+    }
+
+
+    /**
+     * @param string $name widget name
+     * @param bool $clone -> new instance of widget
+     * @return TestWidget
+     * @throws WidgetException
+     */
+    public function createWidget($name, $clone = true)
+    {
+        /** @var AbstractWidget $widget */
+        $widget = $clone ? clone $this->getWidget($name) : $this->getWidget($name);
 
         return $widget;
     }
 
 
-
     /**
-     * @param string $type
-     *
-     * @return WidgetType
-     *
-     * @throws WidgetException
-     */
-    public function getType($type)
-    {
-        if ($this->isWidgetTypeExists($type)) {
-            return $this->widgetsTypes[$type];
-        } else {
-            throw new WidgetException("Widget type '$type' doesn't exists.");
-        }
-    }
-
-
-
-    /**
-     * @param string $type
-     *
-     * @return bool
-     */
-    public function isWidgetTypeExists($type)
-    {
-        if (array_key_exists($type, $this->widgetsTypes)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-
-
-    /**
-     * @param Widget $widget
+     * @param AbstractWidget $widget
      * @param callback|null $callback
      *
      * @throws WidgetException
      */
-    public function addWidget(Widget $widget, $callback = null)
+    public function addWidget(AbstractWidget $widget, $callback = null)
     {
-        if (!array_key_exists($widget->getId(), $this->widgets)) {
-            $this->widgets[$widget->getId()] = $widget;
+        if (!array_key_exists($widget->getName(), $this->widgets)) {
+            $this->widgets[$widget->getName()] = $widget;
+            $widget->setManager($this);
         } else {
-            throw new WidgetException('This widget is already exists.');
+            $name = $widget->getName();
+            throw new WidgetException("This widget($name) is already registered.");
         }
 
         if ($callback && is_callable($callback)) {
@@ -136,105 +217,99 @@ class WidgetManager
     }
 
 
-
     /**
-     * @param string $widgetId
+     * Returns Route URL
      *
-     * @return Widget
-     *
-     * @throws WidgetException
+     * @return string
      */
-    public function getWidget($widgetId)
+    public function getRouteUrl()
     {
-        if (array_key_exists($widgetId, $this->widgets)) {
-            return $this->widgets[$widgetId];
+        if ($this->routeUrl === null) {
+            $this->routeUrl = $this->router->generate($this->request->get('_route'), $this->getRouteParameters());
         }
-        throw new WidgetException('This widget not exists.');
+
+        return $this->routeUrl;
     }
 
 
-
     /**
-     * @param WidgetType $type
-     *
-     * @throws WidgetException
-     */
-    public function addType(WidgetType $type)
-    {
-        if (!$this->isWidgetTypeExists($type->getId())) {
-            $this->widgetsTypes[$type->getId()] = $type;
-        } else {
-            $id = $type->getId();
-            throw new WidgetException("Widget type '$id' already exists.");
-        }
-    }
-
-
-
-    /**
-     * @param string $id
-     * @param string $name
-     * @param bool $autoAdd
-     *
-     * @return WidgetType
-     */
-    public function createType($id, $name, $autoAdd = true)
-    {
-        $type = new WidgetType($id, $name);
-        if ($autoAdd && !$this->isWidgetTypeExists($type->getId())) {
-            $this->widgetsTypes[$id] = $type;
-        }
-
-        return $type;
-    }
-
-
-
-    /**
-     * @param string $typeId
-     *
-     * @return string[]
-     */
-    public function getWidgetsIdsByTypeId($typeId)
-    {
-        $widgetsIds = [];
-        foreach ($this->widgets as $widget) {
-            if ($widget->getType()->getId() == $typeId) {
-                $widgetsIds[] = $widget->getId();
-            }
-        }
-
-        return $widgetsIds;
-    }
-
-
-
-    /**
-     * @param string $categoryName
-     *
      * @return array
      */
-    public function getTypesByCategory($categoryName)
+    public function getRouteParameters()
     {
-        $types = $this->widgetsTypes;
-        $types = array_filter(
-            $types,
-            function (WidgetType $widgetType) use ($categoryName) {
-                if (in_array($categoryName, $widgetType->getCategories())) {
-                    return $widgetType;
-                }
-
-                return [];
-            }
-        );
-
-        usort(
-            $types,
-            function (WidgetType $a, WidgetType $b) use ($categoryName) {
-                return strcmp($a->getCategoryOrder($categoryName), $b->getCategoryOrder($categoryName));
-            }
-        );
-
-        return $types;
+        return $this->routeParameters;
     }
+
+
+    /**
+     * @param array $routeParameters
+     */
+    public function setRouteParameters($routeParameters)
+    {
+        $this->routeParameters = $routeParameters;
+    }
+
+
+    /**
+     * @param BaseUser $user
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
+    }
+
+
+    /**
+     * Return widgets name
+     * @return array
+     */
+    public function getDashboardWidgets()
+    {
+        $widgets = [];
+
+        foreach ($this->widgets as $item) {
+            if ($item->getType() == "dashboard") {
+                $title = ucfirst(str_replace("_", " ", $item->getName()));
+
+                $widgets[$item->getName()] = $title;
+            }
+        }
+
+        return $widgets;
+    }
+
+
+    /**
+     * @return \Symfony\Component\Form\Form
+     */
+    public function getForm()
+    {
+        $form = $this->container->get('form.factory')->create('trinity_widgets_bundle_dashboard_type');
+        $form->handleRequest($this->container->get('request'));
+
+
+        $em = $this->container->get('doctrine')->getManager();
+        $user = $this->tokenStorage->getToken()->getUser();
+
+
+        /** @var WidgetsDashboard $dashboard */
+        $dashboard = $user->getWidgetsDashboard();
+
+        if ($form->isSubmitted()) {
+            $data = $form->getData();
+            $dashboard->setWidgets($data['widgets']);
+
+            $em->persist($dashboard);
+            $em->flush();
+
+            $this->redirect = true;
+            $this->session->set('widget_redirect', '1');
+
+        } else {
+            $form->setData(['widgets' => $dashboard->getWidgets()]);
+        }
+
+        return $form;
+    }
+
 }

@@ -13,7 +13,6 @@ use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 
-
 /**
  * Class BaseTest.
  */
@@ -27,6 +26,7 @@ abstract class BaseTest extends WebTestCase
 
     /** @var  Client */
     protected $clientObject;
+
 
     /**
      * @param string|object $class
@@ -43,6 +43,7 @@ abstract class BaseTest extends WebTestCase
         return $method;
     }
 
+
     /**
      * Create kernel.
      */
@@ -55,6 +56,7 @@ abstract class BaseTest extends WebTestCase
         $this->clientObject = self::createClient();
     }
 
+
     /**
      * Shutdown kernel.
      */
@@ -62,6 +64,17 @@ abstract class BaseTest extends WebTestCase
     {
         $this->kernelObject->shutdown();
     }
+
+
+    public function getWidgetExtension()
+    {
+        $em = $this->getMockBuilder('Trinity\WidgetsBundle\Twig\WidgetExtension')->setConstructorArgs(
+                [$this->getContainer()]
+            )->getMock();
+
+        return $em;
+    }
+
 
     /**
      * @param object $class
@@ -75,6 +88,7 @@ abstract class BaseTest extends WebTestCase
         $property->setValue($class, $value);
     }
 
+
     /**
      * @return \Doctrine\ORM\EntityManager
      */
@@ -86,4 +100,5 @@ abstract class BaseTest extends WebTestCase
 
         return $em;
     }
+
 }

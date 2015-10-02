@@ -1,6 +1,6 @@
-<h1>
+{% extends 'widget_layout.html.twig' %}
 
-    {{ widget.title }}
+{% block widget_contnet %}
 
     {% if widget.name is not defined %}
         <h1>Define</h1>
@@ -8,4 +8,4 @@
         <h2> Non define </h2>
     {% endif %}
 
-</h1>
+{% endblock %}
