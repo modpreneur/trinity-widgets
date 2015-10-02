@@ -101,6 +101,10 @@ class WidgetManager
         if ($this->tokenStorage && $this->tokenStorage->getToken()) {
             $user = $this->tokenStorage->getToken()->getUser();
 
+            if (!($user instanceof IUserDashboard)) {
+                return;
+            }
+
             /** @var WidgetsDashboard $dashboard */
             $dashboard = $user->getWidgetsDashboard();
 
