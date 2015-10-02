@@ -1,3 +1,28 @@
-{% for widget in widgets %}
-    {{ renderWidget(widget) }}
-{% endfor %}
+{% block dashboard %}
+
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+    {% for widget in widgets %}
+        {{ renderWidget(widget) }}
+    {% endfor %}
+
+    <div class="people-item">
+        <a href="#Test_info" class="modal-a button button-secondary">MODAL</a>
+
+        <!--DESKTOP-->
+        <div id="Test_info" class="modal-dialog small-hidden">
+            <a href="#close" title="Close" class="full-width-close"></a>
+
+            <div class="row">
+                <div class="span-none-padding-medium-12">
+                    {{ form(form) }}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}
+
+
+

@@ -2,7 +2,8 @@ services:
     trinity.widgets.manager:
       class: Trinity\WidgetsBundle\Widget\WidgetManager
       arguments: [ @service_container ]
-
+      tags:
+         - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
 
     trinity.widgets.extension:
       class: Trinity\WidgetsBundle\Twig\WidgetExtension
@@ -10,3 +11,10 @@ services:
       public: true
       tags:
         - {name: twig.extension}
+
+
+    trinity.widgets.dashboard.form.dashboard_type:
+      class: Trinity\WidgetsBundle\Form\DashboardType
+      arguments: [ @trinity.widgets.manager ]
+      tags:
+        - {name: form.type, alias: trinity_widgets_bundle_dashboard_type}

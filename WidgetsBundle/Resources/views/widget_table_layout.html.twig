@@ -32,11 +32,7 @@
         <tr>
             {% for column in header %}
                 <td class="widget_table_cell-{{ column.id }}">
-                    {% if block('widget_table_cell_' ~ column.id) %}
-                        {{ block('widget_table_cell_' ~ column.id) }}
-                    {% else %}
-                        {{ renderTableCell(row, column.id)|raw }}
-                    {% endif %}
+                    {{ renderTableCell(row, column.id) }}
                 </td>
             {% endfor %}
         </tr>
@@ -45,7 +41,7 @@
 {% endblock %}
 
 
-{# ---  cell type --- #}
+{# ---  cell type  --- #}
 
 {% block widget_cell_boolean %}
 
@@ -59,12 +55,15 @@
 
 
 {% block widget_cell_datetime %}
-    <i class="tiecons tiecons-calendar-day"></i> {{ value|date('m.d.Y H:i') }}
+    <span class="datetime">
+        {{ value|date('j.n. Y') }} <br>
+        {{ value|date('H:i') }}
+    </span>
 {% endblock %}
 
 
 {% block widget_cell_link %}
-    <a target="_blank" href="{{ value }}"> <i class="tiecons tiecons-arrow-next-border"></i> {{ value }}</a>
+    <a target="_blank" href="{{ value }}"> {{ value }} </a>
 {% endblock %}
 
 
@@ -72,4 +71,4 @@
     {{ value }}
 {% endblock %}
 
-{# --- cell type --- #}
+{# ---  cell type  --- #}

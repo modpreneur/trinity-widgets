@@ -6,11 +6,15 @@
 
 namespace Trinity\WidgetsBundle\Widget;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Router;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use Trinity\FrameworkBundle\Entity\BaseUser;
+use Trinity\WidgetsBundle\Entity\IUserDashboard;
+use Trinity\WidgetsBundle\Entity\WidgetsDashboard;
 use Trinity\WidgetsBundle\Exception\WidgetException;
 use Trinity\WidgetsBundle\Tests\Widgets\TestWidget;
 
@@ -20,6 +24,14 @@ use Trinity\WidgetsBundle\Tests\Widgets\TestWidget;
  */
 class WidgetManager
 {
+
+    const ACTION_REMOVE = 'remove';
+
+    const ACTION_SMALLER = 'smaller';
+
+    const ACTION_BIGGER = 'bigger';
+
+
     /**
      * @var string
      */
@@ -32,33 +44,42 @@ class WidgetManager
      * @var Session;
      */
     protected $session;
-    /**
-     * @var Security
-     */
-    protected $securityContext;
+
+    /** @var TokenStorage */
+    protected $tokenStorage;
+
     /** @var array */
     protected $routeParameters;
-    protected $choices = ["widget_remove"];
+
+    /** @var bool */
+
     /** @var bool */
     protected $redirect = false;
+
     /** @var array */
     protected $requestData = [];
+
     /** @var AbstractWidget[] */
-    private $widgets = [];
+    protected $widgets = [];
+
     /** @var  Router */
-    private $router;
+    protected $router;
+
+    /** @var IUserDashboard */
+    protected $user;
 
 
     /**
-     * @param \Symfony\Component\DependencyInjection\Container $container
+     * WidgetManager constructor.
+     * @param ContainerInterface $container
      */
-    public function __construct($container)
+    public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         $this->router = $container->get('router');
         $this->request = $container->get('request');
-        $this->session = $this->request->getSession();
-
+        $this->session = $container->get('session');
+        $this->tokenStorage = $this->container->get('security.token_storage');
 
         $this->routeParameters = $this->request->attributes->all();
         foreach (array_keys($this->routeParameters) as $key) {
@@ -66,10 +87,65 @@ class WidgetManager
                 unset($this->routeParameters[$key]);
             }
         }
+    }
 
-        if ($this->isRedirected()) {
-            return new RedirectResponse($this->getCurrentUri());
+
+    /**
+     * @param \Symfony\Component\HttpKernel\Event\FilterControllerEvent $event
+     */
+    public function onKernelController(\Symfony\Component\HttpKernel\Event\FilterControllerEvent $event)
+    {
+        $em = $this->container->get('doctrine')->getManager();
+        $redirectUrl = $this->getCurrentUri();
+
+        if ($this->tokenStorage && $this->tokenStorage->getToken()) {
+            $user = $this->tokenStorage->getToken()->getUser();
+
+            /** @var WidgetsDashboard $dashboard */
+            $dashboard = $user->getWidgetsDashboard();
+
+            if ($this->isRedirected()) {
+                $widget = null;
+
+                if (array_key_exists(self::ACTION_REMOVE, $this->requestData)) {
+                    $widget = ($this->getWidget($this->requestData[self::ACTION_REMOVE]));
+
+                    if ($widget instanceof IRemovable) {
+                        $widget->remove();
+                        $dashboard->removeWidget($widget);
+                        $em->persist($dashboard);
+                        $em->flush();
+                    }
+                }
+
+                $event->setController(
+                    function () use ($redirectUrl) {
+                        return new RedirectResponse($redirectUrl);
+                    }
+                );
+            }
         }
+
+        if (($this->session->get('widget_redirect') && $this->session->get('widget_redirect') == '1')) {
+            $this->session->set('widget_redirect', '0');
+
+            $event->setController(
+                function () use ($redirectUrl) {
+                    return new RedirectResponse($redirectUrl);
+                }
+            );
+        }
+
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getCurrentUri()
+    {
+        return $this->request->getScheme().'://'.$this->request->getHttpHost().$this->request->getBaseUrl(
+        ).$this->request->getPathInfo();
     }
 
 
@@ -78,22 +154,29 @@ class WidgetManager
      */
     public function isRedirected()
     {
-        foreach ($this->choices as $hash) {
-            $this->requestData = (array)$this->request->get($hash);
-            if (count($this->requestData) > 0) {
-                $this->redirect = true;
-                break;
+        $choices = ['user', self::ACTION_REMOVE, self::ACTION_BIGGER, self::ACTION_SMALLER];
+
+        foreach ($choices as $hash) {
+            if ($this->request->get($hash)) {
+                $this->requestData[$hash] = $this->request->get($hash);
             }
+        }
+
+        if (count($this->requestData) > 1) {
+            $this->redirect = true;
         }
 
         return $this->redirect;
     }
 
 
-    protected function getCurrentUri()
+    /**
+     * @param string $name
+     * @return AbstractWidget
+     */
+    private function getWidget($name)
     {
-        return $this->request->getScheme().'://'.$this->request->getHttpHost().$this->request->getBaseUrl(
-        ).$this->request->getPathInfo();
+        return $this->widgets[$name];
     }
 
 
@@ -113,16 +196,6 @@ class WidgetManager
 
 
     /**
-     * @param string $name
-     * @return AbstractWidget
-     */
-    private function getWidget($name)
-    {
-        return $this->widgets[$name];
-    }
-
-
-    /**
      * @param AbstractWidget $widget
      * @param callback|null $callback
      *
@@ -134,7 +207,8 @@ class WidgetManager
             $this->widgets[$widget->getName()] = $widget;
             $widget->setManager($this);
         } else {
-            throw new WidgetException('This widget is already registered.');
+            $name = $widget->getName();
+            throw new WidgetException("This widget($name) is already registered.");
         }
 
         if ($callback && is_callable($callback)) {
@@ -175,5 +249,67 @@ class WidgetManager
         $this->routeParameters = $routeParameters;
     }
 
+
+    /**
+     * @param BaseUser $user
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
+    }
+
+
+    /**
+     * Return widgets name
+     * @return array
+     */
+    public function getDashboardWidgets()
+    {
+        $widgets = [];
+
+        foreach ($this->widgets as $item) {
+            if ($item->getType() == "dashboard") {
+                $title = ucfirst(str_replace("_", " ", $item->getName()));
+
+                $widgets[$item->getName()] = $title;
+            }
+        }
+
+        return $widgets;
+    }
+
+
+    /**
+     * @return \Symfony\Component\Form\Form
+     */
+    public function getForm()
+    {
+        $form = $this->container->get('form.factory')->create('trinity_widgets_bundle_dashboard_type');
+        $form->handleRequest($this->container->get('request'));
+
+
+        $em = $this->container->get('doctrine')->getManager();
+        $user = $this->tokenStorage->getToken()->getUser();
+
+
+        /** @var WidgetsDashboard $dashboard */
+        $dashboard = $user->getWidgetsDashboard();
+
+        if ($form->isSubmitted()) {
+            $data = $form->getData();
+            $dashboard->setWidgets($data['widgets']);
+
+            $em->persist($dashboard);
+            $em->flush();
+
+            $this->redirect = true;
+            $this->session->set('widget_redirect', '1');
+
+        } else {
+            $form->setData(['widgets' => $dashboard->getWidgets()]);
+        }
+
+        return $form;
+    }
 
 }

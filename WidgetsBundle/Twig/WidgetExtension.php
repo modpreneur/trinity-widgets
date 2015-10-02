@@ -5,6 +5,7 @@ namespace Trinity\WidgetsBundle\Twig;
 use Nette\Utils\Strings;
 use ReflectionObject;
 use Symfony\Component\HttpFoundation\Request;
+use Trinity\FrameworkBundle\Entity\BaseUser;
 use Trinity\WidgetsBundle\Entity\WidgetsDashboard;
 use Trinity\WidgetsBundle\Exception\WidgetException;
 use Trinity\WidgetsBundle\Widget\AbstractWidget;
@@ -78,11 +79,11 @@ class WidgetExtension extends \Twig_Extension
     /**
      * @param string $section
      * @param AbstractWidget $widget
+     * @param BaseUser $user
      * @return string
      */
-    public function getWidgetUrl($section, AbstractWidget $widget)
+    public function getWidgetUrl($section, AbstractWidget $widget, BaseUser $user)
     {
-
         $prefix = $this->widgetManager->getRouteUrl().(strpos(
                 $this->widgetManager->getRouteUrl(),
                 '?widget_'
@@ -90,16 +91,20 @@ class WidgetExtension extends \Twig_Extension
         $url = '';
 
         switch ($section) {
-            case 'remove':
-                $url = $prefix.'remove='.$widget->getName();
+            case WidgetManager::ACTION_REMOVE:
+                $url = $prefix.'&user='.$user->getId()."&".$section.'='.$widget->getName();
                 break;
         }
 
-        return $url;
+        $this->widgetManager->setUser($user);
 
+        return $url;
     }
 
 
+    /**
+     * @param Twig_Environment $env
+     */
     public function widget(Twig_Environment $env)
     {
 
@@ -131,11 +136,16 @@ class WidgetExtension extends \Twig_Extension
             $result = $method->invoke($object);
         }
 
+        if ($this->template->hasBlock('widget_table_cell_'.$attribute)) {
+            $result = $this->template->renderBlock(
+                'widget_table_cell_'.$attribute,
+                ['value' => $result, 'row' => $object]
+            );
 
-        if ($result instanceof \DateTime) $result = $this->template->renderBlock(
-            'widget_cell_datetime',
-            ['value' => $result, 'row' => $object]
-        ); elseif (is_bool($result)) {
+            return $result;
+        } elseif ($result instanceof \DateTime) {
+            $result = $this->template->renderBlock('widget_cell_datetime', ['value' => $result, 'row' => $object]);
+        } elseif (is_bool($result)) {
             $result = $this->template->renderBlock('widget_cell_boolean', ['value' => $result, 'row' => $object]);
         } elseif (Strings::startsWith($result, "http") || Strings::startsWith($result, "www")) {
             $result = $this->template->renderBlock('widget_cell_link', ['value' => $result, 'row' => $object]);
@@ -153,9 +163,12 @@ class WidgetExtension extends \Twig_Extension
 
         /** @var \Twig_TemplateInterface $template */
         $template = $env->loadTemplate("TrinityWidgetsBundle::dashboard.html.twig");
+        $form = $this->widgetManager->getForm();
 
         $context = [
             'widgets' => $widgetsNames,
+            'availableWidgets' => $this->widgetManager->getDashboardWidgets(),
+            'form' => $form->createView(),
         ];
 
         return $template->render($context);

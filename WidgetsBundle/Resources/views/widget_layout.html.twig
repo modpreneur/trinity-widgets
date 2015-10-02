@@ -1,34 +1,37 @@
 {% block grid %}
 
     {% block widget_start %}
-        <section class="trinity-widget span-none-padding-medium-{{ size }} margin-top-20 padding-right-20">
+        <div class="span-none-padding-large-{{ size }} ">
+        <section class="trinity-widget margin-top-20 margin-right-20">
     {% endblock %}
 
     {% block widget_header %}
-        <header>
+        <header class="row">
             {% block widget_title %}
-                <h3 class="pull-left"> {{ title }} </h3>
+                <h3 class="pull-left widget-title"> {{ title }} </h3>
             {% endblock %}
 
             {% block widget_remove %}
                 {% if removable %}
-                    <a class="pull-right" href="{{ getWidgetUrl('remove', widget) }}"> <i
+                    <a class="pull-right close" href="{{ getWidgetUrl('remove', widget, app.user) }}"> <i
                                 class="tiecons tiecons-cross-angular"></i> </a>
                 {% endif %}
             {% endblock %}
         </header>
-    {% endblock %}
+            {% endblock %}
 
 
     {% block widget_contnet_wrapper %}
-        <main>
-            {{ block('widget_contnet') }}
+        <main class="row content-box">
+            <div class="content">
+                {{ block('widget_contnet') }}
+            </div>
         </main>
     {% endblock %}
 
 
     {% block widget_footer_wrapper %}
-        <footer>
+        <footer class="row">
             {% block widget_footer %} {% endblock %}
         </footer>
     {% endblock %}
@@ -36,7 +39,7 @@
 
     {% block widget_end %}
         </section>
+        </div>
     {% endblock %}
-
 {% endblock %}
 

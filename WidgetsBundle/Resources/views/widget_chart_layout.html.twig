@@ -1,0 +1,26 @@
+{% extends "TrinityWidgetsBundle::widget_layout.html.twig" %}
+
+{% block widget_contnet %}
+
+    <div class="widget-chart chart" id="{{ widget.name }}">
+
+    </div>
+
+    {% block widgetScript %}
+        <script>
+            google.load("visualization", "1.1", {packages: ["corechart"]});
+            google.setOnLoadCallback(drawChart);
+
+            function drawChart() {
+
+                var data = google.visualization.arrayToDataTable(
+                        {{ data|json_encode|raw }}
+                );
+
+                var chart = new google.visualization.{{ chartType }}(document.getElementById('{{ widget.name }}'));
+                chart.draw(data, {{ options|json_encode|raw }});
+            }
+        </script>
+    {% endblock %}
+
+{% endblock %}
