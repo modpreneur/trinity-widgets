@@ -22,4 +22,17 @@ interface IUserDashboard
      */
     public function setWidgetsDashboard($widgetsDashboard);
 
+
+    /**
+     * @param WidgetsSettingsManager $widgetsSettingsManager
+     * @return void
+     */
+    public function setWidgetsSettingsManager(WidgetsSettingsManager $widgetsSettingsManager);
+
+
+    /**
+     * @return WidgetsSettingsManager
+     */
+    public function getWidgetsSettingsManager();
+
 }

@@ -29,15 +29,20 @@
 {% block widget_table_rows %}
 
     {% for row in body %}
-        <tr>
-            {% for column in header %}
-                <td class="widget_table_cell-{{ column.id }}">
-                    {{ renderTableCell(row, column.id) }}
-                </td>
-            {% endfor %}
-        </tr>
+        {{ block('widget_row') }}
     {% endfor %}
 
+{% endblock %}
+
+
+{% block widget_row %}
+    <tr>
+        {% for column in header %}
+            <td class="widget_table_cell-{{ column.id }}">
+                {{ renderTableCell(row, column.id) }}
+            </td>
+        {% endfor %}
+    </tr>
 {% endblock %}
 
 
@@ -68,7 +73,11 @@
 
 
 {% block widget_cell_string %}
-    {{ value }}
+    <div class="short-cell">
+        <span>
+            {{ value }}
+        </span>
+    </div>
 {% endblock %}
 
 {# ---  cell type  --- #}
