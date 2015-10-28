@@ -2,9 +2,11 @@
 
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
-    {% for widget in widgets %}
-        {{ renderWidget(widget) }}
-    {% endfor %}
+    <div class="dashboard-widgets">
+        {% for widget in widgets %}
+            {{ renderWidget(widget) }}
+        {% endfor %}
+    </div>
 
     <div class="people-item">
         <a href="#Test_info" class="modal-a button button-secondary">MODAL</a>
@@ -12,9 +14,17 @@
         <!--DESKTOP-->
         <div id="Test_info" class="modal-dialog small-hidden">
             <a href="#close" title="Close" class="full-width-close"></a>
-
             <div class="row">
-                <div class="span-none-padding-medium-12">
+                <div class="span-none-padding-medium-24">
+                    <header>
+                        <h2>
+                            Dashboard - settings
+                        </h2>
+                        <p>
+                            Select your favourite widget.
+                        </p>
+                    </header>
+
                     {{ form(form) }}
                 </div>
             </div>
@@ -23,6 +33,3 @@
     </div>
 
 {% endblock %}
-
-
-
