@@ -122,7 +122,11 @@ class WidgetExtension extends \Twig_Extension
         $result = null;
 
         $reflection = new ReflectionObject($object);
-        if (property_exists($object, $attribute)) {
+
+        if (method_exists($object, $attribute)) {
+            $method = $reflection->getMethod($attribute);
+            $result = $method->invoke($object);
+        }else{
             $methods = ["get", "is", "has"];
             foreach ($methods as $method) {
                 if (method_exists($object, $method.ucfirst($attribute))) {
@@ -131,9 +135,6 @@ class WidgetExtension extends \Twig_Extension
                     break;
                 }
             }
-        } elseif (method_exists($object, $attribute)) {
-            $method = $reflection->getMethod($attribute);
-            $result = $method->invoke($object);
         }
 
         if ($this->template->hasBlock('widget_table_cell_'.$attribute)) {
