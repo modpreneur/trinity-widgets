@@ -15,7 +15,6 @@ class AppKernel extends Kernel
     public function registerBundles()
     {
         return array(
-            new \Liip\FunctionalTestBundle\LiipFunctionalTestBundle(),
             new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new Trinity\FrameworkBundle\TrinityFrameworkBundle(),
             new \Trinity\WidgetsBundle\TrinityWidgetsBundle(),
