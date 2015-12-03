@@ -16,7 +16,7 @@ use Trinity\FrameworkBundle\Entity\BaseUser;
 use Trinity\WidgetsBundle\Entity\IUserDashboard;
 use Trinity\WidgetsBundle\Entity\WidgetsDashboard;
 use Trinity\WidgetsBundle\Exception\WidgetException;
-use Trinity\WidgetsBundle\Tests\Widgets\TestWidget;
+//use Trinity\WidgetsBundle\Tests\Widgets\TestWidget;
 
 
 /**
