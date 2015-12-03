@@ -26,11 +26,11 @@
     "knplabs/doctrine-behaviors": "~1.2",
     "dmishh/settings-bundle": "2.0.*@dev"
   },
-  "autoload": {
-    "classmap": [
-      "WidgetsBundle/"
-    ]
-  },
+//  "autoload": {
+//    "classmap": [
+//      "WidgetsBundle/"
+//    ]
+//  },
   "minimum-stability": "stable",
   "extra": {
     "branch-alias": {
