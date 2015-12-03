@@ -1,0 +1,11 @@
+{% extends 'widget_layout.html.twig' %}
+
+{% block widget_contnet %}
+
+    {% if widget.name is not defined %}
+        <h1>Define</h1>
+    {% else %}
+        <h2> Non define </h2>
+    {% endif %}
+
+{% endblock %}
