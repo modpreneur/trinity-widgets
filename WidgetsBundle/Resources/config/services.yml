@@ -1,7 +1,13 @@
 services:
     trinity.widgets.manager:
       class: Trinity\WidgetsBundle\Widget\WidgetManager
-      arguments: [ @service_container ]
+      arguments:
+          - @service_container
+      synchronized: true
+      calls:
+        - [setRequest, ["@?request="]]
+
+
       tags:
          - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
 
