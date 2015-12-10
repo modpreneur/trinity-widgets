@@ -130,16 +130,6 @@ class WidgetManager
             }
         }
 
-        if (($this->session->get('widget_redirect') && $this->session->get('widget_redirect') == '1')) {
-            $this->session->set('widget_redirect', '0');
-
-            $event->setController(
-                function () use ($redirectUrl) {
-                    return new RedirectResponse($redirectUrl);
-                }
-            );
-        }
-
     }
 
 
@@ -307,7 +297,6 @@ class WidgetManager
             $em->flush();
 
             $this->redirect = true;
-            $this->session->set('widget_redirect', '1');
 
         } else {
             $form->setData(['widgets' => $dashboard->getWidgets()]);
