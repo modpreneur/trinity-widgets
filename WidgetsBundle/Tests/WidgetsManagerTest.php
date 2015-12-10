@@ -6,6 +6,8 @@
 
 namespace Trinity\WidgetsBundle\Tests;
 
+use Entity\User;
+use Symfony\Bundle\FrameworkBundle\Templating\GlobalVariables;
 use Trinity;
 use Twig_Environment;
 use Twig_Extension_Debug;
@@ -48,7 +50,7 @@ class WidgetsManagerTest extends BaseTest
         $manager = $this->getManager();
 
         $template = $twig->loadTemplate('index.html.twig');
-        $result = $template->render([]);
+        $result = $template->render(['app' => 1]);
         $this->assertContains('Non define', $result);
         $this->assertContains('Test widget ', $result);
     }
@@ -65,8 +67,10 @@ class WidgetsManagerTest extends BaseTest
         $twig->addExtension(new Twig_Extension_Debug());
         $twig->addExtension(new Twig_Extension_StringLoader());
         $twig->addExtension($this->getContainer()->get('trinity.widgets.extension'));
+
+        $g = new GlobalVariables($this->getContainer());
+        $twig->addGlobal('app', $g);
+
         return $twig;
     }
-
-
 }

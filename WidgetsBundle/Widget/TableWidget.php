@@ -63,7 +63,7 @@ abstract class TableWidget extends AbstractWidget
         $body = $this->tableBody->getData();
 
         $context["header"] = $headerColumns;
-        $context["body"] = $body;
+        $context["body"]   = $body;
 
         return $context;
     }

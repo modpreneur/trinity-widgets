@@ -9,14 +9,13 @@ namespace Trinity\WidgetsBundle\Widget;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\Routing\Router;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Trinity\FrameworkBundle\Entity\BaseUser;
 use Trinity\WidgetsBundle\Entity\IUserDashboard;
 use Trinity\WidgetsBundle\Entity\WidgetsDashboard;
 use Trinity\WidgetsBundle\Exception\WidgetException;
-use Trinity\WidgetsBundle\Tests\Widgets\TestWidget;
 
 
 /**
@@ -40,10 +39,6 @@ class WidgetManager
      * @var Request
      */
     protected $request;
-    /**
-     * @var Session;
-     */
-    protected $session;
 
     /** @var TokenStorage */
     protected $tokenStorage;
@@ -77,7 +72,6 @@ class WidgetManager
     {
         $this->container = $container;
         $this->router = $container->get('router');
-        $this->session = $container->get('session');
         $this->tokenStorage = $this->container->get('security.token_storage');
     }
 
@@ -97,9 +91,9 @@ class WidgetManager
 
 
     /**
-     * @param \Symfony\Component\HttpKernel\Event\FilterControllerEvent $event
+     * @param FilterControllerEvent $event
      */
-    public function onKernelController(\Symfony\Component\HttpKernel\Event\FilterControllerEvent $event)
+    public function onKernelController(FilterControllerEvent $event)
     {
         $em = $this->container->get('doctrine')->getManager();
         $redirectUrl = $this->getCurrentUri();
@@ -234,7 +228,7 @@ class WidgetManager
      */
     public function getRouteUrl()
     {
-        if ($this->routeUrl === null) {
+        if ($this->routeUrl === null && $this->request) {
             $this->routeUrl = $this->router->generate($this->request->get('_route'), $this->getRouteParameters());
         }
 
