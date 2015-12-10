@@ -177,7 +177,7 @@ class WidgetManager
     /**
      * @param string $name widget name
      * @param bool $clone -> new instance of widget
-     * @return TestWidget
+     * @return AbstractWidget
      * @throws WidgetException
      */
     public function createWidget($name, $clone = true)

@@ -3,9 +3,10 @@
 namespace Trinity\WidgetsBundle\Twig;
 
 use Nette\Utils\Strings;
-use ReflectionObject;
 use Symfony\Component\HttpFoundation\Request;
 use Trinity\FrameworkBundle\Entity\BaseUser;
+use Trinity\FrameworkBundle\Exception\MemberAccessException;
+use Trinity\FrameworkBundle\Utils\ObjectMixin;
 use Trinity\WidgetsBundle\Entity\WidgetsDashboard;
 use Trinity\WidgetsBundle\Exception\WidgetException;
 use Trinity\WidgetsBundle\Widget\AbstractWidget;
@@ -119,22 +120,10 @@ class WidgetExtension extends \Twig_Extension
      */
     public function renderTableCell($object, $attribute)
     {
-        $result = null;
-
-        $reflection = new ReflectionObject($object);
-
-        if (method_exists($object, $attribute)) {
-            $method = $reflection->getMethod($attribute);
-            $result = $method->invoke($object);
-        }else{
-            $methods = ["get", "is", "has"];
-            foreach ($methods as $method) {
-                if (method_exists($object, $method.ucfirst($attribute))) {
-                    $method = $reflection->getMethod($method.ucfirst($attribute));
-                    $result = $method->invoke($object);
-                    break;
-                }
-            }
+        try{
+            $result = ObjectMixin::get($object, $attribute);
+        }catch (MemberAccessException $ex){
+            $result = "";
         }
 
         if ($this->template->hasBlock('widget_table_cell_'.$attribute)) {
