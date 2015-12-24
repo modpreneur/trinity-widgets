@@ -9,9 +9,9 @@ use Trinity\FrameworkBundle\Exception\MemberAccessException;
 use Trinity\FrameworkBundle\Utils\ObjectMixin;
 use Trinity\WidgetsBundle\Entity\WidgetsDashboard;
 use Trinity\WidgetsBundle\Exception\WidgetException;
-use Trinity\WidgetsBundle\Widget\AbstractWidget;
-use Trinity\WidgetsBundle\Widget\IRemovable;
-use Trinity\WidgetsBundle\Widget\IResizable;
+use Trinity\WidgetsBundle\Widget\AbstractWidgetInterface;
+use Trinity\WidgetsBundle\Widget\RemovableInterface;
+use Trinity\WidgetsBundle\Widget\ResizableInterface;
 use Trinity\WidgetsBundle\Widget\WidgetManager;
 use Twig_Environment;
 
@@ -79,11 +79,11 @@ class WidgetExtension extends \Twig_Extension
 
     /**
      * @param string $section
-     * @param AbstractWidget $widget
+     * @param AbstractWidgetInterface $widget
      * @param BaseUser $user
      * @return string
      */
-    public function getWidgetUrl($section, AbstractWidget $widget, BaseUser $user)
+    public function getWidgetUrl($section, AbstractWidgetInterface $widget, BaseUser $user)
     {
         $prefix = $this->widgetManager->getRouteUrl().(strpos(
                 $this->widgetManager->getRouteUrl(),
@@ -207,7 +207,7 @@ class WidgetExtension extends \Twig_Extension
      */
     public function renderWidget(Twig_Environment $env, $widgetName, $options = [])
     {
-        /** @var AbstractWidget $widget */
+        /** @var AbstractWidgetInterface $widget */
         $widget = $this->widgetManager->createWidget($widgetName);
         /** @var \Twig_TemplateInterface $template */
         $this->template = $template = $env->loadTemplate($widget->getTemplate());
@@ -219,8 +219,8 @@ class WidgetExtension extends \Twig_Extension
             'widget' => $widget,
             'title' => $widget->getTitle(),
             'size' => $widget->getSize(),
-            'resizable' => $widget instanceof IResizable,
-            'removable' => $widget instanceof IRemovable,
+            'resizable' => $widget instanceof ResizableInterface,
+            'removable' => $widget instanceof RemovableInterface,
         ];
 
         if ($wb && is_array($wb)) {

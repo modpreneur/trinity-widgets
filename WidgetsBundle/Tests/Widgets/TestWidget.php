@@ -5,15 +5,15 @@
 
 namespace Trinity\WidgetsBundle\Tests\Widgets;
 
-use Trinity\WidgetsBundle\Widget\AbstractWidget;
-use Trinity\WidgetsBundle\Widget\IRemovable;
+use Trinity\WidgetsBundle\Widget\AbstractWidgetInterface;
+use Trinity\WidgetsBundle\Widget\RemovableInterface;
 
 
 /**
  * Class TestWidget
  * @package Trinity\WidgetsBundle\Tests\Widgets
  */
-class TestWidget extends AbstractWidget implements IRemovable
+class TestWidget extends AbstractWidgetInterface implements RemovableInterface
 {
 
     /** @var string */

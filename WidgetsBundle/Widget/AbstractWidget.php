@@ -6,9 +6,9 @@
 namespace Trinity\WidgetsBundle\Widget;
 
 /**
- * Class AbstractWidget.
+ * Class AbstractWidgetInterface.
  */
-abstract class AbstractWidget extends AbstractArrayWidget implements IWidget
+abstract class AbstractWidgetInterface extends AbstractArrayWidget implements WidgetInterface
 {
 
     /** @var string */

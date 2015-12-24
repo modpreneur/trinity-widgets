@@ -5,10 +5,10 @@ namespace Trinity\WidgetsBundle\Entity;
 
 
 /**
- * Interface IUserDashboard
+ * Interface UserDashboardInterface
  * @package Trinity\WidgetsBundle\Entity
  */
-interface IUserDashboard
+interface UserDashboardInterface
 {
 
     /**

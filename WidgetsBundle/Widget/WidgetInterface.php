@@ -7,10 +7,10 @@ namespace Trinity\WidgetsBundle\Widget;
 
 
 /**
- * Interface IWidget
+ * Interface WidgetInterface
  * @package Trinity\WidgetsBundle\Widget
  */
-interface IWidget
+interface WidgetInterface
 {
 
     /**

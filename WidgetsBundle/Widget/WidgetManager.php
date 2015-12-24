@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\Routing\Router;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Trinity\FrameworkBundle\Entity\BaseUser;
-use Trinity\WidgetsBundle\Entity\IUserDashboard;
+use Trinity\WidgetsBundle\Entity\UserDashboardInterface;
 use Trinity\WidgetsBundle\Entity\WidgetsDashboard;
 use Trinity\WidgetsBundle\Exception\WidgetException;
 
@@ -54,13 +54,13 @@ class WidgetManager
     /** @var array */
     protected $requestData = [];
 
-    /** @var AbstractWidget[] */
+    /** @var AbstractWidgetInterface[] */
     protected $widgets = [];
 
     /** @var  Router */
     protected $router;
 
-    /** @var IUserDashboard */
+    /** @var UserDashboardInterface */
     protected $user;
 
 
@@ -101,7 +101,7 @@ class WidgetManager
         if ($this->tokenStorage && $this->tokenStorage->getToken()) {
             $user = $this->tokenStorage->getToken()->getUser();
 
-            if (!($user instanceof IUserDashboard)) {
+            if (!($user instanceof UserDashboardInterface)) {
                 return;
             }
 
@@ -114,7 +114,7 @@ class WidgetManager
                 if (array_key_exists(self::ACTION_REMOVE, $this->requestData)) {
                     $widget = ($this->getWidget($this->requestData[self::ACTION_REMOVE]));
 
-                    if ($widget instanceof IRemovable) {
+                    if ($widget instanceof RemovableInterface) {
                         $widget->remove();
                         $dashboard->removeWidget($widget);
                         $em->persist($dashboard);
@@ -166,7 +166,7 @@ class WidgetManager
 
     /**
      * @param string $name
-     * @return AbstractWidget
+     * @return AbstractWidgetInterface
      */
     private function getWidget($name)
     {
@@ -177,12 +177,12 @@ class WidgetManager
     /**
      * @param string $name widget name
      * @param bool $clone -> new instance of widget
-     * @return AbstractWidget
+     * @return AbstractWidgetInterface
      * @throws WidgetException
      */
     public function createWidget($name, $clone = true)
     {
-        /** @var AbstractWidget $widget */
+        /** @var AbstractWidgetInterface $widget */
         $widget = $clone ? clone $this->getWidget($name) : $this->getWidget($name);
 
         return $widget;
@@ -190,12 +190,12 @@ class WidgetManager
 
 
     /**
-     * @param AbstractWidget $widget
+     * @param AbstractWidgetInterface $widget
      * @param callback|null $callback
      *
      * @throws WidgetException
      */
-    public function addWidget(AbstractWidget $widget, $callback = null)
+    public function addWidget(AbstractWidgetInterface $widget, $callback = null)
     {
         if (!array_key_exists($widget->getName(), $this->widgets)) {
             $this->widgets[$widget->getName()] = $widget;
