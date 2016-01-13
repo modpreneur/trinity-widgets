@@ -25,7 +25,7 @@
                         </p>
                     </header>
 
-                    {{ form(form) }}
+                    {{ form(form, {'action': path('widget-manage'), 'method': 'POST' } ) }}
                 </div>
             </div>
 

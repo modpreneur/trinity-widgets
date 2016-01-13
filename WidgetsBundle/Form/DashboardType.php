@@ -37,6 +37,7 @@ class DashboardType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+
         $builder->add(
             'widgets',
             'choice',

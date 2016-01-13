@@ -6,10 +6,9 @@ services:
       synchronized: true
       calls:
         - [setRequest, ["@?request="]]
-
-
       tags:
          - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
+
 
     trinity.widgets.extension:
       class: Trinity\WidgetsBundle\Twig\WidgetExtension
