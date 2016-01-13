@@ -1,7 +1,9 @@
 <?php
+/**
+ * This file is part of Trinity package.
+ */
 
 namespace Trinity\WidgetsBundle\DependencyInjection;
-
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

@@ -76,10 +76,11 @@ class WidgetManager
     }
 
 
-    public function setRequest($request){
+    public function setRequest($request)
+    {
         $this->request = $request;
 
-        if($request && $request->attributes){
+        if ($request && $request->attributes) {
             $this->routeParameters = $this->request->attributes->all();
             foreach (array_keys($this->routeParameters) as $key) {
                 if (substr($key, 0, 1) == '_') {

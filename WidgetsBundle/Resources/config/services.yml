@@ -1,4 +1,5 @@
 services:
+
     trinity.widgets.manager:
       class: Trinity\WidgetsBundle\Widget\WidgetManager
       arguments:

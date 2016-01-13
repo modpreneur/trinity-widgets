@@ -1,6 +1,10 @@
 <?php
+/**
+ * This file is part of Trinity package.
+ */
 
 namespace Trinity\WidgetsBundle\Twig;
+
 
 use Nette\Utils\Strings;
 use Symfony\Component\HttpFoundation\Request;
@@ -120,9 +124,9 @@ class WidgetExtension extends \Twig_Extension
      */
     public function renderTableCell($object, $attribute)
     {
-        try{
+        try {
             $result = ObjectMixin::get($object, $attribute);
-        }catch (MemberAccessException $ex){
+        } catch (MemberAccessException $ex) {
             $result = "";
         }
 
@@ -147,6 +151,11 @@ class WidgetExtension extends \Twig_Extension
     }
 
 
+    /**
+     * @param Twig_Environment $env
+     * @param WidgetsDashboard $dashboard
+     * @return string
+     */
     public function renderDashboard(Twig_Environment $env, WidgetsDashboard $dashboard)
     {
         $widgetsNames = $dashboard->getWidgets();
