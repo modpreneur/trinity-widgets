@@ -21,7 +21,8 @@ class AppKernel extends Kernel
             new \Trinity\WidgetsBundle\TrinityWidgetsBundle(),
             new \Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new \Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
-            new \Symfony\Bundle\SecurityBundle\SecurityBundle()
+            new \Symfony\Bundle\SecurityBundle\SecurityBundle(),
+            new \Trinity\Bundle\SettingsBundle\SettingsBundle()
         );
     }
 
