@@ -3,7 +3,7 @@ services:
     trinity.widgets.manager:
       class: Trinity\WidgetsBundle\Widget\WidgetManager
       arguments:
-          - @service_container
+          - "@service_container"
       synchronized: true
       calls:
         - [setRequest, ["@?request="]]
