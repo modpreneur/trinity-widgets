@@ -17,8 +17,7 @@
     "twig/extensions": "~1.3",
     "trinity/framework": "dev-master",
     "friendsofsymfony/user-bundle": "dev-master",
-    "trinity/settings": "dev-master",
-    "dmishh/settings-bundle": "2.0.*@dev"
+    "trinity/settings": "dev-master"
   },
   "require-dev": {
     "braincrafted/testing-bundle": "@stable",
