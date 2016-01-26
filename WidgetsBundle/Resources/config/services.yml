@@ -21,6 +21,6 @@ services:
 
     trinity.widgets.dashboard.form.dashboard_type:
       class: Trinity\WidgetsBundle\Form\DashboardType
-      arguments: [ @trinity.widgets.manager ]
+      arguments: [ "@trinity.widgets.manager" ]
       tags:
         - {name: form.type, alias: trinity_widgets_bundle_dashboard_type}
