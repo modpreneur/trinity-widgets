@@ -61,8 +61,13 @@
 
 {% block widget_cell_datetime %}
     <span class="datetime">
-        {{ value|date('j.n. Y') }} <br>
-        {{ value|date('H:i') }}
+        {%if value|date(has_setting('date')) and value|date(has_setting('time'))%}
+            {{ value|date(get_setting('date')) }} <br>
+            {{ value|date(get_setting('time')) }}
+        {% else %}
+            {{ value|date('j.n. Y') }} <br>
+            {{ value|date('H:i') }}
+        {% endif %}
     </span>
 {% endblock %}
 
