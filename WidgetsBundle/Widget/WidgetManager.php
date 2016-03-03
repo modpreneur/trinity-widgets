@@ -26,9 +26,7 @@ class WidgetManager
 
     const ACTION_REMOVE = 'remove';
 
-    const ACTION_SMALLER = 'smaller';
-
-    const ACTION_BIGGER = 'bigger';
+    const ACTION_RESIZE = 'resize';
 
 
     /**
@@ -149,7 +147,7 @@ class WidgetManager
      */
     public function isRedirected()
     {
-        $choices = ['user', self::ACTION_REMOVE, self::ACTION_BIGGER, self::ACTION_SMALLER];
+        $choices = ['user', self::ACTION_REMOVE, self::ACTION_RESIZE];
 
         foreach ($choices as $hash) {
             if ($this->request->get($hash)) {
@@ -253,6 +251,13 @@ class WidgetManager
         $this->user = $user;
     }
 
+    /**
+     * @return UserDashboardInterface
+     */
+    public function getUser()
+    {
+        return $this->user ;
+    }
 
     /**
      * Return widgets name

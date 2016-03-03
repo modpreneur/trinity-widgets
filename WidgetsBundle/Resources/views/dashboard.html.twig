@@ -1,35 +1,41 @@
 {% block dashboard %}
 
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <link href='{{ asset("js/jspm_packages/npm/dragula@3.6.7/dist/dragula.css")}}' rel='stylesheet' type='text/css' />
 
-    <div class="dashboard-widgets">
-        {% for widget in widgets %}
-            {{ renderWidget(widget) }}
+
+    <div class="dashboard-widgets" id="dragable-widgets" data-url="{{ path('change_order_widget',{order:'0'}) }}">
+
+        {% for widget in showedWidgets %}
+            <span  data-widget="{{ widget }}"  class="widget-field" style=" display: block;">{{ renderWidget(widget) }} </span>
         {% endfor %}
-    </div>
+        {% for widget in hiddenWidgets %}
+            <span  data-widget="{{ widget }}"  class="widget-field" style=" display: none;">{{ renderWidget(widget) }} </span>
+        {% endfor %}
+</div>
 
-    <div class="people-item">
-        <a href="#Test_info" class="modal-a button button-secondary">MODAL</a>
+<div class="people-item">
+<a href="#show-widgets-form" class="modal-a button button-secondary">MODAL</a>
 
-        <!--DESKTOP-->
-        <div id="Test_info" class="modal-dialog small-hidden">
-            <a href="#close" title="Close" class="full-width-close"></a>
-            <div class="row">
-                <div class="span-none-padding-medium-24">
-                    <header>
-                        <h2>
-                            Dashboard - settings
-                        </h2>
-                        <p>
-                            Select your favourite widget.
-                        </p>
-                    </header>
+<!--DESKTOP-->
+<div id="show-widgets-form" class="modal-dialog small-hidden">
+    <a href="#close" title="Close" class="full-width-close"></a>
+    <div class="row">
+        <div class="span-none-padding-medium-24">
+            <header>
+                <h2>
+                    Dashboard - settings
+                </h2>
+                <p>
+                    Select your favourite widget.
+                </p>
+            </header>
 
-                    {{ form(form, {'action': path('widget-manage'), 'method': 'POST' } ) }}
-                </div>
-            </div>
-
+            {{ form(form, {'action': path('widget-manage'), 'method': 'POST' } ) }}
         </div>
     </div>
+
+</div>
+</div>
 
 {% endblock %}

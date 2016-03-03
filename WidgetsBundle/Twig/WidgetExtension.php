@@ -6,8 +6,12 @@
 namespace Trinity\WidgetsBundle\Twig;
 
 
+use Braintree\Exception;
+use DOMDocument;
 use Nette\Utils\Strings;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\RouterInterface;
 use Trinity\FrameworkBundle\Entity\BaseUser;
 use Trinity\FrameworkBundle\Exception\MemberAccessException;
 use Trinity\FrameworkBundle\Utils\ObjectMixin;
@@ -17,7 +21,10 @@ use Trinity\WidgetsBundle\Widget\AbstractWidgetInterface;
 use Trinity\WidgetsBundle\Widget\RemovableInterface;
 use Trinity\WidgetsBundle\Widget\ResizableInterface;
 use Trinity\WidgetsBundle\Widget\WidgetManager;
+
+use Trinity\WidgetsBundle\Widget\WidgetSizes;
 use Twig_Environment;
+
 
 
 /**
@@ -35,16 +42,23 @@ class WidgetExtension extends \Twig_Extension
     /** @var  \Twig_TemplateInterface */
     private $template;
 
+    /**
+     * @var RouterInterface
+     */
+    private $router;
 
     /**
      * WidgetExtension constructor.
      * @param WidgetManager $widgetManager
+     * @param Router $router
      */
-    public function __construct(WidgetManager $widgetManager)
+    public function __construct(WidgetManager $widgetManager,Router $router)
     {
         $this->widgetManager = $widgetManager;
 
         $this->request = null;
+
+        $this->router = $router;
     }
 
 
@@ -65,6 +79,8 @@ class WidgetExtension extends \Twig_Extension
                 array('is_safe' => array('html'), 'needs_environment' => true)
             ),
             new \Twig_SimpleFunction('getWidgetUrl', [$this, 'getWidgetUrl'], ['is_safe' => ['html']]),
+
+            new \Twig_SimpleFunction('getSizeIcon', [$this, 'getSizeIcon'], ['is_safe' => ['html']]),
 
             new \Twig_SimpleFunction(
                 'renderDashboard',
@@ -89,23 +105,41 @@ class WidgetExtension extends \Twig_Extension
      */
     public function getWidgetUrl($section, AbstractWidgetInterface $widget, BaseUser $user)
     {
-        $prefix = $this->widgetManager->getRouteUrl().(strpos(
-                $this->widgetManager->getRouteUrl(),
-                '?widget_'
-            ) ? '&' : '?widget_');
-        $url = '';
-
+        $url='';
         switch ($section) {
             case WidgetManager::ACTION_REMOVE:
-                $url = $prefix.'&user='.$user->getId()."&".$section.'='.$widget->getName();
+                $url = $this->router->generate('remove_widget',array(
+                    'widgetName'=>$widget->getName(),
+                ));
                 break;
+            case WidgetManager::ACTION_RESIZE:
+                $size = ($widget->getSize()===WidgetSizes::Normal)?WidgetSizes::Full:WidgetSizes::Normal;
+
+                $url = $this->router->generate('resize_widget',array(
+                    'widgetName'=>$widget->getName(),
+                    'widgetSize'=>$size,
+                ));
+
+            break;
         }
 
-        $this->widgetManager->setUser($user);
+
 
         return $url;
     }
 
+    /**
+     * @param AbstractWidgetInterface $widget
+     * @return string
+     */
+    public function getSizeIcon(AbstractWidgetInterface $widget)
+    {
+        $icon = ($widget->getSize()===WidgetSizes::Normal)?
+            '<i class="trinity trinity-plus" id="get-bigger"></i><i id="get-smaller" class="trinity trinity-minus" style="display: none"></i>':
+            '<i class="trinity trinity-minus" id="get-smaller"></i><i class="trinity trinity-plus" id="get-bigger" style="display: none"></i>';
+
+        return $icon;
+    }
 
     /**
      * @param Twig_Environment $env
@@ -154,21 +188,41 @@ class WidgetExtension extends \Twig_Extension
     /**
      * @param Twig_Environment $env
      * @param WidgetsDashboard $dashboard
+     * @param BaseUser $user
      * @return string
      */
-    public function renderDashboard(Twig_Environment $env, WidgetsDashboard $dashboard)
+    public function renderDashboard(Twig_Environment $env, WidgetsDashboard $dashboard, BaseUser $user)
     {
         $widgetsNames = $dashboard->getWidgets();
+        $allWidgets = $this->widgetManager->getDashboardWidgets();
+        $hiddenWidgetsNames=[];
+        $showedWidgetsNames=[];
+        $widgetsSettingsManager = $user->getWidgetsSettingsManager();
 
+        foreach($allWidgets as $widgetName => $widget)
+        {
+            if(in_array($widgetName,$widgetsNames))
+            {
+                $widgetSettings = $widgetsSettingsManager->getWidgetSettings($widgetName);
+                $inOrder = $widgetSettings['inOrder'];
+                $showedWidgetsNames[$inOrder]=$widgetName;
+
+            }else{
+                $hiddenWidgetsNames[]=$widgetName;
+            }
+        }
+        ksort($showedWidgetsNames);
         /** @var \Twig_TemplateInterface $template */
+
         $template = $env->loadTemplate("TrinityWidgetsBundle::dashboard.html.twig");
         $form = $this->widgetManager->getForm();
 
         $context = [
-            'widgets' => $widgetsNames,
-            'availableWidgets' => $this->widgetManager->getDashboardWidgets(),
+            'showedWidgets'=>$showedWidgetsNames,
+            'hiddenWidgets'=>$hiddenWidgetsNames,
             'form' => $form->createView(),
         ];
+        $this->widgetManager->setUser($user);
 
         return $template->render($context);
     }
@@ -216,6 +270,7 @@ class WidgetExtension extends \Twig_Extension
      */
     public function renderWidget(Twig_Environment $env, $widgetName, $options = [])
     {
+
         /** @var AbstractWidgetInterface $widget */
         $widget = $this->widgetManager->createWidget($widgetName);
         /** @var \Twig_TemplateInterface $template */
@@ -223,15 +278,23 @@ class WidgetExtension extends \Twig_Extension
 
         $wb = $widget->buildWidget();
 
+        $widgetManager =$this->widgetManager->getUser()->getWidgetsSettingsManager();
+
+        $widgetSettings=$widgetManager->getWidgetSettings($widgetName);
+
+        if(array_key_exists('size',$widgetSettings)){
+            $widget->setSize(intval($widgetSettings['size']));
+        }
         $context = [
             'name' => $widget->getName(),
+            'routeName'=> $widget->getRouteName(),
+            'gridParameters'=> $widget->getGridParameters(),
             'widget' => $widget,
             'title' => $widget->getTitle(),
             'size' => $widget->getSize(),
             'resizable' => $widget instanceof ResizableInterface,
             'removable' => $widget instanceof RemovableInterface,
         ];
-
         if ($wb && is_array($wb)) {
             $context = array_merge($context, $wb);
         }
@@ -239,7 +302,7 @@ class WidgetExtension extends \Twig_Extension
         if ($options && is_array($options) && count($options) > 0) {
             $context = array_merge($context, $options);
         }
-
+        //dump($context);die();
         return $template->render($context);
     }
 

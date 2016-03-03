@@ -6,6 +6,7 @@
 namespace Trinity\WidgetsBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Trinity\WidgetsBundle\Widget\WidgetManager;
@@ -43,12 +44,28 @@ class DashboardType extends AbstractType
 
         $builder->add(
             'widgets',
-            'choice',
+            ChoiceType::class,
             [
                 'required' => true,
                 'expanded' => true,
                 'multiple' => true,
                 'choices' => $this->widgetManager->getDashboardWidgets(),
+
+            ]
+        );
+
+        $builder->add(
+            'expandedWidgets',
+            ChoiceType::class,
+            [
+                'required' => true,
+                'expanded' => true,
+                'multiple' => true,
+                'choices' => $this->widgetManager->getDashboardWidgets(),
+                'choice_label' => function ($value, $key, $index) {
+                    return ' ';
+                }
+
             ]
         );
 
@@ -59,7 +76,6 @@ class DashboardType extends AbstractType
                 'attr' => ['class' => 'button button-success'],
             ]
         );
-
         $builder->setAction($this->widgetManager->getCurrentUri());
     }
 
