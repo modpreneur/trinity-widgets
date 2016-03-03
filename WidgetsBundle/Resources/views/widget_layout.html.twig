@@ -2,23 +2,43 @@
 
     {% block widget_start %}
         <div class="span-none-padding-large-{{ size }} ">
-        <section class="trinity-widget margin-top-20 margin-right-20">
+        <section class="trinity-widget">
     {% endblock %}
 
     {% block widget_header %}
-        <header class="row">
+
+        <header class=" row">
             {% block widget_title %}
-                <h3 class="pull-left widget-title"> {{ title }} </h3>
+                {% if routeName %}
+                    <a href="{{ path(routeName) }}{{ gridParameters }}">
+                        <h3 class="pull-left widget-title">{{ title }}</h3>
+                    </a>
+                {% else %}
+                    <h3 class="pull-left widget-title">{{ title }}</h3>
+                {% endif %}
+
             {% endblock %}
 
             {% block widget_remove %}
                 {% if removable %}
-                    <a class="pull-right close" href="{{ getWidgetUrl('remove', widget, app.user) }}"> <i
-                                class="tiecons tiecons-cross-angular"></i> </a>
+                    {#widgetCloser is use by JS#}
+                    <a class="pull-right close widgetCloser"  href="{{ getWidgetUrl('remove', widget, app.user) }}">
+                        <i class="tiecons tiecons-cross-angular"></i> </a>
                 {% endif %}
             {% endblock %}
-        </header>
+            {% block widget_resize %}
+                {% if resizable %}
+                <a class="pull-right close widgetResizer" href="{{ getWidgetUrl('resize', widget, app.user) }}">
+                    <i class="tiecons tiecons-card"></i>
+                </a>
+                {% endif %}
             {% endblock %}
+            {#todo Style still in progress, waiting for Design#}
+            <span class="handle" style="display: block; width:1000px;height: 15px;cursor: move;background-color: black; opacity: 0.2"></span>
+
+        </header>
+
+    {% endblock %}
 
 
     {% block widget_contnet_wrapper %}

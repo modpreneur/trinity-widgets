@@ -9,14 +9,13 @@ namespace Trinity\WidgetsBundle\Widget;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\Routing\Router;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Trinity\FrameworkBundle\Entity\BaseUser;
-use Trinity\WidgetsBundle\Entity\IUserDashboard;
+use Trinity\WidgetsBundle\Entity\UserDashboardInterface;
 use Trinity\WidgetsBundle\Entity\WidgetsDashboard;
 use Trinity\WidgetsBundle\Exception\WidgetException;
-use Trinity\WidgetsBundle\Tests\Widgets\TestWidget;
 
 
 /**
@@ -27,9 +26,7 @@ class WidgetManager
 
     const ACTION_REMOVE = 'remove';
 
-    const ACTION_SMALLER = 'smaller';
-
-    const ACTION_BIGGER = 'bigger';
+    const ACTION_RESIZE = 'resize';
 
 
     /**
@@ -40,10 +37,6 @@ class WidgetManager
      * @var Request
      */
     protected $request;
-    /**
-     * @var Session;
-     */
-    protected $session;
 
     /** @var TokenStorage */
     protected $tokenStorage;
@@ -59,13 +52,13 @@ class WidgetManager
     /** @var array */
     protected $requestData = [];
 
-    /** @var AbstractWidget[] */
+    /** @var AbstractWidgetInterface[] */
     protected $widgets = [];
 
     /** @var  Router */
     protected $router;
 
-    /** @var IUserDashboard */
+    /** @var UserDashboardInterface */
     protected $user;
 
 
@@ -77,23 +70,29 @@ class WidgetManager
     {
         $this->container = $container;
         $this->router = $container->get('router');
-        $this->request = $container->get('request');
-        $this->session = $container->get('session');
         $this->tokenStorage = $this->container->get('security.token_storage');
+    }
 
-        $this->routeParameters = $this->request->attributes->all();
-        foreach (array_keys($this->routeParameters) as $key) {
-            if (substr($key, 0, 1) == '_') {
-                unset($this->routeParameters[$key]);
+
+    public function setRequest($request)
+    {
+        $this->request = $request;
+
+        if ($request && $request->attributes) {
+            $this->routeParameters = $this->request->attributes->all();
+            foreach (array_keys($this->routeParameters) as $key) {
+                if (substr($key, 0, 1) == '_') {
+                    unset($this->routeParameters[$key]);
+                }
             }
         }
     }
 
 
     /**
-     * @param \Symfony\Component\HttpKernel\Event\FilterControllerEvent $event
+     * @param FilterControllerEvent $event
      */
-    public function onKernelController(\Symfony\Component\HttpKernel\Event\FilterControllerEvent $event)
+    public function onKernelController(FilterControllerEvent $event)
     {
         $em = $this->container->get('doctrine')->getManager();
         $redirectUrl = $this->getCurrentUri();
@@ -101,7 +100,7 @@ class WidgetManager
         if ($this->tokenStorage && $this->tokenStorage->getToken()) {
             $user = $this->tokenStorage->getToken()->getUser();
 
-            if (!($user instanceof IUserDashboard)) {
+            if (!($user instanceof UserDashboardInterface)) {
                 return;
             }
 
@@ -114,7 +113,7 @@ class WidgetManager
                 if (array_key_exists(self::ACTION_REMOVE, $this->requestData)) {
                     $widget = ($this->getWidget($this->requestData[self::ACTION_REMOVE]));
 
-                    if ($widget instanceof IRemovable) {
+                    if ($widget instanceof RemovableInterface) {
                         $widget->remove();
                         $dashboard->removeWidget($widget);
                         $em->persist($dashboard);
@@ -128,16 +127,6 @@ class WidgetManager
                     }
                 );
             }
-        }
-
-        if (($this->session->get('widget_redirect') && $this->session->get('widget_redirect') == '1')) {
-            $this->session->set('widget_redirect', '0');
-
-            $event->setController(
-                function () use ($redirectUrl) {
-                    return new RedirectResponse($redirectUrl);
-                }
-            );
         }
 
     }
@@ -158,7 +147,7 @@ class WidgetManager
      */
     public function isRedirected()
     {
-        $choices = ['user', self::ACTION_REMOVE, self::ACTION_BIGGER, self::ACTION_SMALLER];
+        $choices = ['user', self::ACTION_REMOVE, self::ACTION_RESIZE];
 
         foreach ($choices as $hash) {
             if ($this->request->get($hash)) {
@@ -176,7 +165,7 @@ class WidgetManager
 
     /**
      * @param string $name
-     * @return AbstractWidget
+     * @return AbstractWidgetInterface
      */
     private function getWidget($name)
     {
@@ -187,12 +176,12 @@ class WidgetManager
     /**
      * @param string $name widget name
      * @param bool $clone -> new instance of widget
-     * @return TestWidget
+     * @return AbstractWidgetInterface
      * @throws WidgetException
      */
     public function createWidget($name, $clone = true)
     {
-        /** @var AbstractWidget $widget */
+        /** @var AbstractWidgetInterface $widget */
         $widget = $clone ? clone $this->getWidget($name) : $this->getWidget($name);
 
         return $widget;
@@ -200,12 +189,12 @@ class WidgetManager
 
 
     /**
-     * @param AbstractWidget $widget
+     * @param AbstractWidgetInterface $widget
      * @param callback|null $callback
      *
      * @throws WidgetException
      */
-    public function addWidget(AbstractWidget $widget, $callback = null)
+    public function addWidget(AbstractWidgetInterface $widget, $callback = null)
     {
         if (!array_key_exists($widget->getName(), $this->widgets)) {
             $this->widgets[$widget->getName()] = $widget;
@@ -228,7 +217,7 @@ class WidgetManager
      */
     public function getRouteUrl()
     {
-        if ($this->routeUrl === null) {
+        if ($this->routeUrl === null && $this->request) {
             $this->routeUrl = $this->router->generate($this->request->get('_route'), $this->getRouteParameters());
         }
 
@@ -262,6 +251,13 @@ class WidgetManager
         $this->user = $user;
     }
 
+    /**
+     * @return UserDashboardInterface
+     */
+    public function getUser()
+    {
+        return $this->user ;
+    }
 
     /**
      * Return widgets name
@@ -307,7 +303,6 @@ class WidgetManager
             $em->flush();
 
             $this->redirect = true;
-            $this->session->set('widget_redirect', '1');
 
         } else {
             $form->setData(['widgets' => $dashboard->getWidgets()]);

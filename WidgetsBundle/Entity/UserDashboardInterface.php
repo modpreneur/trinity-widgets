@@ -1,14 +1,17 @@
 <?php
+/**
+ * This file is part of Trinity package.
+ */
 
 
 namespace Trinity\WidgetsBundle\Entity;
 
 
 /**
- * Interface IUserDashboard
+ * Interface UserDashboardInterface
  * @package Trinity\WidgetsBundle\Entity
  */
-interface IUserDashboard
+interface UserDashboardInterface
 {
 
     /**

@@ -14,7 +14,7 @@ use Trinity\WidgetsBundle\Widget\Table\TableHeader;
  * Class AbstractTableWidget
  * @package Trinity\WidgetsBundle\Widget
  */
-abstract class TableWidget extends AbstractWidget
+abstract class TableWidget extends AbstractWidgetInterface
 {
     /** @var  TableHeader */
     protected $tableHeader;
@@ -63,7 +63,7 @@ abstract class TableWidget extends AbstractWidget
         $body = $this->tableBody->getData();
 
         $context["header"] = $headerColumns;
-        $context["body"] = $body;
+        $context["body"]   = $body;
 
         return $context;
     }

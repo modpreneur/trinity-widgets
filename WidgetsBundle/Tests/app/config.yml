@@ -1,5 +1,5 @@
 parameters:
-    database_driver: pdo_pgsql
+    database_driver: pdo_sqlite
     database_host: 127.0.0.1
     database_port: 5432
     database_name: trinity
@@ -20,26 +20,39 @@ parameters:
 doctrine:
     dbal:
       driver:   "%database_driver%"
+      path:     "%kernel.cache_dir%/test.db"
       host:     "%database_host%"
-      port:     "%database_port%"
-      dbname:   "%database_name%"
-      user:     "%database_user%"
-      password: "%database_password%"
-      charset:  UTF8
-      mapping_types:
-        enum: string
-
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
         auto_mapping: true
-
-liip_functional_test: ~
 
 framework:
     secret: "Three can keep a secret, if two of them are dead. MUHEHE."
     test: ~
     session:
         storage_id: session.storage.filesystem
+    router: { resource: "%kernel.root_dir%/routing.yml" }
+
+security:
+  providers:
+      fos_userbundle:
+          id: fos_user.user_provider.username
+
+      in_memory:
+          memory:
+              users:
+                  ryan:
+                      password: ryanpass
+                      roles: 'ROLE_ADMIN'
+
+  role_hierarchy:
+      ROLE_ADMIN:       ROLE_USER
+      ROLE_SUPER_ADMIN: ROLE_ADMIN
+
+  firewalls:
+    dev:
+        pattern: ^/(_(profiler|wdt)|css|images|js)/
+        security: false
 
 services:
    trinity.widget.widget:

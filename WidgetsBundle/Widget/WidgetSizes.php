@@ -3,7 +3,6 @@
  * This file is part of the Trinity project.
  */
 
-
 namespace Trinity\WidgetsBundle\Widget;
 
 
@@ -14,11 +13,7 @@ namespace Trinity\WidgetsBundle\Widget;
 class WidgetSizes
 {
 
-    const Small = 6;
-
-    const Medium = 12;
-
-    const Large = 18;
+    const Normal = 12;
 
     const Full = 24;
 

@@ -1,7 +1,9 @@
 <?php
+/**
+ * This file is part of Trinity package.
+ */
 
 namespace Trinity\WidgetsBundle\DependencyInjection;
-
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -25,11 +27,17 @@ class WidgetCompilerPass implements CompilerPassInterface
 
         foreach ($tagServices as $id => $tags) {
             foreach ($tags as $attributes) {
+
+                $alias = null;
+                if(array_key_exists('alias', $attributes)){
+                    $alias = $attributes["alias"];
+                }
+
                 $definition->addMethodCall(
                     'addWidget',
                     [
                         new Reference($id),
-                        $attributes["alias"],
+                        $alias,
                     ]
                 );
             }

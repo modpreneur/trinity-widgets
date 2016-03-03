@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * This file is part of Trinity package.
+ */
 
 namespace Trinity\WidgetsBundle\Entity;
 
@@ -28,7 +30,7 @@ class WidgetsSettingsManager
      * @var array
      * @ORM\Column(type="array")
      */
-    private $widgetsSettings;
+    private $widgetsSettings=[];
 
 
     /**
@@ -68,7 +70,25 @@ class WidgetsSettingsManager
     public function setWidgetSettings($widget, $settings)
     {
         if (is_string($widget)) {
-            $this->widgetsSettings[$widget] = $settings;
+            foreach($settings as $newPropertyName=>$newProperty)
+            {
+                if(array_key_exists ($widget,$this->widgetsSettings)) {
+                    if (array_key_exists ($newPropertyName, $this->widgetsSettings[$widget])) {
+                        foreach ($this->widgetsSettings[$widget] as $propertyName => $property) {
+                            if ($propertyName === $newPropertyName) {
+                                $this->widgetsSettings[$widget][$propertyName] = $newProperty;
+                            }
+                        }
+                    } else {
+                        $this->widgetsSettings[$widget][$newPropertyName] = $newProperty;
+                    }
+                }
+                else{
+
+                    $this->widgetsSettings[$widget]=$settings;
+                }
+            }
+
         } else {
             throw new WidgetException('Widget must be string (widget name).');
         }

@@ -1,4 +1,7 @@
 <?php
+/**
+ * This file is part of Trinity package.
+ */
 
 
 namespace Trinity\WidgetsBundle\Widget;
@@ -8,7 +11,7 @@ namespace Trinity\WidgetsBundle\Widget;
  * Class ChartWidget
  * @package Trinity\WidgetsBundle\Widget
  */
-abstract class ChartWidget extends AbstractWidget
+abstract class ChartWidget extends AbstractWidgetInterface
 {
     /** @var string */
     protected $template = "TrinityWidgetsBundle::widget_chart_layout.html.twig";

@@ -7,10 +7,10 @@ namespace Trinity\WidgetsBundle\Widget;
 
 
 /**
- * Interface IRemovable
+ * Interface RemovableInterface
  * @package Trinity\WidgetsBundle\Widget
  */
-interface IRemovable
+interface RemovableInterface
 {
 
     /**

@@ -6,9 +6,9 @@
 namespace Trinity\WidgetsBundle\Widget;
 
 /**
- * Class AbstractWidget.
+ * Class AbstractWidgetInterface.
  */
-abstract class AbstractWidget extends AbstractArrayWidget implements IWidget
+abstract class AbstractWidgetInterface extends AbstractArrayWidget implements WidgetInterface
 {
 
     /** @var string */
@@ -18,7 +18,7 @@ abstract class AbstractWidget extends AbstractArrayWidget implements IWidget
     protected $template;
 
     /** @var int */
-    protected $size = WidgetSizes::Small;
+    protected $size = WidgetSizes::Normal;
 
     /** @var  string */
     protected $title;
@@ -29,6 +29,10 @@ abstract class AbstractWidget extends AbstractArrayWidget implements IWidget
     /** @var  WidgetManager */
     protected $manager;
 
+    /** @var string  */
+    protected $routeName;
+
+    protected $gridParameters;
 
     /**
      * @return WidgetManager
@@ -137,6 +141,37 @@ abstract class AbstractWidget extends AbstractArrayWidget implements IWidget
         $this->name = $name;
     }
 
+    /**
+     * @return string
+     */
+    public function getRouteName()
+    {
+        return $this->routeName;
+    }
+
+    /**
+     * @param $routeName
+     */
+    public function setRouteName($routeName)
+    {
+        $this->routeName=$routeName;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGridParameters()
+    {
+        return $this->gridParameters;
+    }
+
+    /**
+     * @param $gridParameters
+     */
+    public function setGridParameters($gridParameters)
+    {
+        $this->gridParameters=$gridParameters;
+    }
 
     /**
      * @param array $attributes

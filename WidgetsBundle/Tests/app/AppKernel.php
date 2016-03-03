@@ -1,4 +1,5 @@
 <?php
+// app/AppKernel.php
 
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
@@ -15,11 +16,13 @@ class AppKernel extends Kernel
     public function registerBundles()
     {
         return array(
-            new \Liip\FunctionalTestBundle\LiipFunctionalTestBundle(),
             new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
-            new Trinity\FrameworkBundle\TrinityFrameworkBundle(),
+            new \Trinity\FrameworkBundle\TrinityFrameworkBundle(),
             new \Trinity\WidgetsBundle\TrinityWidgetsBundle(),
-            new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
+            new \Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
+            new \Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
+            new \Symfony\Bundle\SecurityBundle\SecurityBundle(),
+            new \Trinity\Bundle\SettingsBundle\SettingsBundle()
         );
     }
 
