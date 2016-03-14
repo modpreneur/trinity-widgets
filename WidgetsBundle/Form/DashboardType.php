@@ -71,8 +71,8 @@ class DashboardType extends AbstractType
         );
 
         $builder->add(
-            SubmitType::class,
             'submit',
+            SubmitType::class,
             [
                 'attr' => ['class' => 'button button-success'],
             ]
