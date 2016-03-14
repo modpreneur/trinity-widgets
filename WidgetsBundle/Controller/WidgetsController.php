@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Trinity\WidgetsBundle\Entity\WidgetsDashboard;
 use Trinity\WidgetsBundle\Entity\WidgetsSettingsManager;
+use Trinity\WidgetsBundle\Form\DashboardType;
 
 
 /**
@@ -34,7 +35,7 @@ class WidgetsController extends Controller
      */
     public function manageDashboardWidgets(Request $request){
 
-        $form =  $this->createForm('trinity_widgets_bundle_dashboard_type');
+        $form =  $this->createForm(DashboardType::class);
         $form->handleRequest($request);
         if(
             $request->request->has('trinity_widgets_bundle_dashboard_type')

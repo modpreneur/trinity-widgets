@@ -5,8 +5,6 @@ services:
       arguments:
           - "@service_container"
       synchronized: true
-      calls:
-        - [setRequest, ["@?request="]]
       tags:
          - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
 
