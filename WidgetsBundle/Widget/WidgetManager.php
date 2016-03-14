@@ -72,7 +72,8 @@ class WidgetManager
         $this->container = $container;
         $this->router = $container->get('router');
         $this->tokenStorage = $this->container->get('security.token_storage');
-        $this->request = Request::createFromGlobals();
+
+        $this->request = $container->get('request_stack')->getCurrentRequest();
     }
 
 
@@ -287,9 +288,8 @@ class WidgetManager
     public function getForm()
     {
         $form = $this->container->get('form.factory')->create(DashboardType::class);
-        $form->handleRequest($this->container->get('request'));
-
-
+        $form->handleRequest($this->request);
+        
         $em = $this->container->get('doctrine')->getManager();
         $user = $this->tokenStorage->getToken()->getUser();
 
