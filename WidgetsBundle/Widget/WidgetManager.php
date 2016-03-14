@@ -16,6 +16,7 @@ use Trinity\FrameworkBundle\Entity\BaseUser;
 use Trinity\WidgetsBundle\Entity\UserDashboardInterface;
 use Trinity\WidgetsBundle\Entity\WidgetsDashboard;
 use Trinity\WidgetsBundle\Exception\WidgetException;
+use Trinity\WidgetsBundle\Form\DashboardType;
 
 
 /**
@@ -285,7 +286,7 @@ class WidgetManager
      */
     public function getForm()
     {
-        $form = $this->container->get('form.factory')->create('trinity_widgets_bundle_dashboard_type');
+        $form = $this->container->get('form.factory')->create(DashboardType::class);
         $form->handleRequest($this->container->get('request'));
 
 
