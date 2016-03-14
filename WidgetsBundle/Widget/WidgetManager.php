@@ -140,8 +140,12 @@ class WidgetManager
      */
     public function getCurrentUri()
     {
-        return $this->request->getScheme().'://'.$this->request->getHttpHost().$this->request->getBaseUrl(
-        ).$this->request->getPathInfo();
+        if($this->request){
+            return $this->request->getScheme().'://'.$this->request->getHttpHost().$this->request->getBaseUrl(
+            ).$this->request->getPathInfo();
+        }
+
+        return null;
     }
 
 
@@ -289,7 +293,7 @@ class WidgetManager
     {
         $form = $this->container->get('form.factory')->create(DashboardType::class);
         $form->handleRequest($this->request);
-        
+
         $em = $this->container->get('doctrine')->getManager();
         $user = $this->tokenStorage->getToken()->getUser();
 
