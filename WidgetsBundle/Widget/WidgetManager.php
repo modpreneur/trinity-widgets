@@ -71,21 +71,22 @@ class WidgetManager
         $this->container = $container;
         $this->router = $container->get('router');
         $this->tokenStorage = $this->container->get('security.token_storage');
+        $this->request = Request::createFromGlobals();
     }
 
 
     public function setRequest($request)
     {
-        $this->request = $request;
-
-        if ($request && $request->attributes) {
-            $this->routeParameters = $this->request->attributes->all();
-            foreach (array_keys($this->routeParameters) as $key) {
-                if (substr($key, 0, 1) == '_') {
-                    unset($this->routeParameters[$key]);
-                }
-            }
-        }
+//        $this->request = Request::createFromGlobals();
+//
+//        if ($request && $request->attributes) {
+//            $this->routeParameters = $this->request->attributes->all();
+//            foreach (array_keys($this->routeParameters) as $key) {
+//                if (substr($key, 0, 1) == '_') {
+//                    unset($this->routeParameters[$key]);
+//                }
+//            }
+//        }
     }
 
 
