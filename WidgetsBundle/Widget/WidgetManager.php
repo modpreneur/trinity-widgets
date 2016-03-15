@@ -44,8 +44,8 @@ class WidgetManager
     /** @var  FormFactoryInterface  */
     protected $formFactory;
 
-    /** @var Request */
-    protected $request;
+    /** @var RequestStack */
+    protected $requestStack;
 
     /** @var AbstractWidgetInterface[] */
     protected $widgets = [];
@@ -80,7 +80,7 @@ class WidgetManager
         $this->tokenStorage = $tokenStorage;
         $this->em = $em;
         $this->formFactory = $formFactory;
-        $this->request = $requestStack->getCurrentRequest();
+        $this->requestStack = $requestStack;
     }
 
 
@@ -89,7 +89,6 @@ class WidgetManager
      */
     public function onKernelController(FilterControllerEvent $event)
     {
-        //@todo @RichardBures k čemu to je?
         $redirectUrl = $this->getCurrentUri();
 
         if ($this->tokenStorage && $this->tokenStorage->getToken()) {
@@ -132,9 +131,10 @@ class WidgetManager
      */
     public function getCurrentUri()
     {
-        if($this->request){
-            return $this->request->getScheme().'://'.$this->request->getHttpHost().$this->request->getBaseUrl(
-            ).$this->request->getPathInfo();
+        $request = $this->requestStack->getCurrentRequest();
+        if($request){
+            return $request->getScheme().'://'.$request->getHttpHost().$request->getBaseUrl(
+            ).$request->getPathInfo();
         }
 
         return null;
@@ -148,10 +148,12 @@ class WidgetManager
     {
         $choices = ['user', self::ACTION_REMOVE, self::ACTION_RESIZE];
 
+        $request = $this->requestStack->getCurrentRequest();
+
         foreach ($choices as $hash) {
             //@todo @RicharBures nevíš že ten request bude vždycky, někdy ti to tady spadne na tom že je request null a na null nelze volat funkci get
-            if ($this->request->get($hash)) {
-                $this->requestData[$hash] = $this->request->get($hash);
+            if ($request->get($hash)) {
+                $this->requestData[$hash] = $request->get($hash);
             }
         }
 
@@ -217,8 +219,10 @@ class WidgetManager
      */
     public function getRouteUrl()
     {
-        if ($this->routeUrl === null && $this->request) {
-            $this->routeUrl = $this->router->generate($this->request->get('_route'), $this->getRouteParameters());
+        $request = $this->requestStack->getCurrentRequest();
+
+        if ($this->routeUrl === null && $request) {
+            $this->routeUrl = $this->router->generate($request->get('_route'), $this->getRouteParameters());
         }
 
         return $this->routeUrl;
@@ -284,8 +288,10 @@ class WidgetManager
      */
     public function getForm()
     {
+        $request = $this->requestStack->getCurrentRequest();
+
         $form = $this->formFactory->create(DashboardType::class);
-        $form->handleRequest($this->request);
+        $form->handleRequest($request);
 
         $user = $this->tokenStorage->getToken()->getUser();
 
