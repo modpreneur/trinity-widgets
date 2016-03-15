@@ -50,7 +50,7 @@ class DashboardType extends AbstractType
                 'required' => true,
                 'expanded' => true,
                 'multiple' => true,
-                'choices' => $this->widgetManager->getDashboardWidgets(),
+                'choices' => $this->widgetManager->getFlippedDashboardWidgets(),
 
             ]
         );
@@ -62,7 +62,7 @@ class DashboardType extends AbstractType
                 'required' => true,
                 'expanded' => true,
                 'multiple' => true,
-                'choices' => $this->widgetManager->getDashboardWidgets(),
+                'choices' => $this->widgetManager->getFlippedDashboardWidgets(),
                 'choice_label' => function ($value, $key, $index) {
                     return ' ';
                 }

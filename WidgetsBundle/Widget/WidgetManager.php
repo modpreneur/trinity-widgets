@@ -282,6 +282,10 @@ class WidgetManager
         return $widgets;
     }
 
+    public function getFlippedDashboardWidgets()
+    {
+        return array_flip ( $this->getDashboardWidgets() );
+    }
 
     /**
      * @return \Symfony\Component\Form\Form

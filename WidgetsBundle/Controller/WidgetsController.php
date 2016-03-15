@@ -38,17 +38,17 @@ class WidgetsController extends Controller
         $form =  $this->createForm(DashboardType::class);
         $form->handleRequest($request);
         if(
-            $request->request->has('trinity_widgets_bundle_dashboard_type')
-            && isset($request->request->get('trinity_widgets_bundle_dashboard_type')['widgets']))
+            $request->request->has('dashboard')
+            && isset($request->request->get('dashboard')['widgets']))
         {
             $expandedWidgets = [];
-            if(isset($request->request->get('trinity_widgets_bundle_dashboard_type')['expandedWidgets']))
+            if(isset($request->request->get('dashboard')['expandedWidgets']))
             {
-                $expandedWidgets = $request->request->get('trinity_widgets_bundle_dashboard_type')['expandedWidgets'];
+                $expandedWidgets = $request->request->get('dashboard')['expandedWidgets'];
             }
             $em =$this->get('doctrine.orm.entity_manager');
             $widgetManager = $this->get('trinity.widgets.manager');
-            $widgets = $request->request->get('trinity_widgets_bundle_dashboard_type')['widgets'];
+            $widgets = $request->request->get('dashboard')['widgets'];
 
             $user = $this->getUser();
             $widgetsSettingsManager = $user->getWidgetsSettingsManager();
@@ -100,8 +100,8 @@ class WidgetsController extends Controller
 
             /** @var WidgetsDashboard $dashboard */
             $dashboard = $user->getWidgetsDashboard();
-
             $dashboard->setWidgets($widgets);
+
 
             $em->persist( $dashboard );
             $em->persist($widgetsSettingsManager);
@@ -110,11 +110,13 @@ class WidgetsController extends Controller
                 $em->flush();
             }catch(\Doctrine\DBAL\DBALException $e)
             {
-                return new JsonResponse(array('error'=>$e), 200);
+                return new JsonResponse(array('error'=>$e), 400);
             }
+            return new JsonResponse(array('message'=>'success update','widgets'=>$form->getData()['widgets']), 200);
         }
 
-        return new JsonResponse(array('message'=>'success_update','widgets'=>$form->getData()['widgets']), 200);
+        return new JsonResponse(array('error'=>'request failed'), 400);
+
     }
 
     /**
