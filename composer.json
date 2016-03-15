@@ -17,7 +17,8 @@
     "twig/extensions": "~1.3",
     "trinity/framework": "dev-master",
     "friendsofsymfony/user-bundle": "dev-master",
-    "trinity/settings": "dev-master"
+    "trinity/settings": "dev-master",
+    "trinity/logger": "dev-master"
   },
   "require-dev": {
     "braincrafted/testing-bundle": "@stable",
@@ -25,11 +26,16 @@
     "doctrine/data-fixtures": "~1",
     "doctrine/doctrine-fixtures-bundle": "~2"
   },
+
+
   "autoload": {
-    "classmap": [
-      "WidgetsBundle/"
+    "psr-4": { "Trinity\\WidgetsBundle": "" },
+    "exclude-from-classmap": [
+      "/WidgetsBundle/Tests/"
     ]
   },
+
+
   "minimum-stability": "stable",
   "extra": {
     "branch-alias": {
