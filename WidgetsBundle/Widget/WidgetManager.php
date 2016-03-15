@@ -7,6 +7,7 @@
 namespace Trinity\WidgetsBundle\Widget;
 
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
