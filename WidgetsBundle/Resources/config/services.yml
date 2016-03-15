@@ -3,8 +3,11 @@ services:
     trinity.widgets.manager:
       class: Trinity\WidgetsBundle\Widget\WidgetManager
       arguments:
-          - "@service_container"
-      synchronized: true
+        - "@router"
+        - "@security.token_storage"
+        - "@doctrine.orm.entity_manager"
+        - "@form.factory"
+        - "@request_stack"
       tags:
          - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
 

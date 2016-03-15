@@ -6,9 +6,10 @@
 
 namespace Trinity\WidgetsBundle\Widget;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\Routing\Router;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
@@ -30,22 +31,32 @@ class WidgetManager
     const ACTION_RESIZE = 'resize';
 
 
-    /**
-     * @var string
-     */
-    protected $routeUrl;
-    /**
-     * @var Request
-     */
-    protected $request;
+    /** @var  Router */
+    protected $router;
 
     /** @var TokenStorage */
     protected $tokenStorage;
 
+    /** @var  EntityManager */
+    protected $em;
+
+    /** @var  FormFactoryInterface  */
+    protected $formFactory;
+
+    /** @var Request */
+    protected $request;
+
+    /** @var AbstractWidgetInterface[] */
+    protected $widgets = [];
+
+    /** @var UserDashboardInterface */
+    protected $user;
+
+    /** @var string */
+    protected $routeUrl;
+
     /** @var array */
     protected $routeParameters;
-
-    /** @var bool */
 
     /** @var bool */
     protected $redirect = false;
@@ -53,42 +64,22 @@ class WidgetManager
     /** @var array */
     protected $requestData = [];
 
-    /** @var AbstractWidgetInterface[] */
-    protected $widgets = [];
-
-    /** @var  Router */
-    protected $router;
-
-    /** @var UserDashboardInterface */
-    protected $user;
-
 
     /**
      * WidgetManager constructor.
-     * @param ContainerInterface $container
+     * @param Router $router
+     * @param TokenStorage $tokenStorage
+     * @param EntityManager $em
+     * @param FormFactoryInterface $formFactory
+     * @param RequestStack $requestStack
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(Router $router, TokenStorage $tokenStorage, EntityManager $em, FormFactoryInterface $formFactory, RequestStack $requestStack)
     {
-        $this->container = $container;
-        $this->router = $container->get('router');
-        $this->tokenStorage = $this->container->get('security.token_storage');
-
-        $this->request = $container->get('request_stack')->getCurrentRequest();
-    }
-
-
-    public function setRequest($request)
-    {
-//        $this->request = Request::createFromGlobals();
-//
-//        if ($request && $request->attributes) {
-//            $this->routeParameters = $this->request->attributes->all();
-//            foreach (array_keys($this->routeParameters) as $key) {
-//                if (substr($key, 0, 1) == '_') {
-//                    unset($this->routeParameters[$key]);
-//                }
-//            }
-//        }
+        $this->router = $router;
+        $this->tokenStorage = $tokenStorage;
+        $this->em = $em;
+        $this->formFactory = $formFactory;
+        $this->request = $requestStack->getCurrentRequest();
     }
 
 
@@ -97,7 +88,7 @@ class WidgetManager
      */
     public function onKernelController(FilterControllerEvent $event)
     {
-        $em = $this->container->get('doctrine')->getManager();
+        //@todo @RichardBures k čemu to je?
         $redirectUrl = $this->getCurrentUri();
 
         if ($this->tokenStorage && $this->tokenStorage->getToken()) {
@@ -119,8 +110,8 @@ class WidgetManager
                     if ($widget instanceof RemovableInterface) {
                         $widget->remove();
                         $dashboard->removeWidget($widget);
-                        $em->persist($dashboard);
-                        $em->flush();
+                        $this->em->persist($dashboard);
+                        $this->em->flush();
                     }
                 }
 
@@ -157,6 +148,7 @@ class WidgetManager
         $choices = ['user', self::ACTION_REMOVE, self::ACTION_RESIZE];
 
         foreach ($choices as $hash) {
+            //@todo @RicharBures nevíš že ten request bude vždycky, někdy ti to tady spadne na tom že je request null a na null nelze volat funkci get
             if ($this->request->get($hash)) {
                 $this->requestData[$hash] = $this->request->get($hash);
             }
@@ -291,10 +283,9 @@ class WidgetManager
      */
     public function getForm()
     {
-        $form = $this->container->get('form.factory')->create(DashboardType::class);
+        $form = $this->formFactory->create(DashboardType::class);
         $form->handleRequest($this->request);
 
-        $em = $this->container->get('doctrine')->getManager();
         $user = $this->tokenStorage->getToken()->getUser();
 
 
@@ -305,8 +296,8 @@ class WidgetManager
             $data = $form->getData();
             $dashboard->setWidgets($data['widgets']);
 
-            $em->persist($dashboard);
-            $em->flush();
+            $this->em->persist($dashboard);
+            $this->em->flush();
 
             $this->redirect = true;
 
