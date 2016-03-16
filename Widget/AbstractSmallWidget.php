@@ -10,7 +10,7 @@ namespace Trinity\Bundle\WidgetsBundle\Widget;
  */
 abstract class AbstractSmallWidget extends AbstractWidgetInterface
 {
-    protected $template = "TrinityWidgetsBundle::widget_small_layout.html.twig";
+    protected $template = "WidgetsBundle::widget_small_layout.html.twig";
 
     /**
      * @param  array $attributes

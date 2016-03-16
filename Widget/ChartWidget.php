@@ -14,7 +14,7 @@ namespace Trinity\Bundle\WidgetsBundle\Widget;
 abstract class ChartWidget extends AbstractWidgetInterface
 {
     /** @var string */
-    protected $template = "TrinityWidgetsBundle::widget_chart_layout.html.twig";
+    protected $template = "WidgetsBundle::widget_chart_layout.html.twig";
 
     /** @var string */
     protected $chartType = "BarChart";

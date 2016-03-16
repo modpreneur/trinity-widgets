@@ -23,7 +23,7 @@ abstract class TableWidget extends AbstractWidgetInterface
     protected $tableBody;
 
     /** @var string */
-    protected $template = "TrinityWidgetsBundle::widget_table_layout.html.twig";
+    protected $template = "WidgetsBundle::widget_table_layout.html.twig";
 
 
     /**
