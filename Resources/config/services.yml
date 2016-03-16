@@ -14,7 +14,10 @@ services:
 
     trinity.widgets.extension:
       class: Trinity\Bundle\WidgetsBundle\Twig\WidgetExtension
-      arguments: [ "@trinity.widgets.manager","@router"]
+      arguments:
+        - "@trinity.widgets.manager"
+        - "@router"
+        - "@request_stack"
       public: true
       tags:
         - {name: twig.extension}

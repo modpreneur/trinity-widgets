@@ -5,26 +5,22 @@
 
 namespace Trinity\Bundle\WidgetsBundle\Twig;
 
-
-use Braintree\Exception;
-use DOMDocument;
 use Nette\Utils\Strings;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
-use Trinity\FrameworkBundle\Entity\BaseUser;
-use Trinity\FrameworkBundle\Exception\MemberAccessException;
-use Trinity\FrameworkBundle\Utils\ObjectMixin;
 use Trinity\Bundle\WidgetsBundle\Entity\WidgetsDashboard;
 use Trinity\Bundle\WidgetsBundle\Exception\WidgetException;
 use Trinity\Bundle\WidgetsBundle\Widget\AbstractWidget;
 use Trinity\Bundle\WidgetsBundle\Widget\RemovableInterface;
 use Trinity\Bundle\WidgetsBundle\Widget\ResizableInterface;
 use Trinity\Bundle\WidgetsBundle\Widget\WidgetManager;
-
 use Trinity\Bundle\WidgetsBundle\Widget\WidgetSizes;
+use Trinity\FrameworkBundle\Entity\BaseUser;
+use Trinity\FrameworkBundle\Exception\MemberAccessException;
+use Trinity\FrameworkBundle\Utils\ObjectMixin;
 use Twig_Environment;
-
 
 
 /**
@@ -46,19 +42,24 @@ class WidgetExtension extends \Twig_Extension
      * @var RouterInterface
      */
     private $router;
+    /**
+     * @var RequestStack
+     */
+    private $requestStack;
+
 
     /**
      * WidgetExtension constructor.
      * @param WidgetManager $widgetManager
      * @param Router $router
+     * @param RequestStack $requestStack
      */
-    public function __construct(WidgetManager $widgetManager,Router $router)
+    public function __construct(WidgetManager $widgetManager, Router $router, RequestStack $requestStack)
     {
         $this->widgetManager = $widgetManager;
-
         $this->request = null;
-
         $this->router = $router;
+        $this->requestStack = $requestStack;
     }
 
 
@@ -105,28 +106,34 @@ class WidgetExtension extends \Twig_Extension
      */
     public function getWidgetUrl($section, AbstractWidget $widget, BaseUser $user)
     {
-        $url='';
+        $url = '';
         switch ($section) {
             case WidgetManager::ACTION_REMOVE:
-                $url = $this->router->generate('remove_widget',array(
-                    'widgetName'=>$widget->getName(),
-                ));
+                $url = $this->router->generate(
+                    'remove_widget',
+                    array(
+                        'widgetName' => $widget->getName(),
+                    )
+                );
                 break;
             case WidgetManager::ACTION_RESIZE:
-                $size = ($widget->getSize()===WidgetSizes::Normal)?WidgetSizes::Full:WidgetSizes::Normal;
+                $size = ($widget->getSize() === WidgetSizes::Normal) ? WidgetSizes::Full : WidgetSizes::Normal;
 
-                $url = $this->router->generate('resize_widget',array(
-                    'widgetName'=>$widget->getName(),
-                    'widgetSize'=>$size,
-                ));
+                $url = $this->router->generate(
+                    'resize_widget',
+                    array(
+                        'widgetName' => $widget->getName(),
+                        'widgetSize' => $size,
+                    )
+                );
 
-            break;
+                break;
         }
-
 
 
         return $url;
     }
+
 
     /**
      * @param AbstractWidget $widget
@@ -134,12 +141,12 @@ class WidgetExtension extends \Twig_Extension
      */
     public function getSizeIcon(AbstractWidget $widget)
     {
-        $icon = ($widget->getSize()===WidgetSizes::Normal)?
-            '<i class="trinity trinity-plus" id="get-bigger"></i><i id="get-smaller" class="trinity trinity-minus" style="display: none"></i>':
-            '<i class="trinity trinity-minus" id="get-smaller"></i><i class="trinity trinity-plus" id="get-bigger" style="display: none"></i>';
+        $icon = ($widget->getSize(
+            ) === WidgetSizes::Normal) ? '<i class="trinity trinity-plus" id="get-bigger"></i><i id="get-smaller" class="trinity trinity-minus" style="display: none"></i>' : '<i class="trinity trinity-minus" id="get-smaller"></i><i class="trinity trinity-plus" id="get-bigger" style="display: none"></i>';
 
         return $icon;
     }
+
 
     /**
      * @param Twig_Environment $env
@@ -195,20 +202,18 @@ class WidgetExtension extends \Twig_Extension
     {
         $widgetsNames = $dashboard->getWidgets();
         $allWidgets = $this->widgetManager->getDashboardWidgets();
-        $hiddenWidgetsNames=[];
-        $showedWidgetsNames=[];
+        $hiddenWidgetsNames = [];
+        $showedWidgetsNames = [];
         $widgetsSettingsManager = $user->getWidgetsSettingsManager();
 
-        foreach($allWidgets as $widgetName => $widget)
-        {
-            if(in_array($widgetName,$widgetsNames))
-            {
+        foreach ($allWidgets as $widgetName => $widget) {
+            if (in_array($widgetName, $widgetsNames)) {
                 $widgetSettings = $widgetsSettingsManager->getWidgetSettings($widgetName);
                 $inOrder = $widgetSettings['inOrder'];
-                $showedWidgetsNames[$inOrder]=$widgetName;
+                $showedWidgetsNames[$inOrder] = $widgetName;
 
-            }else{
-                $hiddenWidgetsNames[]=$widgetName;
+            } else {
+                $hiddenWidgetsNames[] = $widgetName;
             }
         }
         ksort($showedWidgetsNames);
@@ -218,8 +223,8 @@ class WidgetExtension extends \Twig_Extension
         $form = $this->widgetManager->getForm();
 
         $context = [
-            'showedWidgets'=>$showedWidgetsNames,
-            'hiddenWidgets'=>$hiddenWidgetsNames,
+            'showedWidgets' => $showedWidgetsNames,
+            'hiddenWidgets' => $hiddenWidgetsNames,
             'form' => $form->createView(),
         ];
         $this->widgetManager->setUser($user);
@@ -270,7 +275,7 @@ class WidgetExtension extends \Twig_Extension
      */
     public function renderWidget(Twig_Environment $env, $widgetName, $options = [])
     {
-
+        
         /** @var AbstractWidget $widget */
         $widget = $this->widgetManager->createWidget($widgetName);
         /** @var \Twig_TemplateInterface $template */
@@ -278,17 +283,17 @@ class WidgetExtension extends \Twig_Extension
 
         $wb = $widget->buildWidget();
 
-        $widgetManager =$this->widgetManager->getUser()->getWidgetsSettingsManager();
+        $widgetManager = $this->widgetManager->getUser()->getWidgetsSettingsManager();
 
-        $widgetSettings=$widgetManager->getWidgetSettings($widgetName);
+        $widgetSettings = $widgetManager->getWidgetSettings($widgetName);
 
-        if(array_key_exists('size',$widgetSettings)){
+        if (array_key_exists('size', $widgetSettings)) {
             $widget->setSize(intval($widgetSettings['size']));
         }
         $context = [
             'name' => $widget->getName(),
-            'routeName'=> $widget->getRouteName(),
-            'gridParameters'=> $widget->getGridParameters(),
+            'routeName' => $widget->getRouteName(),
+            'gridParameters' => $widget->getGridParameters(),
             'widget' => $widget,
             'title' => $widget->getTitle(),
             'size' => $widget->getSize(),
@@ -302,7 +307,7 @@ class WidgetExtension extends \Twig_Extension
         if ($options && is_array($options) && count($options) > 0) {
             $context = array_merge($context, $options);
         }
-        //dump($context);die();
+
         return $template->render($context);
     }
 

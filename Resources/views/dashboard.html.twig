@@ -31,9 +31,12 @@
         {% for widget in showedWidgets %}
             <span  data-widget="{{ widget }}"  class="widget-field" style=" display: block;">{{ renderWidget(widget) }} </span>
         {% endfor %}
-        {% for widget in hiddenWidgets %}
-            <span  data-widget="{{ widget }}"  class="widget-field" style=" display: none;">{{ renderWidget(widget) }} </span>
-        {% endfor %}
+
+        {#
+            {% for widget in hiddenWidgets %}
+                <span  data-widget="{{ widget }}"  class="widget-field" style=" display: none;">{{ renderWidget(widget) }} </span>
+            {% endfor %}
+        #}
 </div>
 
 <div class="people-item">

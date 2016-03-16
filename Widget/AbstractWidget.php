@@ -29,11 +29,12 @@ abstract class AbstractWidget extends AbstractArrayWidget implements WidgetInter
     /** @var  WidgetManager */
     protected $manager;
 
-    /** @var string  */
+    /** @var string */
     protected $routeName;
 
 
     protected $gridParameters;
+
 
     /**
      * @return WidgetManager
@@ -142,6 +143,7 @@ abstract class AbstractWidget extends AbstractArrayWidget implements WidgetInter
         $this->name = $name;
     }
 
+
     /**
      * @return string
      */
@@ -150,13 +152,15 @@ abstract class AbstractWidget extends AbstractArrayWidget implements WidgetInter
         return $this->routeName;
     }
 
+
     /**
      * @param $routeName
      */
     public function setRouteName($routeName)
     {
-        $this->routeName=$routeName;
+        $this->routeName = $routeName;
     }
+
 
     /**
      * @return mixed
@@ -166,13 +170,15 @@ abstract class AbstractWidget extends AbstractArrayWidget implements WidgetInter
         return $this->gridParameters;
     }
 
+
     /**
      * @param $gridParameters
      */
     public function setGridParameters($gridParameters)
     {
-        $this->gridParameters=$gridParameters;
+        $this->gridParameters = $gridParameters;
     }
+
 
     /**
      * @param array $attributes
