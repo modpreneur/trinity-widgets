@@ -29,7 +29,7 @@
 
 
   "autoload": {
-    "psr-4": { "Trinity\\WidgetsBundle": "" },
+    "psr-4": { "Trinity\\WidgetsBundle\\": "" },
     "exclude-from-classmap": [
       "/WidgetsBundle/Tests/"
     ]
