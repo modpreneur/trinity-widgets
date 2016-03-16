@@ -214,7 +214,7 @@ class WidgetExtension extends \Twig_Extension
         ksort($showedWidgetsNames);
         /** @var \Twig_TemplateInterface $template */
 
-        $template = $env->loadTemplate("TrinityWidgetsBundle::dashboard.html.twig");
+        $template = $env->loadTemplate("WidgetsBundle::dashboard.html.twig");
         $form = $this->widgetManager->getForm();
 
         $context = [
