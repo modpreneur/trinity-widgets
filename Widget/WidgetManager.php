@@ -9,16 +9,15 @@ namespace Trinity\Bundle\WidgetsBundle\Widget;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\Routing\Router;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
-use Trinity\FrameworkBundle\Entity\BaseUser;
 use Trinity\Bundle\WidgetsBundle\Entity\UserDashboardInterface;
 use Trinity\Bundle\WidgetsBundle\Entity\WidgetsDashboard;
 use Trinity\Bundle\WidgetsBundle\Exception\WidgetException;
 use Trinity\Bundle\WidgetsBundle\Form\DashboardType;
+use Trinity\FrameworkBundle\Entity\BaseUser;
 
 
 /**
@@ -41,7 +40,7 @@ class WidgetManager
     /** @var  EntityManager */
     protected $em;
 
-    /** @var  FormFactoryInterface  */
+    /** @var  FormFactoryInterface */
     protected $formFactory;
 
     /** @var RequestStack */
@@ -74,8 +73,13 @@ class WidgetManager
      * @param FormFactoryInterface $formFactory
      * @param RequestStack $requestStack
      */
-    public function __construct(Router $router, TokenStorage $tokenStorage, EntityManager $em, FormFactoryInterface $formFactory, RequestStack $requestStack)
-    {
+    public function __construct(
+        Router $router,
+        TokenStorage $tokenStorage,
+        EntityManager $em,
+        FormFactoryInterface $formFactory,
+        RequestStack $requestStack
+    ) {
         $this->router = $router;
         $this->tokenStorage = $tokenStorage;
         $this->em = $em;
@@ -89,6 +93,10 @@ class WidgetManager
      */
     public function onKernelController(FilterControllerEvent $event)
     {
+        if ($this->requestStack->getCurrentRequest()->attributes->get('_route') !== "admin_home") {
+            return;
+        }
+
         $redirectUrl = $this->getCurrentUri();
 
         if ($this->tokenStorage && $this->tokenStorage->getToken()) {
@@ -132,9 +140,8 @@ class WidgetManager
     public function getCurrentUri()
     {
         $request = $this->requestStack->getCurrentRequest();
-        if($request){
-            return $request->getScheme().'://'.$request->getHttpHost().$request->getBaseUrl(
-            ).$request->getPathInfo();
+        if ($request) {
+            return $request->getScheme().'://'.$request->getHttpHost().$request->getBaseUrl().$request->getPathInfo();
         }
 
         return null;
@@ -255,13 +262,15 @@ class WidgetManager
         $this->user = $user;
     }
 
+
     /**
      * @return UserDashboardInterface
      */
     public function getUser()
     {
-        return $this->user ;
+        return $this->user;
     }
+
 
     /**
      * Return widgets name
@@ -282,10 +291,12 @@ class WidgetManager
         return $widgets;
     }
 
+
     public function getFlippedDashboardWidgets()
     {
-        return array_flip ( $this->getDashboardWidgets() );
+        return array_flip($this->getDashboardWidgets());
     }
+
 
     /**
      * @return \Symfony\Component\Form\Form
@@ -297,6 +308,7 @@ class WidgetManager
         $form = $this->formFactory->create(DashboardType::class);
         $form->handleRequest($request);
 
+        /** @var User $user */
         $user = $this->tokenStorage->getToken()->getUser();
 
 
