@@ -1,0 +1,29 @@
+services:
+
+    trinity.widgets.manager:
+      class: Trinity\Bundle\WidgetsBundle\Widget\WidgetManager
+      arguments:
+        - "@router"
+        - "@security.token_storage"
+        - "@doctrine.orm.entity_manager"
+        - "@form.factory"
+        - "@request_stack"
+      tags:
+         - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
+
+
+    trinity.widgets.extension:
+      class: Trinity\Bundle\WidgetsBundle\Twig\WidgetExtension
+      arguments: [ "@trinity.widgets.manager","@router"]
+      public: true
+      tags:
+        - {name: twig.extension}
+
+
+    trinity.widgets.dashboard.form.dashboard_type:
+      class: Trinity\Bundle\WidgetsBundle\Form\DashboardType
+      arguments: [ "@trinity.widgets.manager"]
+      tags:
+        - {name: form.type, alias: trinity_widgets_bundle_dashboard_type}
+
+
