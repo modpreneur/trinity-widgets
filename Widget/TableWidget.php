@@ -14,7 +14,7 @@ use Trinity\Bundle\WidgetsBundle\Widget\Table\TableHeader;
  * Class AbstractTableWidget
  * @package Trinity\Bundle\WidgetsBundle\Widget
  */
-abstract class TableWidget extends AbstractWidgetInterface
+abstract class TableWidget extends AbstractWidget
 {
     /** @var  TableHeader */
     protected $tableHeader;

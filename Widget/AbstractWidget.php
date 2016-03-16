@@ -6,9 +6,9 @@
 namespace Trinity\Bundle\WidgetsBundle\Widget;
 
 /**
- * Class AbstractWidgetInterface.
+ * Class AbstractWidget.
  */
-abstract class AbstractWidgetInterface extends AbstractArrayWidget implements WidgetInterface
+abstract class AbstractWidget extends AbstractArrayWidget implements WidgetInterface
 {
 
     /** @var string */
@@ -32,7 +32,7 @@ abstract class AbstractWidgetInterface extends AbstractArrayWidget implements Wi
     /** @var string  */
     protected $routeName;
 
-    
+
     protected $gridParameters;
 
     /**

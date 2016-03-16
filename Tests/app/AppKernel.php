@@ -18,7 +18,7 @@ class AppKernel extends Kernel
         return array(
             new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new \Trinity\FrameworkBundle\TrinityFrameworkBundle(),
-            new \Trinity\Bundle\WidgetsBundle\TrinityWidgetsBundle(),
+            new \Trinity\Bundle\WidgetsBundle\WidgetsBundle(),
             new \Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new \Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
             new \Symfony\Bundle\SecurityBundle\SecurityBundle(),

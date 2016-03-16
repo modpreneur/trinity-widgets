@@ -47,7 +47,7 @@ class WidgetManager
     /** @var RequestStack */
     protected $requestStack;
 
-    /** @var AbstractWidgetInterface[] */
+    /** @var AbstractWidget[] */
     protected $widgets = [];
 
     /** @var UserDashboardInterface */
@@ -167,7 +167,7 @@ class WidgetManager
 
     /**
      * @param string $name
-     * @return AbstractWidgetInterface
+     * @return AbstractWidget
      */
     private function getWidget($name)
     {
@@ -178,12 +178,12 @@ class WidgetManager
     /**
      * @param string $name widget name
      * @param bool $clone -> new instance of widget
-     * @return AbstractWidgetInterface
+     * @return AbstractWidget
      * @throws WidgetException
      */
     public function createWidget($name, $clone = true)
     {
-        /** @var AbstractWidgetInterface $widget */
+        /** @var AbstractWidget $widget */
         $widget = $clone ? clone $this->getWidget($name) : $this->getWidget($name);
 
         return $widget;
@@ -191,12 +191,12 @@ class WidgetManager
 
 
     /**
-     * @param AbstractWidgetInterface $widget
+     * @param AbstractWidget $widget
      * @param callback|null $callback
      *
      * @throws WidgetException
      */
-    public function addWidget(AbstractWidgetInterface $widget, $callback = null)
+    public function addWidget(AbstractWidget $widget, $callback = null)
     {
         if (!array_key_exists($widget->getName(), $this->widgets)) {
             $this->widgets[$widget->getName()] = $widget;

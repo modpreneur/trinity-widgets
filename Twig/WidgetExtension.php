@@ -17,7 +17,7 @@ use Trinity\FrameworkBundle\Exception\MemberAccessException;
 use Trinity\FrameworkBundle\Utils\ObjectMixin;
 use Trinity\Bundle\WidgetsBundle\Entity\WidgetsDashboard;
 use Trinity\Bundle\WidgetsBundle\Exception\WidgetException;
-use Trinity\Bundle\WidgetsBundle\Widget\AbstractWidgetInterface;
+use Trinity\Bundle\WidgetsBundle\Widget\AbstractWidget;
 use Trinity\Bundle\WidgetsBundle\Widget\RemovableInterface;
 use Trinity\Bundle\WidgetsBundle\Widget\ResizableInterface;
 use Trinity\Bundle\WidgetsBundle\Widget\WidgetManager;
@@ -99,11 +99,11 @@ class WidgetExtension extends \Twig_Extension
 
     /**
      * @param string $section
-     * @param AbstractWidgetInterface $widget
+     * @param AbstractWidget $widget
      * @param BaseUser $user
      * @return string
      */
-    public function getWidgetUrl($section, AbstractWidgetInterface $widget, BaseUser $user)
+    public function getWidgetUrl($section, AbstractWidget $widget, BaseUser $user)
     {
         $url='';
         switch ($section) {
@@ -129,10 +129,10 @@ class WidgetExtension extends \Twig_Extension
     }
 
     /**
-     * @param AbstractWidgetInterface $widget
+     * @param AbstractWidget $widget
      * @return string
      */
-    public function getSizeIcon(AbstractWidgetInterface $widget)
+    public function getSizeIcon(AbstractWidget $widget)
     {
         $icon = ($widget->getSize()===WidgetSizes::Normal)?
             '<i class="trinity trinity-plus" id="get-bigger"></i><i id="get-smaller" class="trinity trinity-minus" style="display: none"></i>':
@@ -271,7 +271,7 @@ class WidgetExtension extends \Twig_Extension
     public function renderWidget(Twig_Environment $env, $widgetName, $options = [])
     {
 
-        /** @var AbstractWidgetInterface $widget */
+        /** @var AbstractWidget $widget */
         $widget = $this->widgetManager->createWidget($widgetName);
         /** @var \Twig_TemplateInterface $template */
         $this->template = $template = $env->loadTemplate($widget->getTemplate());

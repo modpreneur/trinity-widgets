@@ -8,7 +8,7 @@ namespace Trinity\Bundle\WidgetsBundle\Widget;
  * Class AbstractSmallWidget
  * @package Trinity\Bundle\WidgetsBundle\Widget
  */
-abstract class AbstractSmallWidget extends AbstractWidgetInterface
+abstract class AbstractSmallWidget extends AbstractWidget
 {
     protected $template = "WidgetsBundle::widget_small_layout.html.twig";
 

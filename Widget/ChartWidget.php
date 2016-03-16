@@ -11,7 +11,7 @@ namespace Trinity\Bundle\WidgetsBundle\Widget;
  * Class ChartWidget
  * @package Trinity\Bundle\WidgetsBundle\Widget
  */
-abstract class ChartWidget extends AbstractWidgetInterface
+abstract class ChartWidget extends AbstractWidget
 {
     /** @var string */
     protected $template = "WidgetsBundle::widget_chart_layout.html.twig";
