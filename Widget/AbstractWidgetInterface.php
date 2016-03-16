@@ -32,6 +32,7 @@ abstract class AbstractWidgetInterface extends AbstractArrayWidget implements Wi
     /** @var string  */
     protected $routeName;
 
+    
     protected $gridParameters;
 
     /**
