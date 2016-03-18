@@ -26,11 +26,12 @@
         }
     </style>
     <hidden id="render-url" data-url="{{ path('ajax_render_widget',{widgetName:'0'}) }}"></hidden>
-    {#<div class="dashboard-widgets">#}
-        {#{% for widget in staticWidgets %}#}
-            {#<span  data-widget="{{ widget }}"  class="widget-field" style=" display: block; height: 50%">{{ renderWidget(widget) }} </span>#}
-        {#{% endfor %}#}
-    {#</div>#}
+    <div class="dashboard-widgets">
+        {% for widget in staticWidgets %}
+            <span  data-widget="{{ widget }}"  class="widget-field" style=" display: block; height: 50%">{{ renderWidget(widget) }} </span>
+        {% endfor %}
+
+    </div>
     <div class="dashboard-widgets" id="dragable-widgets" data-url="{{ path('change_order_widget',{order:'0'}) }}">
 
         {#not complete#}

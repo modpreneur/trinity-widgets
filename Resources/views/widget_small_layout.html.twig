@@ -15,12 +15,9 @@
         <main class="row content-box">
             <div class="content" >
                 <h6>{{ title }}</h6>
-                <table style="width:200px;">
-                    <tr>
-                        <td style="background-color:{{ color }}; width: {{2*percent }}px"></td>
-                        <td style="background-color:silver;"></td>
-                    </tr>
-                </table>
+                <div style="background-color: silver;width: 90%;margin-left: 5%;height: 10px" >
+                    <div style="background-color: {{ color }};height: 10px; width: {{percent}}%" ><span style="color: transparent">.</span></div>
+                </div>
             </div>
         </main>
     {% endblock %}
