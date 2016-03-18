@@ -5,14 +5,13 @@
     <div class="widget-chart " id="{{ widget.name }}">
 
     </div>
-
     {% block widgetScript %}
         <script>
             google.load("visualization", "1.1", {packages: ["corechart"]});
-            google.setOnLoadCallback(drawChart);
+            google.setOnLoadCallback(drawChart{{ widget.name }});
 
-            function drawChart() {
-
+            function drawChart{{ widget.name }}() {
+                console.log("aaa");
                 var data = google.visualization.arrayToDataTable(
                         {{ data|json_encode|raw }}
                 );
