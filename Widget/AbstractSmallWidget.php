@@ -12,6 +12,8 @@ abstract class AbstractSmallWidget extends AbstractWidget
 {
     protected $template = "WidgetsBundle::widget_small_layout.html.twig";
 
+    protected $type = "static";
+
     /**
      * @param  array $attributes
      * @return array
@@ -19,7 +21,6 @@ abstract class AbstractSmallWidget extends AbstractWidget
     function buildWidget(array $attributes = [])
     {
         $context = $attributes;
-
         $bSmall = $this->buildSmall($attributes);
         $context = array_merge($context, $bSmall);
 

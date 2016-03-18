@@ -280,6 +280,7 @@ class WidgetManager
     {
         $widgets = [];
 
+
         foreach ($this->widgets as $item) {
             if ($item->getType() == "dashboard") {
                 $title = ucfirst(str_replace("_", " ", $item->getName()));
@@ -291,10 +292,28 @@ class WidgetManager
         return $widgets;
     }
 
+    /**
+     * Return widgets name
+     * @return array
+     */
+    public function getStaticWidgets()
+    {
+        $widgets = [];
+        foreach ($this->widgets as $item) {
+            if ($item->getType() == "static") {
+                $title = ucfirst(str_replace("_", " ", $item->getName()));
+
+                $widgets[$item->getName()] = $title;
+            }
+        }
+
+        return $widgets;
+    }
 
     public function getFlippedDashboardWidgets()
     {
         return array_flip($this->getDashboardWidgets());
+
     }
 
 

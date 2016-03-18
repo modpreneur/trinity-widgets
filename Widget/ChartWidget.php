@@ -31,7 +31,6 @@ abstract class ChartWidget extends AbstractWidget
 
         $bch = $this->buildChart($attributes);
         $context = array_merge($context, $bch);
-
         return $context;
     }
 

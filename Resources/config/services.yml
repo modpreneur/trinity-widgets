@@ -28,5 +28,3 @@ services:
       arguments: [ "@trinity.widgets.manager"]
       tags:
         - {name: form.type, alias: trinity_widgets_bundle_dashboard_type}
-
-

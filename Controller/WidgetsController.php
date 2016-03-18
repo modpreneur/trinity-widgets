@@ -16,6 +16,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Trinity\Bundle\WidgetsBundle\Entity\WidgetsDashboard;
 use Trinity\Bundle\WidgetsBundle\Entity\WidgetsSettingsManager;
 use Trinity\Bundle\WidgetsBundle\Form\DashboardType;
+use Trinity\Bundle\WidgetsBundle\Widget\RemovableInterface;
+use Trinity\Bundle\WidgetsBundle\Widget\ResizableInterface;
+use Trinity\Bundle\WidgetsBundle\Widget\WidgetManager;
 
 
 /**
@@ -26,6 +29,7 @@ use Trinity\Bundle\WidgetsBundle\Form\DashboardType;
  */
 class WidgetsController extends Controller
 {
+
 
     /**
      * @Route("/manage", name="widget-manage")
@@ -220,5 +224,38 @@ class WidgetsController extends Controller
         {
             return new JsonResponse(array('error' => $e->getMessage()), 400);
         }
+    }
+
+
+    /**
+     * @Route("/render/{widgetName}/", name="ajax_render_widget")
+     * @param string $widgetName
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function ajaxRenderWidget( $widgetName)
+    {
+        $widgetManager = $this->get('trinity.widgets.manager');
+
+        /** @var AbstractWidget $widget */
+        $widget = $widgetManager->createWidget($widgetName);
+        /** @var \Twig_TemplateInterface $template */
+        $template = $widget->getTemplate();
+        $wb = $widget->buildWidget();
+
+        $context = [
+            'name' => $widget->getName(),
+            'routeName' => $widget->getRouteName(),
+            'gridParameters' => $widget->getGridParameters(),
+            'widget' => $widget,
+            'title' => $widget->getTitle(),
+            'size' => $widget->getSize(),
+            'resizable' => $widget instanceof ResizableInterface,
+            'removable' => $widget instanceof RemovableInterface,
+        ];
+        if ($wb && is_array($wb)) {
+            $context = array_merge($context, $wb);
+        }
+
+        return $this->render($template,$context);
     }
 }

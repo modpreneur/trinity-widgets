@@ -202,6 +202,12 @@ class WidgetExtension extends \Twig_Extension
     {
         $widgetsNames = $dashboard->getWidgets();
         $allWidgets = $this->widgetManager->getDashboardWidgets();
+        $staticWidgets = $this->widgetManager->getStaticWidgets();
+        $staticWidgetsNames=[];
+        foreach($staticWidgets as $widgetName =>$widget)
+        {
+            $staticWidgetsNames[]=$widgetName;
+        }
         $hiddenWidgetsNames = [];
         $showedWidgetsNames = [];
         $widgetsSettingsManager = $user->getWidgetsSettingsManager();
@@ -225,6 +231,7 @@ class WidgetExtension extends \Twig_Extension
         $context = [
             'showedWidgets' => $showedWidgetsNames,
             'hiddenWidgets' => $hiddenWidgetsNames,
+            'staticWidgets' => $staticWidgetsNames,
             'form' => $form->createView(),
         ];
         $this->widgetManager->setUser($user);
@@ -307,7 +314,6 @@ class WidgetExtension extends \Twig_Extension
         if ($options && is_array($options) && count($options) > 0) {
             $context = array_merge($context, $options);
         }
-
         return $template->render($context);
     }
 

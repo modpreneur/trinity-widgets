@@ -25,18 +25,27 @@
             filter: alpha(opacity=20);
         }
     </style>
-
+    <hidden id="render-url" data-url="{{ path('ajax_render_widget',{widgetName:'0'}) }}"></hidden>
+    {#<div class="dashboard-widgets">#}
+        {#{% for widget in staticWidgets %}#}
+            {#<span  data-widget="{{ widget }}"  class="widget-field" style=" display: block; height: 50%">{{ renderWidget(widget) }} </span>#}
+        {#{% endfor %}#}
+    {#</div>#}
     <div class="dashboard-widgets" id="dragable-widgets" data-url="{{ path('change_order_widget',{order:'0'}) }}">
+
+        {#not complete#}
+
+
 
         {% for widget in showedWidgets %}
             <span  data-widget="{{ widget }}"  class="widget-field" style=" display: block;">{{ renderWidget(widget) }} </span>
         {% endfor %}
 
-        {#
-            {% for widget in hiddenWidgets %}
-                <span  data-widget="{{ widget }}"  class="widget-field" style=" display: none;">{{ renderWidget(widget) }} </span>
-            {% endfor %}
-        #}
+        {#TODO: think of another way#}
+        {#{% for widget in hiddenWidgets %}#}
+            {#<span  data-widget="{{ widget }}"  class="widget-field" style=" display: none;">{{ renderWidget(widget) }} </span>#}
+        {#{% endfor %}#}
+
 </div>
 
 <div class="people-item">
