@@ -89,7 +89,7 @@ class WidgetExtension extends \Twig_Extension
                 array('is_safe' => array('html'), 'needs_environment' => true)
             ),
             new \Twig_SimpleFunction(
-                'renderTableCell', [$this, 'renderTableCell'], ['is_safe' => array('html')]
+                'renderTableCell', [$this, 'renderTableCell'], ['is_safe' => ['html'], 'needs_environment' => true]
             ),
             new \Twig_SimpleFunction(
                 'widget_*', [$this, 'widget'], ['is_safe' => ['html'], 'needs_environment' => true]
@@ -163,8 +163,10 @@ class WidgetExtension extends \Twig_Extension
      * @return string
      * @throws \Exception
      */
-    public function renderTableCell($object, $attribute)
+    public function renderTableCell($env, $object, $attribute, $widgetName)
     {
+        $widget = $this->createWidget($widgetName, $env);
+
         try {
             $result = ObjectMixin::get($object, $attribute);
         } catch (MemberAccessException $ex) {
@@ -269,6 +271,16 @@ class WidgetExtension extends \Twig_Extension
     }
 
 
+    public function createWidget($widgetName, $env){
+        /** @var AbstractWidget $widget */
+        $widget = $this->widgetManager->createWidget($widgetName);
+        /** @var \Twig_TemplateInterface $template */
+        $this->template = $template = $env->loadTemplate($widget->getTemplate());
+
+        return $widget;
+    }
+
+
     /**
      * {{ renderWidget("projects_list", {"title": "Products list"}) }}
      *
@@ -282,13 +294,8 @@ class WidgetExtension extends \Twig_Extension
      */
     public function renderWidget(Twig_Environment $env, $widgetName, $options = [])
     {
-        
-        /** @var AbstractWidget $widget */
-        $widget = $this->widgetManager->createWidget($widgetName);
-        /** @var \Twig_TemplateInterface $template */
-        $this->template = $template = $env->loadTemplate($widget->getTemplate());
-
-        $wb = $widget->buildWidget();
+        $widget = $this->createWidget($widgetName, $env);
+        $wb     = $widget->buildWidget();
 
         $widgetManager = $this->widgetManager->getUser()->getWidgetsSettingsManager();
 
@@ -314,7 +321,7 @@ class WidgetExtension extends \Twig_Extension
         if ($options && is_array($options) && count($options) > 0) {
             $context = array_merge($context, $options);
         }
-        return $template->render($context);
+        return $this->template->render($context);
     }
 
 

@@ -1,6 +1,5 @@
 {% extends "WidgetsBundle::widget_layout.html.twig" %}
 
-
 {% block widget_contnet %}
     {% block data_grid %}
         <table class="data-grid">
@@ -39,7 +38,7 @@
     <tr>
         {% for column in header %}
             <td class="widget_table_cell-{{ column.id }}">
-                {{ renderTableCell(row, column.id) }}
+                {{ renderTableCell(row, column.id, name) }}
             </td>
         {% endfor %}
     </tr>
