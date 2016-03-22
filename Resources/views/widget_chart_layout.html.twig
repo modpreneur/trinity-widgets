@@ -2,7 +2,7 @@
 
 {% block widget_contnet %}
 
-    <div class="widget-chart " id="{{ widget.name }}">
+    <div class="widget-chart" id="{{ widget.name }}">
 
     </div>
     <hidden id="chart-{{ widget.name }}"></hidden>
@@ -12,7 +12,6 @@
             google.setOnLoadCallback(drawChart{{ widget.name }});
 
             function drawChart{{ widget.name }}() {
-                console.log("aaa");
                 var data = google.visualization.arrayToDataTable(
                         {{ data|json_encode|raw }}
                 );

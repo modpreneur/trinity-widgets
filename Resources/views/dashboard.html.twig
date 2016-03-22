@@ -34,18 +34,9 @@
     </div>
     <div class="dashboard-widgets" id="dragable-widgets" data-url="{{ path('change_order_widget',{order:'0'}) }}">
 
-        {#not complete#}
-
-
-
         {% for widget in showedWidgets %}
-            <span  data-widget="{{ widget }}"  class="widget-field" style=" display: block;">{{ renderWidget(widget) }} </span>
+            <span  data-widget="{{ widget }}"    class="widget-field" style=" display: block;">{{ renderWidget(widget) }} </span>
         {% endfor %}
-
-        {#TODO: think of another way#}
-        {#{% for widget in hiddenWidgets %}#}
-            {#<span  data-widget="{{ widget }}"  class="widget-field" style=" display: none;">{{ renderWidget(widget) }} </span>#}
-        {#{% endfor %}#}
 
 </div>
 
