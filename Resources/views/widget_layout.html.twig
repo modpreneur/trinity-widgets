@@ -28,13 +28,13 @@
             {% endblock %}
             {% block widget_resize %}
                 {% if resizable %}
-                <a class="pull-right close widgetResizer" href="{{ getWidgetUrl('resize', widget, app.user) }}">
-                    <i class="tiecons tiecons-card"></i>
-                </a>
+                    <a class="pull-right close widgetResizer" href="{{ getWidgetUrl('resize', widget, app.user) }}">
+                        <i class="tiecons tiecons-card"></i>
+                    </a>
                 {% endif %}
             {% endblock %}
             {#todo Style still in progress, waiting for Design#}
-            <span class="handle" style="display: block; width:1000px;height: 15px;cursor: move;background-color: black; opacity: 0.2"></span>
+            <div class="handle" style="display: block; width:100%;height: 50px;cursor: move;background-color: black; opacity: 0.2"></div>
 
         </header>
 

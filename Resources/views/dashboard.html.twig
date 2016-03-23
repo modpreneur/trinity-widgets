@@ -15,7 +15,7 @@
 
     <div class="dashboard-widgets" id="dragable-widgets" data-url="{{ path('change_order_widget',{order:'0'}) }}">
         {% for widget in showedWidgets %}
-            <span  data-widget="{{ widget }}"    class="widget-field" style=" display: block;">{{ renderWidget(widget) }} </span>
+            <div  data-widget="{{ widget }}"    class="widget-field" style=" display: block;">{{ renderWidget(widget) }} </div>
         {% endfor %}
     </div>
 
