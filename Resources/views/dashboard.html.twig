@@ -1,67 +1,46 @@
 {% block dashboard %}
 
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    <style type="text/css">
-        .gu-mirror {
-            position: fixed !important;
-            margin: 0 !important;
-            z-index: 9999 !important;
-            opacity: 0.8;
-            -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
-            filter: alpha(opacity=80);
-        }
-        .gu-hide {
-            display: none !important;
-        }
-        .gu-unselectable {
-            -webkit-user-select: none !important;
-            -moz-user-select: none !important;
-            -ms-user-select: none !important;
-            user-select: none !important;
-        }
-        .gu-transit {
-            opacity: 0.2;
-            -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
-            filter: alpha(opacity=20);
-        }
-    </style>
     <hidden id="render-url" data-url="{{ path('ajax_render_widget',{widgetName:'0'}) }}"></hidden>
-    <div class="dashboard-widgets">
-        {% for widget in staticWidgets %}
-            <span  data-widget="{{ widget }}"  class="widget-field" style=" display: block; height: 50%">{{ renderWidget(widget) }} </span>
-        {% endfor %}
 
-    </div>
-    <div class="dashboard-widgets" id="dragable-widgets" data-url="{{ path('change_order_widget',{order:'0'}) }}">
 
-        {% for widget in showedWidgets %}
-            <span  data-widget="{{ widget }}"    class="widget-field" style=" display: block;">{{ renderWidget(widget) }} </span>
-        {% endfor %}
-
-</div>
-
-<div class="people-item">
-<a href="#show-widgets-form" class="modal-a button button-secondary">MODAL</a>
-
-<!--DESKTOP-->
-<div id="show-widgets-form" class="modal-dialog small-hidden">
-    <a href="#close" title="Close" class="full-width-close"></a>
     <div class="row">
-        <div class="span-none-padding-medium-24">
-            <header>
-                <h2>
-                    Dashboard - settings
-                </h2>
-                <p>
-                    Select your favourite widget.
-                </p>
-            </header>
-
-            {{ form(form, {'action': path('widget-manage'), 'method': 'POST' } ) }}
+        <div class="dashboard-widgets row margin-bottom-10">
+            {% for widget in staticWidgets %}
+                <div  data-widget="{{ widget }}"  class="widget-field">{{ renderWidget(widget) }} </div>
+            {% endfor %}
         </div>
     </div>
 
-</div>
-</div>
+
+    <div class="dashboard-widgets" id="dragable-widgets" data-url="{{ path('change_order_widget',{order:'0'}) }}">
+        {% for widget in showedWidgets %}
+            <span  data-widget="{{ widget }}"    class="widget-field" style=" display: block;">{{ renderWidget(widget) }} </span>
+        {% endfor %}
+    </div>
+
+    <div class="people-item">
+        <a href="#show-widgets-form" class="modal-a button button-secondary">MODAL</a>
+
+        <!--DESKTOP-->
+        <div id="show-widgets-form" class="modal-dialog small-hidden">
+            <a href="#close" title="Close" class="full-width-close"></a>
+            <div class="row">
+                <div class="span-none-padding-medium-24">
+                    <header>
+                        <h2>
+                            Dashboard - settings
+                        </h2>
+                        <p>
+                            Select your favourite widget.
+                        </p>
+                    </header>
+
+                    {{ form(form, {'action': path('widget-manage'), 'method': 'POST' } ) }}
+                </div>
+            </div>
+
+        </div>
+    </div>
 
 {% endblock %}
