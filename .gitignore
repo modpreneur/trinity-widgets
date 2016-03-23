@@ -52,4 +52,4 @@ crashlytics-build.properties
 # vendor
 /vendor/
 /build/
-/Tests/app/cache/
+/Tests/app/cache
