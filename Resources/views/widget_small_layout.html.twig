@@ -5,22 +5,20 @@
         <section class="trinity-widget" style="height: 100%">
     {% endblock %}
 
+
     {% block widget_contnet_wrapper %}
-            {% block widget_title %}
-                    <h3 class="pull-left widget-title">{{ titleCounter }}</h3>
-            {% endblock %}
-        <a class="pull-right"  href="{{ getWidgetUrl('remove', widget, app.user) }}">
-            <i class="{{ icon }}" style="font-size: 200%;"></i>
+        {% block widget_title %}
+            <h3 class="pull-left widget-title font-20">{{ titleCounter }}</h3>
+        {% endblock %}
+        <a class="pull-right margin-top-10 margin-right-10" href="{{ getWidgetUrl('remove', widget, app.user) }}">
+            <i class="{{ icon }} font-25 widget-small-icon"></i>
         </a>
         <main class="row content-box">
             <div class="content" >
-                <h6>{{ title }}</h6>
-                <table style="width:200px;">
-                    <tr>
-                        <td style="background-color:{{ color }}; width: {{2*percent }}px"></td>
-                        <td style="background-color:silver;"></td>
-                    </tr>
-                </table>
+                <h6 class="margin-top-5 margin-bottom-15 margin-left-15 widget-small-description">{{ title }}</h6>
+                <div class="row" style="background-color: silver;height: 5px" >
+                    <div style="background-color: {{ color }};height: 5px; width: {{percent}}%" ><span style="color: transparent">.</span></div>
+                </div>
             </div>
         </main>
     {% endblock %}
