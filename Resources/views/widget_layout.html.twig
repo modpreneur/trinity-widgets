@@ -23,13 +23,13 @@
                 {% if removable %}
                     {#widgetCloser is use by JS#}
                     <a class="pull-right close widgetCloser"  href="{{ getWidgetUrl('remove', widget, app.user) }}">
-                        <i class="tiecons tiecons-cross-angular"></i> </a>
+                        <i class="trinity trinity-pin"></i> </a>
                 {% endif %}
             {% endblock %}
             {% block widget_resize %}
                 {% if resizable %}
                 <a class="pull-right close widgetResizer" href="{{ getWidgetUrl('resize', widget, app.user) }}">
-                    <i class="tiecons tiecons-card"></i>
+                    <i class="trinity trinity-arrow-right"></i>
                 </a>
                 {% endif %}
             {% endblock %}
