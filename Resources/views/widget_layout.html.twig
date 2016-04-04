@@ -29,7 +29,11 @@
             {% block widget_resize %}
                 {% if resizable %}
                     <a class="close widgetResizer" href="{{ getWidgetUrl('resize', widget, app.user) }}">
-                        <i class="trinity trinity-arrow-right"></i>
+                        {% if widget.size == 24 %}
+                            <i class="trinity trinity-arrow-right rotate-180"></i>
+                        {% else %}
+                            <i class="trinity trinity-arrow-right"></i>
+                        {% endif %}
                     </a>
                 {% endif %}
             {% endblock %}
