@@ -32,10 +32,10 @@ class WidgetsController extends Controller
 
 
     /**
-     * @Route("/manage", name="widget-manage")
+     * @Route("/manage", name="widget-manage", defaults={"_format": "json"})
      * @param Request $request
      *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return JsonResponse
      */
     public function manageDashboardWidgets(Request $request){
 
@@ -43,8 +43,8 @@ class WidgetsController extends Controller
         $form->handleRequest($request);
         if(
             $request->request->has('dashboard')
-            && isset($request->request->get('dashboard')['widgets']))
-        {
+            && isset($request->request->get('dashboard')['widgets'])
+        ){
             $expandedWidgets = [];
             if(isset($request->request->get('dashboard')['expandedWidgets']))
             {
@@ -100,8 +100,6 @@ class WidgetsController extends Controller
                 }
             }
 
-
-
             /** @var WidgetsDashboard $dashboard */
             $dashboard = $user->getWidgetsDashboard();
             $dashboard->setWidgets($widgets);
@@ -124,12 +122,12 @@ class WidgetsController extends Controller
     }
 
     /**
-     * @Route("/resize/{widgetName}/{widgetSize}", name="resize_widget")
+     * @Route("/resize/{widgetName}/{widgetSize}", name="resize_widget", defaults={"_format": "json"})
      *
      * @param  string $widgetName
      * @param int $widgetSize
      *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return JsonResponse
      */
     public function resizeAction($widgetName,$widgetSize)
     {
@@ -137,27 +135,25 @@ class WidgetsController extends Controller
 
         $widgetsSettingsManager = $this->getUser()->getWidgetsSettingsManager();
 
-
         $widgetsSettingsManager->setWidgetSettings($widgetName,array(
             'size'=> $widgetSize,
         ));
 
         $em->persist($widgetsSettingsManager);
         try{
-
             $em->flush($widgetsSettingsManager);
-
         }catch(Exception $e){
             return new JsonResponse(array('error' => $e->getMessage()), 400);
         }
         return new JsonResponse(array('status'=>'success'), 200);
     }
 
+
     /**
-     * @Route("/remove/{widgetName}/", name="remove_widget")
+     * @Route("/remove/{widgetName}/", name="remove_widget", defaults={"_format": "json"})
      * @param string $widgetName
      *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return JsonResponse
      */
     public function removeAction($widgetName)
     {
@@ -190,12 +186,14 @@ class WidgetsController extends Controller
         return new JsonResponse(array('status'=>'success'), 200);
     }
 
+
     /**
-     * @Route("/changeOrder/{order}/", name="change_order_widget")
+     * @Route("/changeOrder/{order}/", name="change_order_widget", defaults={"_format": "json"})
      *
      * @param $order
-     * @return JsonResponse
      * @throws \Nette\Utils\JsonException
+     *
+     * @return JsonResponse
      */
     public function changeOrder($order)
     {
@@ -205,7 +203,8 @@ class WidgetsController extends Controller
             $em = $this->get('doctrine.orm.entity_manager');
             $widgetsSettingsManager = $this->getUser()->getWidgetsSettingsManager();
 
-            for ($i = 0; $i < count($orderArr); $i++) {
+            $orderArrCount = count($orderArr);
+            for ($i = 0; $i < $orderArrCount; $i++) {
 
 //                $widgetsSettingsManager->getWidgetSettings($orderArr[$i]);
                 $widgetsSettingsManager->setWidgetSettings($orderArr[$i], array(
