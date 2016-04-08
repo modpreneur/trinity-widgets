@@ -42,7 +42,6 @@ class DashboardType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-
         $builder->add(
             'widgets',
             ChoiceType::class,
@@ -62,10 +61,12 @@ class DashboardType extends AbstractType
                 'required' => true,
                 'expanded' => true,
                 'multiple' => true,
+                'data' => $this->widgetManager->getBigWidgets(),
                 'choices' => $this->widgetManager->getFlippedDashboardWidgets(),
                 'choice_label' => function ($value, $key, $index) {
                     return ' ';
-                }
+                },
+
 
             ]
         );
@@ -83,6 +84,7 @@ class DashboardType extends AbstractType
 
     /**
      * @param OptionsResolver $resolver
+     * @throws \Symfony\Component\OptionsResolver\Exception\AccessException
      */
     public function configureOptions(OptionsResolver $resolver)
     {
@@ -101,4 +103,5 @@ class DashboardType extends AbstractType
     {
         return 'trinity_widgets_bundle_dashboard_type';
     }
+
 }

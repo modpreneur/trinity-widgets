@@ -25,7 +25,7 @@ use Trinity\Bundle\WidgetsBundle\Widget\WidgetManager;
  * Class WidgetsController
  * @package Trinity\Bundle\WidgetsBundle\Controller
  *
- * @Route("/admin/widget")
+ * @Route("/widget")
  */
 class WidgetsController extends Controller
 {
@@ -230,6 +230,8 @@ class WidgetsController extends Controller
      * @Route("/render/{widgetName}/", name="ajax_render_widget")
      * @param string $widgetName
      * @return \Symfony\Component\HttpFoundation\Response
+     * @throws \LogicException
+     * @throws \Trinity\Bundle\WidgetsBundle\Exception\WidgetException
      */
     public function ajaxRenderWidget( $widgetName)
     {
@@ -237,17 +239,22 @@ class WidgetsController extends Controller
 
         /** @var AbstractWidget $widget */
         $widget = $widgetManager->createWidget($widgetName);
+        $size = $widget->getSize();
+        $widgetSettings = $this->getUser()->getWidgetsSettingsManager()->getWidgetSettings($widgetName);
+        if(array_key_exists ( 'size' , $widgetSettings ))
+        {
+            $size = $widgetSettings['size'];
+        }
         /** @var \Twig_TemplateInterface $template */
         $template = $widget->getTemplate();
         $wb = $widget->buildWidget();
-
         $context = [
             'name' => $widget->getName(),
             'routeName' => $widget->getRouteName(),
             'gridParameters' => $widget->getGridParameters(),
             'widget' => $widget,
             'title' => $widget->getTitle(),
-            'size' => $widget->getSize(),
+            'size' => $size,
             'resizable' => $widget instanceof ResizableInterface,
             'removable' => $widget instanceof RemovableInterface,
         ];
