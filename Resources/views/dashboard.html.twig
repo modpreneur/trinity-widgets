@@ -4,20 +4,22 @@
     <hidden id="render-url" data-url="{{ path('ajax_render_widget',{widgetName:'0'}) }}"></hidden>
 
 
-    <div class="row">
-        <div class="dashboard-widgets row margin-bottom-20">
+    <div class="dashboard-widgets">
+
+        <div class="small-widgets row">
             {% for widget in staticWidgets %}
-                <div  data-widget="{{ widget }}"  class="widget-field">{{ renderWidget(widget) }} </div>
+                <div  data-widget="{{ widget }}" class="widget-field small-widget">{{ renderWidget(widget) }} </div>
             {% endfor %}
         </div>
+
+        <div class="dragable-widgets row" id="dragable-widgets" data-url="{{ path('change_order_widget',{order:'0'}) }}">
+            {% for widget in showedWidgets %}
+                <div  data-widget="{{ widget }}" class="widget-field" style=" display: block;">{{ renderWidget(widget) }} </div>
+            {% endfor %}
+        </div>
+
     </div>
 
-
-    <div class="dashboard-widgets" id="dragable-widgets" data-url="{{ path('change_order_widget',{order:'0'}) }}">
-        {% for widget in showedWidgets %}
-            <div  data-widget="{{ widget }}"    class="widget-field" style=" display: block;">{{ renderWidget(widget) }} </div>
-        {% endfor %}
-    </div>
 
     <div class="people-item">
         <a href="#show-widgets-form" class="modal-a button button-secondary">MODAL</a>
