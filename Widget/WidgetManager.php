@@ -157,10 +157,11 @@ class WidgetManager
 
         $request = $this->requestStack->getCurrentRequest();
 
-        foreach ($choices as $hash) {
-            //@todo @RicharBures nevíš že ten request bude vždycky, někdy ti to tady spadne na tom že je request null a na null nelze volat funkci get
-            if ($request->get($hash)) {
-                $this->requestData[$hash] = $request->get($hash);
+        if($request) {
+            foreach ($choices as $hash) {
+                if ($request->get($hash)) {
+                    $this->requestData[$hash] = $request->get($hash);
+                }
             }
         }
 
@@ -316,6 +317,21 @@ class WidgetManager
 
     }
 
+    public function getBigWidgets(){
+        $user = $this->tokenStorage->getToken()->getUser();
+        $widgetsSettingsManager = $user->getWidgetsSettingsManager();
+        $bigWidgets = [];
+        foreach ($this->widgets as $item) {
+            $widgetSetting =$widgetsSettingsManager->getWidgetSettings($item->getName());
+            if(array_key_exists ( 'size' , $widgetSetting ))
+            {
+                if($widgetSetting['size']===24){
+                    $bigWidgets[]=$item->getName();
+                }
+            }
+        }
+        return $bigWidgets;
+    }
 
     /**
      * @return \Symfony\Component\Form\Form
