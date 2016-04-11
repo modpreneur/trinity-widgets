@@ -154,6 +154,11 @@ class WidgetExtension extends \Twig_Extension
         if (0 === $wr) {
             return $this->getRowStartElement();
         }
+
+        if ($this->widgetRow > $this->widgetLayout) {
+            $this->widgetRow = 0;
+            return $this->getRowEndElement();
+        }
     }
 
 
