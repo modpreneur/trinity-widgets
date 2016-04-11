@@ -17,7 +17,7 @@
             {% for widget in showedWidgets %}
 
                 {{ widgetRowStart(widget, showedWidgets|length) }}
-                <div  data-widget="{{ widget }}" class="widget-field {{ getWidgetSize(widget) }}" style=" display: block;">{{ renderWidget(widget) }} </div>
+                <div  data-widget="{{ widget }}" class="widget-field w-{{ getWidgetSize(widget) }}" style=" display: block;">{{ renderWidget(widget) }} </div>
                 {{ widgetRowEnd(widget, showedWidgets|length) }}
 
             {% endfor %}
