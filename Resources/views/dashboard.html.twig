@@ -13,9 +13,15 @@
         </div>
 
         <div class="dragable-widgets row" id="dragable-widgets" data-url="{{ path('change_order_widget',{order:'0'}) }}">
+
             {% for widget in showedWidgets %}
-                <div  data-widget="{{ widget }}" class="widget-field" style=" display: block;">{{ renderWidget(widget) }} </div>
+
+                {{ widgetRowStart(widget, showedWidgets|length) }}
+                <div  data-widget="{{ widget }}" class="widget-field {{ getWidgetSize(widget) }}" style=" display: block;">{{ renderWidget(widget) }} </div>
+                {{ widgetRowEnd(widget, showedWidgets|length) }}
+
             {% endfor %}
+
         </div>
 
     </div>

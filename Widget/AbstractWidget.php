@@ -32,7 +32,6 @@ abstract class AbstractWidget extends AbstractArrayWidget implements WidgetInter
     /** @var string */
     protected $routeName;
 
-
     protected $gridParameters;
 
 

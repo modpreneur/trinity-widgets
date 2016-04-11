@@ -194,6 +194,13 @@ class WidgetManager
         /** @var AbstractWidget $widget */
         $widget = $clone ? clone $this->getWidget($name) : $this->getWidget($name);
 
+        $widgetManager = $this->getUser()->getWidgetsSettingsManager();
+        $widgetSettings = $widgetManager->getWidgetSettings($name);
+
+        if (array_key_exists('size', $widgetSettings)) {
+            $widget->setSize( intval( $widgetSettings['size'] ) );
+        }
+
         return $widget;
     }
 
