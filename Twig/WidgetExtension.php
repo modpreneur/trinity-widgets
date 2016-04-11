@@ -127,7 +127,7 @@ class WidgetExtension extends \Twig_Extension
 
     protected function getRowStartElement()
     {
-        return "<div class='row'>";
+        return "<div class='row widgets-row'>";
     }
 
 
