@@ -238,9 +238,10 @@ class WidgetsController extends Controller
         $widgetManager = $this->get('trinity.widgets.manager');
 
         /** @var AbstractWidget $widget */
-        $widget = $widgetManager->createWidget($widgetName);
+        $widget = $widgetManager->createWidget($widgetName, true, $this->getUser());
         $size = $widget->getSize();
         $widgetSettings = $this->getUser()->getWidgetsSettingsManager()->getWidgetSettings($widgetName);
+
         if(array_key_exists ( 'size' , $widgetSettings ))
         {
             $size = $widgetSettings['size'];

@@ -186,21 +186,25 @@ class WidgetManager
     /**
      * @param string $name widget name
      * @param bool $clone -> new instance of widget
+     * @param UserDashboardInterface $user
      * @return AbstractWidget
      * @throws WidgetException
      */
-    public function createWidget($name, $clone = true)
+    public function createWidget($name, $clone = true, $user=null)
     {
         /** @var AbstractWidget $widget */
         $widget = $clone ? clone $this->getWidget($name) : $this->getWidget($name);
 
-        $widgetManager = $this->getUser()->getWidgetsSettingsManager();
+        if($user === null) {
+            $user = $this->getUser();
+        }
+        $widgetManager = $user->getWidgetsSettingsManager();
+
         $widgetSettings = $widgetManager->getWidgetSettings($name);
 
         if (array_key_exists('size', $widgetSettings)) {
-            $widget->setSize( intval( $widgetSettings['size'] ) );
+            $widget->setSize( (int)$widgetSettings['size']);
         }
-
         return $widget;
     }
 

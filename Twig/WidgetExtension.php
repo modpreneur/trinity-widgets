@@ -127,7 +127,7 @@ class WidgetExtension extends \Twig_Extension
 
     protected function getRowStartElement()
     {
-        return "<div class='row widgets-row'>";
+        return "<div class='row widgets-row dragable-widgets'>";
     }
 
 
@@ -238,14 +238,16 @@ class WidgetExtension extends \Twig_Extension
 
 
     /**
+     * @param $env
      * @param $object
      * @param $attribute
+     * @param $widgetName
+     * @param BaseUser $user
      * @return string
-     * @throws \Exception
      */
-    public function renderTableCell($env, $object, $attribute, $widgetName)
+    public function renderTableCell($env, $object, $attribute, $widgetName,BaseUser $user)
     {
-        $widget = $this->createWidget($widgetName, $env);
+        $widget = $this->createWidget($widgetName, $env, $user);
 
         try {
             $result = ObjectMixin::get($object, $attribute);
@@ -347,10 +349,10 @@ class WidgetExtension extends \Twig_Extension
     }
 
 
-    public function createWidget($widgetName, $env)
+    public function createWidget($widgetName, $env, BaseUser $user = null)
     {
         /** @var AbstractWidget $widget */
-        $widget = $this->widgetManager->createWidget($widgetName);
+        $widget = $this->widgetManager->createWidget($widgetName,true,$user);
         /** @var \Twig_TemplateInterface $template */
         $this->template = $template = $env->loadTemplate($widget->getTemplate());
 
