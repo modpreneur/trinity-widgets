@@ -38,7 +38,7 @@
     <tr>
         {% for column in header %}
             <td class="widget_table_cell-{{ column.id }}">
-                {{ renderTableCell(row, column.id, name) }}
+                {{ renderTableCell(row, column.id, name, app.user) }}
             </td>
         {% endfor %}
     </tr>
