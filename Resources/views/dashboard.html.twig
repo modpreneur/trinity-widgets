@@ -1,7 +1,7 @@
 {% block dashboard %}
 
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    <hidden id="render-url" data-url="{{ path('ajax_render_widget',{widgetName:'0'}) }}"></hidden>
+    <hidden id="render-url" data-url="{{ path('ajax_render_widgets') }}"></hidden>
 
 
     <div class="dashboard-widgets padding-right-5">
@@ -15,10 +15,8 @@
         <div class="dragable-widgets row" id="dragable-widgets" data-url="{{ path('change_order_widget',{order:'0'}) }}">
 
             {% for widget in showedWidgets %}
-
-                {{ widgetRowStart(widget, showedWidgets|length) }}
-                <div  data-widget="{{ widget }}" class="widget-field w-{{ getWidgetSize(widget) }}" style=" display: block;">{{ renderWidget(widget) }} </div>
-                {{ widgetRowEnd(widget, showedWidgets|length) }}
+                {#TODO: Display none to block, whe style is ready#}
+                <div  data-widget="{{ widget }}" class="widget-field w-{{ getWidgetSize(widget) }} " style=" display: none;">{{ renderWidget(widget) }} </div>
 
             {% endfor %}
 

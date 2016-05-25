@@ -49,10 +49,11 @@ class WidgetExtension extends \Twig_Extension
 
     private $widgetLayout = 24;
 
-    private $widgetRow = 0;
+//    private $widgetRow = 0;
+//
+//    private $rendered = 0;
 
-    private $rendered = 0;
-
+    private $oddEven = 0;
 
     /**
      * WidgetExtension constructor.
@@ -75,33 +76,40 @@ class WidgetExtension extends \Twig_Extension
     public function getFunctions()
     {
         return array(
-            new \Twig_SimpleFunction('renderWidget', [$this, 'renderWidget'],
-                ['is_safe' => ['html'], 'needs_environment' => true]),
-            new \Twig_SimpleFunction('renderWidgets', [$this, 'renderWidgets'],
-                ['is_safe' => ['html'], 'needs_environment' => true]),
+            new \Twig_SimpleFunction(
+                'renderWidget',
+                [$this, 'renderWidget'],
+                ['is_safe' => ['html'],
+                    'needs_environment' => true]
+            ),
+            new \Twig_SimpleFunction(
+                'renderWidgets',
+                [$this, 'renderWidgets'],
+                ['is_safe' => ['html'], 'needs_environment' => true]
+            ),
             new \Twig_SimpleFunction('getWidgetUrl', [$this, 'getWidgetUrl'], ['is_safe' => ['html']]),
 
             new \Twig_SimpleFunction('getSizeIcon', [$this, 'getSizeIcon'], ['is_safe' => ['html']]),
 
-            new \Twig_SimpleFunction('renderDashboard', [$this, 'renderDashboard'],
-                ['is_safe' => ['html'], 'needs_environment' => true]),
+            new \Twig_SimpleFunction(
+                'renderDashboard',
+                [$this, 'renderDashboard'],
+                ['is_safe' => ['html'], 'needs_environment' => true]
+            ),
 
-            new \Twig_SimpleFunction('renderTableCell', [$this, 'renderTableCell'], [
-                'is_safe' => ['html'],
-                'needs_environment' => true,
-            ]),
+            new \Twig_SimpleFunction(
+                'renderTableCell',
+                [$this, 'renderTableCell'],
+                ['is_safe' => ['html'], 'needs_environment' => true,]
+            ),
 
             new \Twig_SimpleFunction('getWidgetSize', [$this, 'getWidgetSize'], ['needs_environment' => true]),
 
-            new \Twig_SimpleFunction('widgetRowStart', [$this, 'widgetRowStart'], [
+            new \Twig_SimpleFunction('getWidgetStyle', [$this, 'widgetRowStart'], [
                 'is_safe' => ['html'],
                 'needs_environment' => true,
             ]),
 
-            new \Twig_SimpleFunction('widgetRowEnd', [$this, 'widgetRowEnd'], [
-                'is_safe' => ['html'],
-                'needs_environment' => true,
-            ]),
 
             new \Twig_SimpleFunction('widget_*', [$this, 'widget'], [
                 'is_safe' => ['html'],
@@ -125,63 +133,9 @@ class WidgetExtension extends \Twig_Extension
         return $widget->getSize();
     }
 
-    protected function getRowStartElement()
+    public function getWidgetStyle()
     {
-        return "<div class='row widgets-row dragable-widgets'>";
-    }
-
-
-    protected function getRowEndElement()
-    {
-        return "</div>";
-    }
-
-
-    /**
-     * @param Twig_Environment $env
-     * @param string $widgetName
-     * @param int $count
-     * @return string
-     */
-    public function widgetRowStart(Twig_Environment $env, $widgetName, $count)
-    {
-        $widget = $this->createWidget($widgetName, $env);
-
-        $wr = $this->widgetRow;
-        $this->widgetRow += $widget->getSize();
-        $this->rendered++;
-
-        if (0 === $wr) {
-            return $this->getRowStartElement();
-        }
-
-        if ($this->widgetRow > $this->widgetLayout) {
-            $this->widgetRow = 0;
-            return $this->getRowEndElement();
-        }
-    }
-
-
-    /**
-     * @param Twig_Environment $env
-     * @param string $widgetName
-     * @param int $count
-     * @return string
-     */
-    public function widgetRowEnd(Twig_Environment $env, $widgetName, $count)
-    {
-        $widget = $this->createWidget($widgetName, $env);
-
-        if ($this->widgetRow >= $this->widgetLayout) {
-
-            $this->widgetRow = 0;
-            return $this->getRowEndElement();
-        }
-
-        if ($this->rendered === $count) {
-            return $this->getRowEndElement();
-        }
-
+        
     }
 
 
@@ -245,7 +199,7 @@ class WidgetExtension extends \Twig_Extension
      * @param BaseUser $user
      * @return string
      */
-    public function renderTableCell($env, $object, $attribute, $widgetName,BaseUser $user)
+    public function renderTableCell($env, $object, $attribute, $widgetName, BaseUser $user)
     {
         $widget = $this->createWidget($widgetName, $env, $user);
 
@@ -255,8 +209,8 @@ class WidgetExtension extends \Twig_Extension
             $result = "";
         }
 
-        if ($this->template->hasBlock('widget_table_cell_'.$attribute)) {
-            $result = $this->template->renderBlock('widget_table_cell_'.$attribute,
+        if ($this->template->hasBlock('widget_table_cell_' . $attribute)) {
+            $result = $this->template->renderBlock('widget_table_cell_' . $attribute,
                 ['value' => $result, 'row' => $object]);
 
             return $result;
@@ -304,8 +258,8 @@ class WidgetExtension extends \Twig_Extension
             }
         }
         ksort($showedWidgetsNames);
-        /** @var \Twig_TemplateInterface $template */
 
+        /** @var \Twig_TemplateInterface $template */
         $template = $env->loadTemplate("WidgetsBundle::dashboard.html.twig");
         $form = $this->widgetManager->getForm();
 
@@ -342,7 +296,7 @@ class WidgetExtension extends \Twig_Extension
             if (array_key_exists('params', $widget)) {
                 $params = $widget['params'];
             }
-            $result .= "\n".$this->renderWidget($env, $widget['id'], $params);
+            $result .= "\n" . $this->renderWidget($env, $widget['id'], $params);
         }
 
         return $result;
@@ -352,7 +306,7 @@ class WidgetExtension extends \Twig_Extension
     public function createWidget($widgetName, $env, BaseUser $user = null)
     {
         /** @var AbstractWidget $widget */
-        $widget = $this->widgetManager->createWidget($widgetName,true,$user);
+        $widget = $this->widgetManager->createWidget($widgetName, true, $user);
         /** @var \Twig_TemplateInterface $template */
         $this->template = $template = $env->loadTemplate($widget->getTemplate());
 

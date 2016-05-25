@@ -41,13 +41,12 @@ class WidgetsController extends Controller
 
         $form =  $this->createForm(DashboardType::class);
         $form->handleRequest($request);
-        if(
-            $request->request->has('dashboard')
+
+        if ($request->request->has('dashboard')
             && isset($request->request->get('dashboard')['widgets'])
-        ){
+        ) {
             $expandedWidgets = [];
-            if(isset($request->request->get('dashboard')['expandedWidgets']))
-            {
+            if (isset($request->request->get('dashboard')['expandedWidgets'])) {
                 $expandedWidgets = $request->request->get('dashboard')['expandedWidgets'];
             }
             $em =$this->get('doctrine.orm.entity_manager');
@@ -60,43 +59,36 @@ class WidgetsController extends Controller
 
             $allWidgets = $widgetManager->getDashboardWidgets();
 
-            foreach($widgets as $widget)
-            {
-                if(array_key_exists('inOrder',$widgetsSettingsManager->getWidgetSettings($widget))) {
+            foreach ($widgets as $widget) {
+                if (array_key_exists('inOrder', $widgetsSettingsManager->getWidgetSettings($widget))) {
                     if ($widgetsSettingsManager->getWidgetSettings($widget)['inOrder'] >= $availableIndex) {
                         $availableIndex = $widgetsSettingsManager->getWidgetSettings($widget)['inOrder'] + 1;
                     }
-                }
-                else{
-                    $widgetsSettingsManager->setWidgetSettings($widget,array('inOrder'=>-1));
+                } else {
+                    $widgetsSettingsManager->setWidgetSettings($widget, ['inOrder'=>-1]);
                 }
 
-                if(!in_array($widget,$widgets))
-                {
-                    $widgetsSettingsManager->setWidgetSettings($widget,array(
+                if (!in_array($widget, $widgets)) {
+                    $widgetsSettingsManager->setWidgetSettings($widget, [
                         'inOrder'=> -1,
-                    ));
-                }else
-                {
-                    if($widgetsSettingsManager->getWidgetSettings($widget)['inOrder']==-1)
-                    {
-                        $widgetsSettingsManager->setWidgetSettings($widget,array(
+                    ]);
+                } else {
+                    if ($widgetsSettingsManager->getWidgetSettings($widget)['inOrder']===-1) {
+                        $widgetsSettingsManager->setWidgetSettings($widget, [
                             'inOrder'=> $availableIndex,
-                        ));
+                        ]);
                         $availableIndex++;
                     }
                 }
 
-                if(in_array($widget,$expandedWidgets))
-                {
-                    $widgetsSettingsManager->setWidgetSettings($widget, array(
+                if (in_array($widget, $expandedWidgets)) {
+                    $widgetsSettingsManager->setWidgetSettings($widget, [
                         'size' => 24,
-                    ));
-                }
-                else{
-                    $widgetsSettingsManager->setWidgetSettings($widget, array(
+                    ]);
+                } else {
+                    $widgetsSettingsManager->setWidgetSettings($widget, [
                         'size' => 12,
-                    ));
+                    ]);
                 }
             }
 
@@ -105,13 +97,11 @@ class WidgetsController extends Controller
             $dashboard->setWidgets($widgets);
 
 
-            $em->persist( $dashboard );
-            $em->persist($widgetsSettingsManager);
-            try
-            {
+            try {
+                $em->persist($dashboard);
+                $em->persist($widgetsSettingsManager);
                 $em->flush();
-            }catch(\Doctrine\DBAL\DBALException $e)
-            {
+            } catch (Exception $e) {
                 return new JsonResponse(array('error'=>$e), 400);
             }
             return new JsonResponse(array('message'=>'success update','widgets'=>$form->getData()['widgets']), 200);
@@ -129,23 +119,23 @@ class WidgetsController extends Controller
      *
      * @return JsonResponse
      */
-    public function resizeAction($widgetName,$widgetSize)
+    public function resizeAction($widgetName, $widgetSize)
     {
         $em = $this->get('doctrine.orm.entity_manager');
 
         $widgetsSettingsManager = $this->getUser()->getWidgetsSettingsManager();
 
-        $widgetsSettingsManager->setWidgetSettings($widgetName,array(
+        $widgetsSettingsManager->setWidgetSettings($widgetName, [
             'size'=> $widgetSize,
-        ));
+        ]);
 
-        $em->persist($widgetsSettingsManager);
-        try{
+        try {
+            $em->persist($widgetsSettingsManager);
             $em->flush($widgetsSettingsManager);
-        }catch(Exception $e){
-            return new JsonResponse(array('error' => $e->getMessage()), 400);
+        } catch (Exception $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 400);
         }
-        return new JsonResponse(array('status'=>'success'), 200);
+        return new JsonResponse(['status'=>'success'], 200);
     }
 
 
@@ -166,12 +156,12 @@ class WidgetsController extends Controller
             $dashboard = $this->getUser()->getWidgetsDashboard();
             $widgetsSettingsManager = $this->getUser()->getWidgetsSettingsManager();
 
-            $widgetsSettingsManager->setWidgetSettings($widgetName,array(
+            $widgetsSettingsManager->setWidgetSettings($widgetName, [
                 'inOrder'=> -1,
-            ));
+            ]);
 
             if (!$dashboard->removeWidget($widgetName)) {
-                return new JsonResponse(array('error' => 'Widget could not be deleted'), 400);
+                return new JsonResponse(['error' => 'Widget could not be deleted'], 400);
             }
 
             $em->persist($dashboard);
@@ -180,10 +170,10 @@ class WidgetsController extends Controller
 
 
         } catch (Exception $e) {
-            return new JsonResponse(array('error' => $e->getMessage()), 400);
+            return new JsonResponse(['error' => $e->getMessage()], 400);
         }
 
-        return new JsonResponse(array('status'=>'success'), 200);
+        return new JsonResponse(['status'=>'success'], 200);
     }
 
 
@@ -192,6 +182,7 @@ class WidgetsController extends Controller
      *
      * @param $order
      * @throws \Nette\Utils\JsonException
+     * @throws \LogicException
      *
      * @return JsonResponse
      */
@@ -199,41 +190,35 @@ class WidgetsController extends Controller
     {
         $orderArr = Json::decode($order);
 
+        $em = $this->get('doctrine.orm.entity_manager');
+        $widgetsSettingsManager = $this->getUser()->getWidgetsSettingsManager();
+
+        $orderArrCount = count($orderArr);
+        for ($i = 0; $i < $orderArrCount; $i++) {
+//            $widgetsSettingsManager->getWidgetSettings($orderArr[$i]);
+            $widgetsSettingsManager->setWidgetSettings($orderArr[$i], [
+                'inOrder' => $i,
+            ]);
+        }
+
         try {
-            $em = $this->get('doctrine.orm.entity_manager');
-            $widgetsSettingsManager = $this->getUser()->getWidgetsSettingsManager();
-
-            $orderArrCount = count($orderArr);
-            for ($i = 0; $i < $orderArrCount; $i++) {
-
-//                $widgetsSettingsManager->getWidgetSettings($orderArr[$i]);
-                $widgetsSettingsManager->setWidgetSettings($orderArr[$i], array(
-                    'inOrder' => $i,
-                ));
-
-
-            }
-
             $em->persist($widgetsSettingsManager);
             $em->flush();
 
-            return new JsonResponse(array('status' => 'success'), 200);
-
-        }catch(Exception $e)
-        {
-            return new JsonResponse(array('error' => $e->getMessage()), 400);
+            return new JsonResponse(['status' => 'success'], 200);
+        } catch (Exception $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 400);
         }
     }
 
 
     /**
-     * @Route("/render/{widgetName}/", name="ajax_render_widget")
      * @param string $widgetName
-     * @return \Symfony\Component\HttpFoundation\Response
      * @throws \LogicException
      * @throws \Trinity\Bundle\WidgetsBundle\Exception\WidgetException
+     * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function ajaxRenderWidget( $widgetName)
+    private function ajaxRenderWidget($widgetName)
     {
         $widgetManager = $this->get('trinity.widgets.manager');
 
@@ -242,8 +227,7 @@ class WidgetsController extends Controller
         $size = $widget->getSize();
         $widgetSettings = $this->getUser()->getWidgetsSettingsManager()->getWidgetSettings($widgetName);
 
-        if(array_key_exists ( 'size' , $widgetSettings ))
-        {
+        if (array_key_exists('size', $widgetSettings)) {
             $size = $widgetSettings['size'];
         }
         /** @var \Twig_TemplateInterface $template */
@@ -262,7 +246,35 @@ class WidgetsController extends Controller
         if ($wb && is_array($wb)) {
             $context = array_merge($context, $wb);
         }
+        
+        return $this->renderView($template, $context);
+    }
 
-        return $this->render($template,$context);
+    /**
+     * @Route("/render/", name="ajax_render_widgets")
+     * @throws \Trinity\Bundle\WidgetsBundle\Exception\WidgetException
+     * @throws \LogicException
+     * @return array
+     */
+    public function ajaxRenderWidgets()
+    {
+        $dashboard = $this->getUser()->getWidgetsDashboard();
+        $widgetsSettingsManager = $this->getUser()->getWidgetsSettingsManager();
+        $widgetsNames = $dashboard->getWidgets();
+        $orderedWidgetsNames = [];
+
+        foreach ($widgetsNames as $widgetName) {
+            $widgetSettings = $widgetsSettingsManager->getWidgetSettings($widgetName);
+            $inOrder = $widgetSettings['inOrder'];
+            $orderedWidgetsNames[$inOrder] = $widgetName;
+        }
+        ksort($orderedWidgetsNames);
+
+        $widgetsHTML = [];
+        foreach ($orderedWidgetsNames as $widgetName) {
+            $widgetsHTML[$widgetName] = $this->ajaxRenderWidget($widgetName);
+        }
+
+        return new JsonResponse(['message'=>'test', 'widgets'=> $widgetsHTML], 200);
     }
 }
