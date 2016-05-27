@@ -197,6 +197,8 @@ class WidgetExtension extends \Twig_Extension
      */
     public function renderTableCell($env, $object, $attribute, $widgetName, BaseUser $user)
     {
+        /*$widget = */$this->createWidget($widgetName, $env, $user);
+
         try {
             $result = ObjectMixin::get($object, $attribute);
         } catch (MemberAccessException $ex) {
