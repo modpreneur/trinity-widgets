@@ -5,21 +5,10 @@
     <div class="widget-chart" id="{{ widget.name }}">
 
     </div>
+    <hidden id="data-translator" class="chart-data-translator" data-type="chart"
+            data-chart-type="{{ chartType }}" data-chart-data="{{ data|json_encode }}"
+            data-name="{{ widget.name }}" data-chart-options="{{ options|json_encode }}"></hidden>
     <hidden id="chart-{{ widget.name }}"></hidden>
-    {% block widgetScript %}
-        <script>
-            google.load("visualization", "1.1", {packages: ["corechart"]});
-            google.setOnLoadCallback(drawChart{{ widget.name }});
 
-            function drawChart{{ widget.name }}() {
-                var data = google.visualization.arrayToDataTable(
-                        {{ data|json_encode|raw }}
-                );
-
-                var chart = new google.visualization.{{ chartType }}(document.getElementById('{{ widget.name }}'));
-                chart.draw(data, {{ options|json_encode|raw }});
-            }
-        </script>
-    {% endblock %}
 
 {% endblock %}

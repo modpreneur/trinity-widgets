@@ -49,11 +49,7 @@ class WidgetExtension extends \Twig_Extension
 
     private $widgetLayout = 24;
 
-//    private $widgetRow = 0;
-//
-//    private $rendered = 0;
-
-    private $oddEven = 0;
+//    private $oddEven = 0;
 
     /**
      * WidgetExtension constructor.
@@ -105,10 +101,10 @@ class WidgetExtension extends \Twig_Extension
 
             new \Twig_SimpleFunction('getWidgetSize', [$this, 'getWidgetSize'], ['needs_environment' => true]),
 
-            new \Twig_SimpleFunction('getWidgetStyle', [$this, 'widgetRowStart'], [
-                'is_safe' => ['html'],
-                'needs_environment' => true,
-            ]),
+//            new \Twig_SimpleFunction('getWidgetStyle', [$this, 'widgetRowStart'], [
+//                'is_safe' => ['html'],
+//                'needs_environment' => true,
+//            ]),
 
 
             new \Twig_SimpleFunction('widget_*', [$this, 'widget'], [
@@ -133,10 +129,10 @@ class WidgetExtension extends \Twig_Extension
         return $widget->getSize();
     }
 
-    public function getWidgetStyle()
-    {
-        
-    }
+//    public function getWidgetStyle()
+//    {
+//
+//    }
 
 
     /**
@@ -201,8 +197,6 @@ class WidgetExtension extends \Twig_Extension
      */
     public function renderTableCell($env, $object, $attribute, $widgetName, BaseUser $user)
     {
-        $widget = $this->createWidget($widgetName, $env, $user);
-
         try {
             $result = ObjectMixin::get($object, $attribute);
         } catch (MemberAccessException $ex) {
@@ -249,6 +243,7 @@ class WidgetExtension extends \Twig_Extension
 
         foreach ($allWidgets as $widgetName => $widget) {
             if (in_array($widgetName, $widgetsNames)) {
+                
                 $widgetSettings = $widgetsSettingsManager->getWidgetSettings($widgetName);
                 $inOrder = $widgetSettings['inOrder'];
                 $showedWidgetsNames[$inOrder] = $widgetName;

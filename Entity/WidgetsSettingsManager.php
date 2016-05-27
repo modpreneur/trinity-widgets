@@ -58,10 +58,25 @@ class WidgetsSettingsManager
         }
 
         /** default settings */
-        return ['order' => 0];
+        return ['none' => true];
     }
 
+    public function clearWidgetsSettings()
+    {
+        $this->widgetsSettings = [];
+    }
 
+    public function clearWidgetSettings($widget)
+    {
+        if (is_string($widget)) {
+            if (array_key_exists($widget, $this->widgetsSettings)) {
+                unset($this->widgetsSettings[$widget]);
+            }
+        } else {
+            throw new WidgetException('Widget must be string (widget name).');
+        }
+
+    }
     /**
      * @param $widget
      * @param $settings

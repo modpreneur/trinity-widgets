@@ -14,11 +14,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Trinity\Bundle\WidgetsBundle\Entity\WidgetsDashboard;
-use Trinity\Bundle\WidgetsBundle\Entity\WidgetsSettingsManager;
 use Trinity\Bundle\WidgetsBundle\Form\DashboardType;
 use Trinity\Bundle\WidgetsBundle\Widget\RemovableInterface;
 use Trinity\Bundle\WidgetsBundle\Widget\ResizableInterface;
-use Trinity\Bundle\WidgetsBundle\Widget\WidgetManager;
 
 
 /**
@@ -34,10 +32,12 @@ class WidgetsController extends Controller
     /**
      * @Route("/manage", name="widget-manage", defaults={"_format": "json"})
      * @param Request $request
+     * @throws \LogicException
      *
      * @return JsonResponse
      */
-    public function manageDashboardWidgets(Request $request){
+    public function manageDashboardWidgets(Request $request)
+    {
 
         $form =  $this->createForm(DashboardType::class);
         $form->handleRequest($request);
@@ -50,52 +50,41 @@ class WidgetsController extends Controller
                 $expandedWidgets = $request->request->get('dashboard')['expandedWidgets'];
             }
             $em =$this->get('doctrine.orm.entity_manager');
-            $widgetManager = $this->get('trinity.widgets.manager');
-            $widgets = $request->request->get('dashboard')['widgets'];
 
+            /** @var array $widgets */
+            $widgets = $request->request->get('dashboard')['widgets'];
             $user = $this->getUser();
             $widgetsSettingsManager = $user->getWidgetsSettingsManager();
-            $availableIndex=0;
-
-            $allWidgets = $widgetManager->getDashboardWidgets();
+            $newWidgets = [];
+            $counter = count($widgets);
 
             foreach ($widgets as $widget) {
-                if (array_key_exists('inOrder', $widgetsSettingsManager->getWidgetSettings($widget))) {
-                    if ($widgetsSettingsManager->getWidgetSettings($widget)['inOrder'] >= $availableIndex) {
-                        $availableIndex = $widgetsSettingsManager->getWidgetSettings($widget)['inOrder'] + 1;
-                    }
+                $setting = $widgetsSettingsManager->getWidgetSettings($widget);
+                if (!array_key_exists('none', $setting)) {
+                    $newWidgets[$setting['inOrder']] = $widget;
                 } else {
-                    $widgetsSettingsManager->setWidgetSettings($widget, ['inOrder'=>-1]);
+                    $counter++;
+                    $newWidgets[$counter] = $widget;
                 }
+            }
 
-                if (!in_array($widget, $widgets)) {
-                    $widgetsSettingsManager->setWidgetSettings($widget, [
-                        'inOrder'=> -1,
-                    ]);
-                } else {
-                    if ($widgetsSettingsManager->getWidgetSettings($widget)['inOrder']===-1) {
-                        $widgetsSettingsManager->setWidgetSettings($widget, [
-                            'inOrder'=> $availableIndex,
-                        ]);
-                        $availableIndex++;
-                    }
-                }
+            ksort($newWidgets);
+            $newWidgets = array_values($newWidgets);
 
-                if (in_array($widget, $expandedWidgets)) {
-                    $widgetsSettingsManager->setWidgetSettings($widget, [
-                        'size' => 24,
-                    ]);
-                } else {
-                    $widgetsSettingsManager->setWidgetSettings($widget, [
-                        'size' => 12,
-                    ]);
+            $widgetsSettingsManager->clearWidgetsSettings();
+
+            $newWidgetsLength = count($newWidgets);
+            for ($i = 0; $i < $newWidgetsLength; $i++) {
+                $size = 12;
+                if (in_array($newWidgets[$i], $expandedWidgets)) {
+                    $size = 24;
                 }
+                $widgetsSettingsManager->setWidgetSettings($newWidgets[$i], ['inOrder'=> $i, 'size'=> $size, ]);
             }
 
             /** @var WidgetsDashboard $dashboard */
             $dashboard = $user->getWidgetsDashboard();
             $dashboard->setWidgets($widgets);
-
 
             try {
                 $em->persist($dashboard);
@@ -156,9 +145,7 @@ class WidgetsController extends Controller
             $dashboard = $this->getUser()->getWidgetsDashboard();
             $widgetsSettingsManager = $this->getUser()->getWidgetsSettingsManager();
 
-            $widgetsSettingsManager->setWidgetSettings($widgetName, [
-                'inOrder'=> -1,
-            ]);
+            $widgetsSettingsManager->clearWidgetSettings($widgetName);
 
             if (!$dashboard->removeWidget($widgetName)) {
                 return new JsonResponse(['error' => 'Widget could not be deleted'], 400);
@@ -192,10 +179,8 @@ class WidgetsController extends Controller
 
         $em = $this->get('doctrine.orm.entity_manager');
         $widgetsSettingsManager = $this->getUser()->getWidgetsSettingsManager();
-
         $orderArrCount = count($orderArr);
         for ($i = 0; $i < $orderArrCount; $i++) {
-//            $widgetsSettingsManager->getWidgetSettings($orderArr[$i]);
             $widgetsSettingsManager->setWidgetSettings($orderArr[$i], [
                 'inOrder' => $i,
             ]);
@@ -204,7 +189,6 @@ class WidgetsController extends Controller
         try {
             $em->persist($widgetsSettingsManager);
             $em->flush();
-
             return new JsonResponse(['status' => 'success'], 200);
         } catch (Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);

@@ -16,7 +16,7 @@
 
             {% for widget in showedWidgets %}
                 {#TODO: Display none to block, whe style is ready#}
-                <div  data-widget="{{ widget }}" class="widget-field w-{{ getWidgetSize(widget) }} " style=" display: none;">{{ renderWidget(widget) }} </div>
+                <div  data-widget="{{ widget }}" class="widget-field regular-widget w-{{ getWidgetSize(widget) }} " style=" display: none;">{{ renderWidget(widget) }} </div>
 
             {% endfor %}
 
