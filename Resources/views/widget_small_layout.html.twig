@@ -1,22 +1,22 @@
 {% block grid %}
 
     {% block widget_start %}
-        <div class="span-none-padding-large-{{ size }} " style="height: 100px">
+        <div class="span-none-padding-large-{{ size }} ">
         <section class="trinity-widget" style="height: 100%">
     {% endblock %}
 
 
     {% block widget_contnet_wrapper %}
         {% block widget_title %}
-            <h3 class="pull-left widget-title font-20">{{ titleCounter }}</h3>
+            <h3 class="pull-left widget-title">{{ titleCounter }}</h3>
         {% endblock %}
-        <a class="pull-right margin-top-10 margin-right-10" href="{{ getWidgetUrl('remove', widget, app.user) }}">
-            <i class="{{ icon }} font-25 widget-small-icon"></i>
+        <a class="pull-right" href="{{ getWidgetUrl('remove', widget, app.user) }}">
+            <i class="{{ icon }} widget-small-icon"></i>
         </a>
         <main class="row content-box">
             <div class="content" >
-                <h6 class="margin-top-5 margin-bottom-15 margin-left-15 widget-small-description">{{ title }}</h6>
-                <div class="row" style="background-color: silver;height: 5px" >
+                <h6 class="widget-small-description">{{ title }}</h6>
+                <div class="row" style="background-color: #eaeaea;height: 5px" >
                     <div style="background-color: {{ color }};height: 5px; width: {{percent}}%" ><span style="color: transparent">.</span></div>
                 </div>
             </div>
