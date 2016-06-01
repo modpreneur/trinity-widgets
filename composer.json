@@ -25,7 +25,8 @@
     "braincrafted/testing-bundle": "@stable",
     "phpunit/phpunit": "~5",
     "doctrine/data-fixtures": "~1",
-    "doctrine/doctrine-fixtures-bundle": "~2"
+    "doctrine/doctrine-fixtures-bundle": "~2",
+    "satooshi/php-coveralls" : "1.0.*"
   },
 
 
