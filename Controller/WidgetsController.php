@@ -42,9 +42,7 @@ class WidgetsController extends Controller
         $form =  $this->createForm(DashboardType::class);
         $form->handleRequest($request);
 
-        if ($request->request->has('dashboard')
-            && isset($request->request->get('dashboard')['widgets'])
-        ) {
+        if ($request->request->has('dashboard')) {
             $expandedWidgets = [];
             if (isset($request->request->get('dashboard')['expandedWidgets'])) {
                 $expandedWidgets = $request->request->get('dashboard')['expandedWidgets'];
@@ -52,7 +50,11 @@ class WidgetsController extends Controller
             $em =$this->get('doctrine.orm.entity_manager');
 
             /** @var array $widgets */
-            $widgets = $request->request->get('dashboard')['widgets'];
+            $widgets = [];
+            if (isset($request->request->get('dashboard')['widgets'])) {
+                $widgets = $request->request->get('dashboard')['widgets'];
+            }
+
             $user = $this->getUser();
             $widgetsSettingsManager = $user->getWidgetsSettingsManager();
             $newWidgets = [];
@@ -91,12 +93,13 @@ class WidgetsController extends Controller
                 $em->persist($widgetsSettingsManager);
                 $em->flush();
             } catch (Exception $e) {
-                return new JsonResponse(array('error'=>$e), 400);
+                return new JsonResponse(array('error'=>'Widgets could not be saved'), 400);
             }
             return new JsonResponse(array('message'=>'success update','widgets'=>$form->getData()['widgets']), 200);
         }
 
-        return new JsonResponse(array('error'=>'request failed'), 400);
+
+        return new JsonResponse(array('error'=>'Widgets could not be saved'), 400);
 
     }
 
