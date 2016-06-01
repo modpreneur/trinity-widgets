@@ -16,6 +16,10 @@ parameters:
     debug_redirects: false
     use_assetic_controller: true
 
+    trinity.search.doctrine_prefix: "Search"
+    trinity.search.namespace: "Trinity\\Bundle\\WidgetsBundle\\Tests\\Functional\\Entity"
+
+
 # Doctrine Configuration
 doctrine:
     dbal:
@@ -32,6 +36,7 @@ framework:
     session:
         storage_id: session.storage.filesystem
     router: { resource: "%kernel.root_dir%/routing.yml" }
+    form: ~
 
 security:
   providers:
@@ -53,6 +58,18 @@ security:
     dev:
         pattern: ^/(_(profiler|wdt)|css|images|js)/
         security: false
+
+## ----
+
+trinity_settings:
+  settings:
+
+
+trinity_logger:
+  elastic_logs:
+    elastic_host: 'necktie_elasticsearch_1'
+
+# -----
 
 services:
    trinity.widget.widget:

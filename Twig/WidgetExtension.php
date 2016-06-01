@@ -141,7 +141,7 @@ class WidgetExtension extends \Twig_Extension
      * @param BaseUser $user
      * @return string
      */
-    public function getWidgetUrl($section, AbstractWidget $widget, BaseUser $user)
+    public function getWidgetUrl($section, AbstractWidget $widget)
     {
         $url = '';
         switch ($section) {

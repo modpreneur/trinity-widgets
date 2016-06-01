@@ -18,7 +18,8 @@
     "trinity/framework": "dev-master",
     "friendsofsymfony/user-bundle": "dev-master",
     "trinity/settings": "dev-master",
-    "trinity/logger": "dev-master"
+    "trinity/logger": "dev-master",
+    "trinity/search": "dev-master"
   },
   "require-dev": {
     "braincrafted/testing-bundle": "@stable",
@@ -36,7 +37,6 @@
   },
 
 
-  "minimum-stability": "stable",
   "extra": {
     "branch-alias": {
       "dev-master": "1.0-dev"

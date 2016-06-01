@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Widgets Test Suite" tests="4" assertions="3" failures="0" errors="0" time="0.090514">
+    <testsuite name="Trinity\Bundle\WidgetsBundle\Tests\WidgetTest" file="/Users/tomas/workspace/trinity-widgets/Tests/WidgetTest.php" tests="1" assertions="0" failures="0" errors="0" time="0.000198">
+      <testcase name="testWidget" class="Trinity\Bundle\WidgetsBundle\Tests\WidgetTest" file="/Users/tomas/workspace/trinity-widgets/Tests/WidgetTest.php" line="20" assertions="0" time="0.000198"/>
+    </testsuite>
+    <testsuite name="Trinity\Bundle\WidgetsBundle\Tests\WidgetTypeTest" file="/Users/tomas/workspace/trinity-widgets/Tests/WidgetTypeTest.php" tests="1" assertions="0" failures="0" errors="0" time="0.000115">
+      <testcase name="testWidgetType" class="Trinity\Bundle\WidgetsBundle\Tests\WidgetTypeTest" file="/Users/tomas/workspace/trinity-widgets/Tests/WidgetTypeTest.php" line="16" assertions="0" time="0.000115"/>
+    </testsuite>
+    <testsuite name="Trinity\Bundle\WidgetsBundle\Tests\WidgetsManagerTest" file="/Users/tomas/workspace/trinity-widgets/Tests/WidgetsManagerTest.php" tests="2" assertions="3" failures="0" errors="0" time="0.090201">
+      <testcase name="testManager" class="Trinity\Bundle\WidgetsBundle\Tests\WidgetsManagerTest" file="/Users/tomas/workspace/trinity-widgets/Tests/WidgetsManagerTest.php" line="33" assertions="1" time="0.039206"/>
+      <testcase name="testRenderWidget" class="Trinity\Bundle\WidgetsBundle\Tests\WidgetsManagerTest" file="/Users/tomas/workspace/trinity-widgets/Tests/WidgetsManagerTest.php" line="52" assertions="2" time="0.050995"/>
+    </testsuite>
+  </testsuite>
+</testsuites>

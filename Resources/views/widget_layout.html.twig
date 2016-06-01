@@ -22,8 +22,11 @@
             {% block widget_remove %}
                 {% if removable %}
                     {#widgetCloser is use by JS#}
-                    <a class="close widgetCloser"  href="{{ getWidgetUrl('remove', widget, app.user) }}">
-                        <i class="trinity trinity-pin"></i> </a>
+                    {% if app.user %}
+                        <a class="close widgetCloser" href="{{ getWidgetUrl('remove', widget, app.user) }}">
+                            <i class="trinity trinity-pin"></i>
+                        </a>
+                    {% endif %}
                 {% endif %}
             {% endblock %}
             {% block widget_resize %}

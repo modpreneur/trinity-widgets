@@ -5,14 +5,22 @@
 
 namespace Trinity\Bundle\WidgetsBundle\Tests;
 
-use Trinity\FrameworkBundle\Utils\BaseWebTest;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 
 /**
  * Class BaseTest.
  */
-abstract class BaseTest extends BaseWebTest
+abstract class BaseTest extends WebTestCase
 {
+
+    function getContainer(){
+
+        $client = self::createClient();
+        $container = $client->getContainer();
+
+        return $container;
+    }
 
     public function getWidgetExtension()
     {
