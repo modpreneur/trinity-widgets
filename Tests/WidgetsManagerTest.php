@@ -6,7 +6,6 @@
 
 namespace Trinity\Bundle\WidgetsBundle\Tests;
 
-use Entity\User;
 use Symfony\Bundle\FrameworkBundle\Templating\GlobalVariables;
 use Trinity;
 use Twig_Environment;
