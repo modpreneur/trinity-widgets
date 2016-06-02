@@ -131,14 +131,10 @@ class WidgetExtension extends \Twig_Extension
 
     public function getWidgetStyle(Twig_Environment $env, $size)
     {
-        dump($this->oddEven);
-        dump($size);
-
         if ($size === 24) {
             if (!($this->oddEven % 2)) {
                 $this->oddEven++;
             }
-            dump($this->oddEven);
             return 'long-widget';
         } else {
             if ($this->oddEven % 2) {
