@@ -49,7 +49,7 @@ class WidgetExtension extends \Twig_Extension
 
     private $widgetLayout = 24;
 
-//    private $oddEven = 0;
+    private $oddEven = 1;
 
     /**
      * WidgetExtension constructor.
@@ -101,10 +101,10 @@ class WidgetExtension extends \Twig_Extension
 
             new \Twig_SimpleFunction('getWidgetSize', [$this, 'getWidgetSize'], ['needs_environment' => true]),
 
-//            new \Twig_SimpleFunction('getWidgetStyle', [$this, 'widgetRowStart'], [
-//                'is_safe' => ['html'],
-//                'needs_environment' => true,
-//            ]),
+            new \Twig_SimpleFunction('getWidgetStyle', [$this, 'getWidgetStyle'], [
+                'is_safe' => ['html'],
+                'needs_environment' => true,
+            ]),
 
 
             new \Twig_SimpleFunction('widget_*', [$this, 'widget'], [
@@ -129,10 +129,27 @@ class WidgetExtension extends \Twig_Extension
         return $widget->getSize();
     }
 
-//    public function getWidgetStyle()
-//    {
-//
-//    }
+    public function getWidgetStyle(Twig_Environment $env, $size)
+    {
+        dump($this->oddEven);
+        dump($size);
+
+        if ($size === 24) {
+            if (!($this->oddEven % 2)) {
+                $this->oddEven++;
+            }
+            dump($this->oddEven);
+            return 'long-widget';
+        } else {
+            if ($this->oddEven % 2) {
+                $this->oddEven++;
+                return 'left-widget';
+            } else {
+                $this->oddEven++;
+                return 'right-widget';
+            }
+        }
+    }
 
 
     /**
