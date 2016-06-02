@@ -9,7 +9,6 @@ WORKDIR /var/app
 
 
 
-RUN chmod +x entrypoint.sh \
-    phpunit
+RUN chmod +x entrypoint.sh
 
-ENTRYPOINT ["sh", "entrypoint.sh", "service postfix start"]
+ENTRYPOINT ["sh", "entrypoint.sh"]
