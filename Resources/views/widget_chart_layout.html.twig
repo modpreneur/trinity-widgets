@@ -10,5 +10,7 @@
             data-name="{{ widget.name }}" data-chart-options="{{ options|json_encode }}"></hidden>
     <hidden id="chart-{{ widget.name }}"></hidden>
 
-
+    {% if empty is defined %}
+        <hidden id="empty-chart" data-content="{{ empty|json_encode }}"></hidden>
+    {% endif%}
 {% endblock %}
