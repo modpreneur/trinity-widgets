@@ -5,12 +5,13 @@
     <div class="widget-chart" id="{{ widget.name }}">
 
     </div>
-    <hidden id="data-translator" class="chart-data-translator" data-type="chart"
+
+    {% if data is defined %}
+    <hidden class="chart-data-translator" data-type="chart"
             data-chart-type="{{ chartType }}" data-chart-data="{{ data|json_encode }}"
             data-name="{{ widget.name }}" data-chart-options="{{ options|json_encode }}"></hidden>
     <hidden id="chart-{{ widget.name }}"></hidden>
-
-    {% if empty is defined %}
-        <hidden id="empty-chart" data-content="{{ empty|json_encode }}"></hidden>
+    {% elseif empty is defined%}
+        <hidden class="empty-chart" data-content="{{ empty|json_encode }}"></hidden>
     {% endif%}
 {% endblock %}
