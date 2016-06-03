@@ -260,8 +260,14 @@ class WidgetExtension extends \Twig_Extension
             if (in_array($widgetName, $widgetsNames)) {
                 
                 $widgetSettings = $widgetsSettingsManager->getWidgetSettings($widgetName);
-                $inOrder = $widgetSettings['inOrder'];
-                $showedWidgetsNames[$inOrder] = $widgetName;
+                
+                $widgetSettings = $widgetsSettingsManager->getWidgetSettings($widgetName);
+                if(array_key_exists('inOrder', $widgetSettings)){
+                    $inOrder = $widgetSettings['inOrder'];
+                    $showedWidgetsNames[$inOrder] = $widgetName;
+                }else{
+                    $showedWidgetsNames[] = $widgetName;
+                }    
 
             } else {
                 $hiddenWidgetsNames[] = $widgetName;
