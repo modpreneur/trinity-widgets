@@ -12,10 +12,5 @@ namespace Trinity\Bundle\WidgetsBundle\Widget;
  */
 interface RemovableInterface
 {
-
-    /**
-     * @return void
-     */
-    function remove();
-
+    
 }
