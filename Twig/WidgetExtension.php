@@ -343,28 +343,33 @@ class WidgetExtension extends \Twig_Extension
      */
     public function renderWidget(Twig_Environment $env, $widgetName, $options = [])
     {
-        $widget = $this->createWidget($widgetName, $env);
-        $wb = $widget->buildWidget();
+        try {
+            $widget = $this->createWidget($widgetName, $env);
+            $wb = $widget->buildWidget();
 
-        $context = [
-            'name' => $widget->getName(),
-            'routeName' => $widget->getRouteName(),
-            'gridParameters' => $widget->getGridParameters(),
-            'widget' => $widget,
-            'title' => $widget->getTitle(),
-            'size' => $widget->getSize(),
-            'resizable' => $widget instanceof ResizableInterface,
-            'removable' => $widget instanceof RemovableInterface,
-        ];
-        if ($wb && is_array($wb)) {
-            $context = array_merge($context, $wb);
+            $context = [
+                'name' => $widget->getName(),
+                'routeName' => $widget->getRouteName(),
+                'gridParameters' => $widget->getGridParameters(),
+                'widget' => $widget,
+                'title' => $widget->getTitle(),
+                'size' => $widget->getSize(),
+                'resizable' => $widget instanceof ResizableInterface,
+                'removable' => $widget instanceof RemovableInterface,
+            ];
+            if ($wb && is_array($wb)) {
+                $context = array_merge($context, $wb);
+            }
+
+            if ($options && is_array($options) && count($options) > 0) {
+                $context = array_merge($context, $options);
+            }
+
+            return $this->template->render($context);
+        }catch (\Exception $e) {
+//            TODO : ????
         }
-
-        if ($options && is_array($options) && count($options) > 0) {
-            $context = array_merge($context, $options);
-        }
-
-        return $this->template->render($context);
+        return '<div>Error</div>';
     }
 
 
