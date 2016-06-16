@@ -5,8 +5,18 @@
   "license": "MIT",
   "authors": [
     {
-      "name": "Trinity",
+      "name": "Modpreneur team",
       "email": "info@modpreneur.com"
+    },
+    {
+      "name": "Richard Bureš",
+      "email": "bures@modpreneur.com",
+      "role": "Lead Developer"
+    },
+    {
+      "name": "Tomáš Jančar",
+      "email": "jancar@modpreneur.com",
+      "role": "Developer"
     }
   ],
   "require": {
