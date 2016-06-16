@@ -19,6 +19,7 @@
     "friendsofsymfony/user-bundle": "dev-master",
     "trinity/settings": "dev-master",
     "trinity/logger": "dev-master",
+    "trinity/utils": "dev-master",
     "trinity/search": "dev-master"
   },
   "require-dev": {
