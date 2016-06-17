@@ -1,7 +1,7 @@
 {% block dashboard %}
 
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    <hidden id="render-url" data-url="{{ path('ajax_render_widgets') }}"></hidden>
+    <input type="hidden" id="render-url" data-url="{{ path('ajax_render_widgets') }}"/>
 
 
     <div class="dashboard-widgets">
@@ -16,7 +16,10 @@
 
             {% for widget in showedWidgets %}
 
-                <div  data-widget="{{ widget }}" class="widget-field regular-widget w-{{ getWidgetSize(widget) }} {{ getWidgetStyle(getWidgetSize(widget)) }}" >{{ renderWidget(widget) }} </div>
+                <div  data-widget="{{ widget }}"
+                      class="widget-field regular-widget w-{{ getWidgetSize(widget) }} {{ getWidgetStyle(getWidgetSize(widget)) }}" >
+                    {{ renderWidget(widget) }}
+                </div>
 
             {% endfor %}
 

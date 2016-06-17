@@ -15,7 +15,10 @@ abstract class AbstractArrayWidget implements \ArrayAccess
     protected $attributes = [];
 
 
-    /** @inheritdoc */
+    /**
+     * @param mixed $offset
+     * @return mixed
+     */
     public function offsetExists($offset)
     {
         return array_key_exists($offset, $this->getAttributes());
@@ -44,7 +47,10 @@ abstract class AbstractArrayWidget implements \ArrayAccess
     }
 
 
-    /** @inheritdoc */
+    /**
+     * @param mixed $offset
+     * @return null|string
+     */
     public function offsetGet($offset)
     {
         return $this->getAttribute($offset);
@@ -66,21 +72,30 @@ abstract class AbstractArrayWidget implements \ArrayAccess
     }
 
 
-    /** @inheritdoc */
+    /**
+     * @param mixed $offset
+     */
     public function offsetUnset($offset)
     {
         unset($this->attributes[$offset]);
     }
 
 
-    /** @inheritdoc */
+    /**
+     * @param mixed $offset
+     * @param mixed $value
+     */
     public function offsetSet($offset, $value)
     {
         $this->addAttributes($offset, $value);
     }
 
 
-    /** @inheritdoc */
+    /**
+     * @param $name
+     * @param $attr
+     * @return $this
+     */
     public function addAttributes($name, $attr)
     {
         $this->attributes[$name] = $attr;

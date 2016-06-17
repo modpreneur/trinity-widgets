@@ -21,7 +21,7 @@ abstract class AbstractSmallWidget extends AbstractWidget
      * @param  array $attributes
      * @return array
      */
-    function buildWidget(array $attributes = [])
+    public function buildWidget(array $attributes = [])
     {
         $context = $attributes;
         $bSmall = $this->buildSmall($attributes);
@@ -35,6 +35,6 @@ abstract class AbstractSmallWidget extends AbstractWidget
      * @param array $attributes
      * @return array
      */
-    abstract function buildSmall(array $attributes = []);
+    abstract public function buildSmall(array $attributes = []);
 
 }

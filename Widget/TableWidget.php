@@ -23,7 +23,7 @@ abstract class TableWidget extends AbstractWidget
     protected $tableBody;
 
     /** @var string */
-    protected $template = "WidgetsBundle::widget_table_layout.html.twig";
+    protected $template = 'WidgetsBundle::widget_table_layout.html.twig';
 
 
     /**
@@ -52,7 +52,10 @@ abstract class TableWidget extends AbstractWidget
         $this->tableBody->setData($data);
     }
 
-
+    /**
+     * @param array $attributes
+     * @return mixed
+     */
     public function buildWidget(array $attributes = [])
     {
         $this->tableHeader = new TableHeader();
@@ -62,8 +65,8 @@ abstract class TableWidget extends AbstractWidget
         $headerColumns = $this->tableHeader->getColumns();
         $body = $this->tableBody->getData();
 
-        $context["header"] = $headerColumns;
-        $context["body"]   = $body;
+        $context['header'] = $headerColumns;
+        $context['body']   = $body;
 
         return $context;
     }

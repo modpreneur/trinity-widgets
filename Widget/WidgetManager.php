@@ -15,6 +15,7 @@ use Symfony\Component\Routing\Router;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Trinity\Bundle\WidgetsBundle\Entity\UserDashboardInterface;
 use Trinity\Bundle\WidgetsBundle\Entity\WidgetsDashboard;
+use Trinity\Bundle\WidgetsBundle\Entity\WidgetsSettingsManager;
 use Trinity\Bundle\WidgetsBundle\Exception\WidgetException;
 use Trinity\Bundle\WidgetsBundle\Form\DashboardType;
 use Trinity\FrameworkBundle\Entity\BaseUser;
@@ -90,10 +91,13 @@ class WidgetManager
 
     /**
      * @param FilterControllerEvent $event
+     * @throws \Doctrine\ORM\ORMInvalidArgumentException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \InvalidArgumentException
      */
     public function onKernelController(FilterControllerEvent $event)
     {
-        if ($this->requestStack->getCurrentRequest()->attributes->get('_route') !== "admin_home") {
+        if ($this->requestStack->getCurrentRequest()->attributes->get('_route') !== 'admin_home') {
             return;
         }
 
@@ -110,13 +114,14 @@ class WidgetManager
             $dashboard = $user->getWidgetsDashboard();
 
             if ($this->isRedirected()) {
+                /** @var AbstractWidget $widget */
                 $widget = null;
 
                 if (array_key_exists(self::ACTION_REMOVE, $this->requestData)) {
-                    $widget = ($this->getWidget($this->requestData[self::ACTION_REMOVE]));
+                    $widget = $this->getWidget($this->requestData[self::ACTION_REMOVE]);
 
                     if ($widget instanceof RemovableInterface) {
-                        $widget->remove();
+//                        $widget->remove();
                         $dashboard->removeWidget($widget);
                         $this->em->persist($dashboard);
                         $this->em->flush();
@@ -231,7 +236,7 @@ class WidgetManager
         }
 
         if ($callback && is_callable($callback)) {
-            call_user_func($callback, $widget);
+            $callback($widget);
         }
     }
 
@@ -240,6 +245,9 @@ class WidgetManager
      * Returns Route URL
      *
      * @return string
+     * @throws \Symfony\Component\Routing\Exception\RouteNotFoundException
+     * @throws \Symfony\Component\Routing\Exception\MissingMandatoryParametersException
+     * @throws \Symfony\Component\Routing\Exception\InvalidParameterException
      */
     public function getRouteUrl()
     {
@@ -299,8 +307,8 @@ class WidgetManager
 
 
         foreach ($this->widgets as $item) {
-            if ($item->getType() == "dashboard") {
-                $title = ucfirst(str_replace("_", " ", $item->getName()));
+            if ($item->getType() === 'dashboard') {
+                $title = ucfirst(str_replace('_', ' ', $item->getName()));
 
                 $widgets[$item->getName()] = $title;
             }
@@ -317,8 +325,8 @@ class WidgetManager
     {
         $widgets = [];
         foreach ($this->widgets as $item) {
-            if ($item->getType() == "static") {
-                $title = ucfirst(str_replace("_", " ", $item->getName()));
+            if ($item->getType() === 'static') {
+                $title = ucfirst(str_replace('_', ' ', $item->getName()));
 
                 $widgets[$item->getName()] = $title;
             }
@@ -335,15 +343,15 @@ class WidgetManager
 
     public function getBigWidgets(){
         $user = $this->tokenStorage->getToken()->getUser();
+
+        /** @var WidgetsSettingsManager $widgetsSettingsManager */
         $widgetsSettingsManager = $user->getWidgetsSettingsManager();
         $bigWidgets = [];
         foreach ($this->widgets as $item) {
             $widgetSetting =$widgetsSettingsManager->getWidgetSettings($item->getName());
-            if(array_key_exists ( 'size' , $widgetSetting ))
+            if(array_key_exists ( 'size' , $widgetSetting ) && $widgetSetting['size'] === 24)
             {
-                if($widgetSetting['size']===24){
-                    $bigWidgets[]=$item->getName();
-                }
+                $bigWidgets[]=$item->getName();
             }
         }
         return $bigWidgets;
@@ -351,6 +359,9 @@ class WidgetManager
 
     /**
      * @return \Symfony\Component\Form\Form
+     * @throws \Symfony\Component\Form\Exception\LogicException
+     * @throws \Symfony\Component\Form\Exception\AlreadySubmittedException
+     * @throws \Symfony\Component\OptionsResolver\Exception\InvalidOptionsException
      */
     public function getForm()
     {
@@ -359,7 +370,7 @@ class WidgetManager
         $form = $this->formFactory->create(DashboardType::class);
         $form->handleRequest($request);
 
-        /** @var User $user */
+        /** @var BaseUser $user */
         $user = $this->tokenStorage->getToken()->getUser();
 
 

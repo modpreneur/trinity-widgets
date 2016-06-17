@@ -16,13 +16,13 @@ interface WidgetInterface
     /**
      * @return string
      */
-    function getName();
+    public function getName();
 
 
     /**
      * @param array $attributes
      * @return array
      */
-    function buildWidget(array $attributes = []);
+    public function buildWidget(array $attributes = []);
 
 }

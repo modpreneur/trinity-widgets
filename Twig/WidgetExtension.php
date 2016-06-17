@@ -7,10 +7,12 @@ namespace Trinity\Bundle\WidgetsBundle\Twig;
 
 use Nette\Utils\Strings;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
 use Trinity\Bundle\WidgetsBundle\Entity\WidgetsDashboard;
+use Trinity\Bundle\WidgetsBundle\Entity\WidgetsSettingsManager;
 use Trinity\Bundle\WidgetsBundle\Exception\WidgetException;
 use Trinity\Bundle\WidgetsBundle\Widget\AbstractWidget;
 use Trinity\Bundle\WidgetsBundle\Widget\RemovableInterface;
@@ -21,13 +23,15 @@ use Trinity\FrameworkBundle\Entity\BaseUser;
 use Trinity\FrameworkBundle\Exception\MemberAccessException;
 use Trinity\FrameworkBundle\Utils\ObjectMixin;
 use Twig_Environment;
+use Twig_Extension;
+use Twig_Template;
 
 
 /**
  * Class WidgetExtension
  * @package Trinity\Bundle\WidgetsBundle\Twig
  */
-class WidgetExtension extends \Twig_Extension
+class WidgetExtension extends Twig_Extension
 {
     /** @var  WidgetManager */
     private $widgetManager;
@@ -35,7 +39,7 @@ class WidgetExtension extends \Twig_Extension
     /** @var  Request */
     private $request;
 
-    /** @var  \Twig_TemplateInterface */
+    /** @var  Twig_Template */
     private $template;
 
     /**
@@ -151,7 +155,6 @@ class WidgetExtension extends \Twig_Extension
     /**
      * @param string $section
      * @param AbstractWidget $widget
-     * @param BaseUser $user
      * @return string
      */
     public function getWidgetUrl($section, AbstractWidget $widget)
@@ -242,6 +245,9 @@ class WidgetExtension extends \Twig_Extension
      * @param WidgetsDashboard $dashboard
      * @param BaseUser $user
      * @return string
+     * @throws \Twig_Error_Syntax
+     * @throws \Twig_Error_Loader
+     * @throws \Trinity\Bundle\WidgetsBundle\Exception\WidgetException
      */
     public function renderDashboard(Twig_Environment $env, WidgetsDashboard $dashboard, BaseUser $user)
     {
@@ -254,10 +260,12 @@ class WidgetExtension extends \Twig_Extension
         }
         $hiddenWidgetsNames = [];
         $showedWidgetsNames = [];
+
+        /** @var WidgetsSettingsManager $widgetsSettingsManager */
         $widgetsSettingsManager = $user->getWidgetsSettingsManager();
 
         foreach ($allWidgets as $widgetName => $widget) {
-            if (in_array($widgetName, $widgetsNames)) {
+            if (in_array($widgetName, $widgetsNames, false)) {
                 
                 $widgetSettings = $widgetsSettingsManager->getWidgetSettings($widgetName);
                 
@@ -276,7 +284,7 @@ class WidgetExtension extends \Twig_Extension
         ksort($showedWidgetsNames);
 
         /** @var \Twig_TemplateInterface $template */
-        $template = $env->loadTemplate("WidgetsBundle::dashboard.html.twig");
+        $template = $env->loadTemplate('WidgetsBundle::dashboard.html.twig');
         $form = $this->widgetManager->getForm();
 
         $context = [
@@ -319,11 +327,11 @@ class WidgetExtension extends \Twig_Extension
     }
 
 
-    public function createWidget($widgetName, $env, BaseUser $user = null)
+    public function createWidget( string $widgetName, Twig_Environment $env, BaseUser $user = null)
     {
         /** @var AbstractWidget $widget */
         $widget = $this->widgetManager->createWidget($widgetName, true, $user);
-        /** @var \Twig_TemplateInterface $template */
+        /** @var Twig_Template $template */
         $this->template = $template = $env->loadTemplate($widget->getTemplate());
 
         return $widget;
@@ -341,7 +349,7 @@ class WidgetExtension extends \Twig_Extension
      *
      * @throws WidgetException
      */
-    public function renderWidget(Twig_Environment $env, $widgetName, $options = [])
+    public function renderWidget(Twig_Environment $env, string $widgetName, array $options = [])
     {
         try {
             $widget = $this->createWidget($widgetName, $env);
@@ -366,24 +374,23 @@ class WidgetExtension extends \Twig_Extension
             }
 
             return $this->template->render($context);
-        } catch (\Exception $e) {
+        }catch (Exception $e) {
 //            TODO : ????
         }
         return '<div>Error</div>';
     }
 
 
-    /**
-     * @param string|null $typeId
-     *
-     * @return string[]
-     */
-    public function getWidgetsByTypeId($typeId = null)
-    {
-        $widgets = $this->widgetManager->getWidgetsIdsByTypeId($typeId);
-
-        return $widgets;
-    }
+//    /**
+//     * @param string|null $typeId
+//     *
+//     * @return string[]
+//     */
+//    public function getWidgetsByTypeId($typeId = null)
+//    {
+//        return ($this->widgetManager->getWidgetsIdsByTypeId($typeId));
+//
+//    }
 
 
     /**
