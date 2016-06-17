@@ -366,7 +366,7 @@ class WidgetExtension extends \Twig_Extension
             }
 
             return $this->template->render($context);
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
 //            TODO : ????
         }
         return '<div>Error</div>';
