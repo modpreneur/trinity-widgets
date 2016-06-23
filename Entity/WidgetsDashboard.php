@@ -147,7 +147,7 @@ class WidgetsDashboard
     public function removeWidget($name)
     {
         $widgetsName = $this->widgets;
-        $index = array_search($name, $widgetsName);
+        $index = array_search($name, $widgetsName, false);
 
         if ($index !== null) {
             unset($widgetsName[$index]);

@@ -19,6 +19,8 @@ class WidgetCompilerPass implements CompilerPassInterface
 
     /**
      * @param ContainerBuilder $container
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
+     * @throws \Symfony\Component\DependencyInjection\Exception\InvalidArgumentException
      */
     public function process(ContainerBuilder $container)
     {
@@ -30,7 +32,7 @@ class WidgetCompilerPass implements CompilerPassInterface
 
                 $alias = null;
                 if(array_key_exists('alias', $attributes)){
-                    $alias = $attributes["alias"];
+                    $alias = $attributes['alias'];
                 }
 
                 $definition->addMethodCall(

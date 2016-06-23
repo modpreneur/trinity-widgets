@@ -183,5 +183,5 @@ abstract class AbstractWidget extends AbstractArrayWidget implements WidgetInter
      * @param array $attributes
      * @return array
      */
-    abstract function buildWidget(array $attributes = []);
+    abstract public function buildWidget(array $attributes = []);
 }

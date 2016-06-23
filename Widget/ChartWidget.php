@@ -14,17 +14,17 @@ namespace Trinity\Bundle\WidgetsBundle\Widget;
 abstract class ChartWidget extends AbstractWidget
 {
     /** @var string */
-    protected $template = "WidgetsBundle::widget_chart_layout.html.twig";
+    protected $template = 'WidgetsBundle::widget_chart_layout.html.twig';
 
     /** @var string */
-    protected $chartType = "BarChart";
+    protected $chartType = 'BarChart';
 
 
     /**
      * @param  array $attributes
      * @return array
      */
-    function buildWidget(array $attributes = [])
+    public function buildWidget(array $attributes = [])
     {
         $context = $attributes;
         $context['chartType'] = $this->chartType;
@@ -39,7 +39,7 @@ abstract class ChartWidget extends AbstractWidget
      * @param array $attributes
      * @return array
      */
-    abstract function buildChart(array $attributes = []);
+    abstract public function buildChart(array $attributes = []);
 
 }
 

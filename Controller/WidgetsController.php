@@ -14,7 +14,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Trinity\Bundle\WidgetsBundle\Entity\WidgetsDashboard;
+use Trinity\Bundle\WidgetsBundle\Entity\WidgetsSettingsManager;
 use Trinity\Bundle\WidgetsBundle\Form\DashboardType;
+use Trinity\Bundle\WidgetsBundle\Widget\AbstractWidget;
 use Trinity\Bundle\WidgetsBundle\Widget\RemovableInterface;
 use Trinity\Bundle\WidgetsBundle\Widget\ResizableInterface;
 
@@ -35,6 +37,7 @@ class WidgetsController extends Controller
      * @throws \LogicException
      *
      * @return JsonResponse
+     * @throws \Trinity\Bundle\WidgetsBundle\Exception\WidgetException
      */
     public function manageDashboardWidgets(Request $request)
     {
@@ -56,6 +59,7 @@ class WidgetsController extends Controller
             }
 
             $user = $this->getUser();
+            /** @var WidgetsSettingsManager $widgetsSettingsManager */
             $widgetsSettingsManager = $user->getWidgetsSettingsManager();
             $newWidgets = [];
             $counter = count($widgets);
@@ -78,7 +82,7 @@ class WidgetsController extends Controller
             $newWidgetsLength = count($newWidgets);
             for ($i = 0; $i < $newWidgetsLength; $i++) {
                 $size = 12;
-                if (in_array($newWidgets[$i], $expandedWidgets)) {
+                if (in_array($newWidgets[$i], $expandedWidgets, false)) {
                     $size = 24;
                 }
                 $widgetsSettingsManager->setWidgetSettings($newWidgets[$i], ['inOrder'=> $i, 'size'=> $size, ]);
@@ -110,11 +114,14 @@ class WidgetsController extends Controller
      * @param int $widgetSize
      *
      * @return JsonResponse
+     * @throws \Trinity\Bundle\WidgetsBundle\Exception\WidgetException
+     * @throws \LogicException
      */
     public function resizeAction($widgetName, $widgetSize)
     {
         $em = $this->get('doctrine.orm.entity_manager');
 
+        /** @var WidgetsSettingsManager $widgetsSettingsManager */
         $widgetsSettingsManager = $this->getUser()->getWidgetsSettingsManager();
 
         $widgetsSettingsManager->setWidgetSettings($widgetName, [
@@ -146,6 +153,8 @@ class WidgetsController extends Controller
 
             /** @var WidgetsDashboard $dashboard */
             $dashboard = $this->getUser()->getWidgetsDashboard();
+
+            /** @var WidgetsSettingsManager $widgetsSettingsManager */
             $widgetsSettingsManager = $this->getUser()->getWidgetsSettingsManager();
 
             $widgetsSettingsManager->clearWidgetSettings($widgetName);
@@ -175,12 +184,15 @@ class WidgetsController extends Controller
      * @throws \LogicException
      *
      * @return JsonResponse
+     * @throws \Trinity\Bundle\WidgetsBundle\Exception\WidgetException
      */
     public function changeOrder($order)
     {
         $orderArr = Json::decode($order);
 
         $em = $this->get('doctrine.orm.entity_manager');
+
+        /** @var WidgetsSettingsManager $widgetsSettingsManager */
         $widgetsSettingsManager = $this->getUser()->getWidgetsSettingsManager();
         $orderArrCount = count($orderArr);
         for ($i = 0; $i < $orderArrCount; $i++) {
@@ -245,7 +257,10 @@ class WidgetsController extends Controller
      */
     public function ajaxRenderWidgets()
     {
+        /** @var WidgetsDashboard $dashboard */
         $dashboard = $this->getUser()->getWidgetsDashboard();
+
+        /** @var WidgetsSettingsManager $widgetsSettingsManager */
         $widgetsSettingsManager = $this->getUser()->getWidgetsSettingsManager();
         $widgetsNames = $dashboard->getWidgets();
         $orderedWidgetsNames = [];
