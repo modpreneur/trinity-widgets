@@ -368,7 +368,7 @@ class WidgetManager
         $form = $this->formFactory->create(DashboardType::class);
         $form->handleRequest($request);
 
-        /** @var BaseUser $user */
+        /** @var UserDashboardInterface $user */
         $user = $this->tokenStorage->getToken()->getUser();
 
 

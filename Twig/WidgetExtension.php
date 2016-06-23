@@ -11,6 +11,7 @@ use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
+use Trinity\Bundle\WidgetsBundle\Entity\UserDashboardInterface;
 use Trinity\Bundle\WidgetsBundle\Entity\WidgetsDashboard;
 use Trinity\Bundle\WidgetsBundle\Entity\WidgetsSettingsManager;
 use Trinity\Bundle\WidgetsBundle\Exception\WidgetException;
@@ -19,13 +20,11 @@ use Trinity\Bundle\WidgetsBundle\Widget\RemovableInterface;
 use Trinity\Bundle\WidgetsBundle\Widget\ResizableInterface;
 use Trinity\Bundle\WidgetsBundle\Widget\WidgetManager;
 use Trinity\Bundle\WidgetsBundle\Widget\WidgetSizes;
-use Trinity\FrameworkBundle\Entity\BaseUser;
-use Trinity\FrameworkBundle\Exception\MemberAccessException;
-use Trinity\FrameworkBundle\Utils\ObjectMixin;
+use Trinity\Component\Utils\Utils\ObjectMixin;
+use Trinity\Component\Utils\Exception\MemberAccessException;
 use Twig_Environment;
 use Twig_Extension;
 use Twig_Template;
-
 
 /**
  * Class WidgetExtension
@@ -208,10 +207,10 @@ class WidgetExtension extends Twig_Extension
      * @param $object
      * @param $attribute
      * @param $widgetName
-     * @param BaseUser $user
+     * @param UserDashboardInterface $user
      * @return string
      */
-    public function renderTableCell($env, $object, $attribute, $widgetName, BaseUser $user)
+    public function renderTableCell($env, $object, $attribute, $widgetName, UserDashboardInterface $user)
     {
         /*$widget = */$this->createWidget($widgetName, $env, $user);
 
@@ -243,13 +242,13 @@ class WidgetExtension extends Twig_Extension
     /**
      * @param Twig_Environment $env
      * @param WidgetsDashboard $dashboard
-     * @param BaseUser $user
+     * @param UserDashboardInterface $user
      * @return string
      * @throws \Twig_Error_Syntax
      * @throws \Twig_Error_Loader
      * @throws \Trinity\Bundle\WidgetsBundle\Exception\WidgetException
      */
-    public function renderDashboard(Twig_Environment $env, WidgetsDashboard $dashboard, BaseUser $user)
+    public function renderDashboard(Twig_Environment $env, WidgetsDashboard $dashboard, UserDashboardInterface $user)
     {
         $widgetsNames = $dashboard->getWidgets();
         $allWidgets = $this->widgetManager->getDashboardWidgets();
@@ -327,7 +326,7 @@ class WidgetExtension extends Twig_Extension
     }
 
 
-    public function createWidget( string $widgetName, Twig_Environment $env, BaseUser $user = null)
+    public function createWidget( string $widgetName, Twig_Environment $env, UserDashboardInterface $user = null)
     {
         /** @var AbstractWidget $widget */
         $widget = $this->widgetManager->createWidget($widgetName, true, $user);
