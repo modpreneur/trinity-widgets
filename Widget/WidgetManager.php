@@ -17,8 +17,6 @@ use Trinity\Bundle\WidgetsBundle\Entity\UserDashboardInterface;
 use Trinity\Bundle\WidgetsBundle\Entity\WidgetsDashboard;
 use Trinity\Bundle\WidgetsBundle\Exception\WidgetException;
 use Trinity\Bundle\WidgetsBundle\Form\DashboardType;
-use Trinity\FrameworkBundle\Entity\BaseUser;
-
 
 /**
  * Class WidgetManager.
@@ -272,9 +270,9 @@ class WidgetManager
 
 
     /**
-     * @param BaseUser $user
+     * @param UserDashboardInterface $user
      */
-    public function setUser($user)
+    public function setUser(UserDashboardInterface $user)
     {
         $this->user = $user;
     }
