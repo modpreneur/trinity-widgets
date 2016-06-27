@@ -3,9 +3,7 @@
  * This file is part of Trinity package.
  */
 
-
 namespace Trinity\Bundle\WidgetsBundle\Entity;
-
 
 /**
  * Interface UserDashboardInterface
@@ -37,5 +35,4 @@ interface UserDashboardInterface
      * @return WidgetsSettingsManager
      */
     public function getWidgetsSettingsManager();
-
 }

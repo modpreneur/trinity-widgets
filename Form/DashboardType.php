@@ -12,7 +12,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Trinity\Bundle\WidgetsBundle\Widget\WidgetManager;
 
-
 /**
  * Class DashboardType
  * @package Trinity\Bundle\WidgetsBundle\Form
@@ -96,6 +95,7 @@ class DashboardType extends AbstractType
     }
 
 
+    //@todo @RichardBures getName is remove from symfony 3, this works just in symfony 2
     /**
      * @return string
      */
@@ -103,5 +103,4 @@ class DashboardType extends AbstractType
     {
         return 'trinity_widgets_bundle_dashboard_type';
     }
-
 }

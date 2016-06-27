@@ -5,7 +5,6 @@
 
 namespace Trinity\Bundle\WidgetsBundle\Controller;
 
-
 use Doctrine\ORM\EntityManager;
 use Exception;
 use Nette\Utils\Json;
@@ -20,7 +19,6 @@ use Trinity\Bundle\WidgetsBundle\Widget\AbstractWidget;
 use Trinity\Bundle\WidgetsBundle\Widget\RemovableInterface;
 use Trinity\Bundle\WidgetsBundle\Widget\ResizableInterface;
 
-
 /**
  * Class WidgetsController
  * @package Trinity\Bundle\WidgetsBundle\Controller
@@ -29,7 +27,6 @@ use Trinity\Bundle\WidgetsBundle\Widget\ResizableInterface;
  */
 class WidgetsController extends Controller
 {
-
 
     /**
      * @Route("/manage", name="widget-manage", defaults={"_format": "json"})
@@ -50,8 +47,12 @@ class WidgetsController extends Controller
             if (isset($request->request->get('dashboard')['expandedWidgets'])) {
                 $expandedWidgets = $request->request->get('dashboard')['expandedWidgets'];
             }
-            $em =$this->get('doctrine.orm.entity_manager');
 
+            /** @var EntityManager $em */
+            $em = $this->get('doctrine.orm.entity_manager');
+
+            $this->get('doctrine.orm.entity_manager.abstract');
+            
             /** @var array $widgets */
             $widgets = [];
             if (isset($request->request->get('dashboard')['widgets'])) {
@@ -97,13 +98,13 @@ class WidgetsController extends Controller
                 $em->persist($widgetsSettingsManager);
                 $em->flush();
             } catch (Exception $e) {
-                return new JsonResponse(array('error'=>'Widgets could not be saved'), 400);
+                return new JsonResponse(['error'=>'Widgets could not be saved'], 400);
             }
-            return new JsonResponse(array('message'=>'success update','widgets'=>$form->getData()['widgets']), 200);
+            return new JsonResponse(['message'=>'success update','widgets'=>$form->getData()['widgets']], 200);
         }
 
 
-        return new JsonResponse(array('error'=>'Widgets could not be saved'), 400);
+        return new JsonResponse(['error'=>'Widgets could not be saved'], 400);
 
     }
 
@@ -119,6 +120,7 @@ class WidgetsController extends Controller
      */
     public function resizeAction($widgetName, $widgetSize)
     {
+        /** @var EntityManager $em */
         $em = $this->get('doctrine.orm.entity_manager');
 
         /** @var WidgetsSettingsManager $widgetsSettingsManager */
@@ -190,6 +192,7 @@ class WidgetsController extends Controller
     {
         $orderArr = Json::decode($order);
 
+        /** @var EntityManager $em */
         $em = $this->get('doctrine.orm.entity_manager');
 
         /** @var WidgetsSettingsManager $widgetsSettingsManager */

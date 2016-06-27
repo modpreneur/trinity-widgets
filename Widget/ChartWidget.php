@@ -6,7 +6,6 @@
 
 namespace Trinity\Bundle\WidgetsBundle\Widget;
 
-
 /**
  * Class ChartWidget
  * @package Trinity\Bundle\WidgetsBundle\Widget
@@ -43,5 +42,5 @@ abstract class ChartWidget extends AbstractWidget
 
 }
 
-
+//@todo @TomasJancar What you mean?
 //@todo - check if context is array

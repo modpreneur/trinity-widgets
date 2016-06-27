@@ -6,7 +6,6 @@
 
 namespace Trinity\Bundle\WidgetsBundle\Widget;
 
-
 interface ResizableInterface
 {
 

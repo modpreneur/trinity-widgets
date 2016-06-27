@@ -5,7 +5,6 @@
 
 namespace Trinity\Bundle\WidgetsBundle\Widget;
 
-
 /**
  * Interface WidgetInterface
  * @package Trinity\Bundle\WidgetsBundle\Widget
@@ -24,5 +23,4 @@ interface WidgetInterface
      * @return array
      */
     public function buildWidget(array $attributes = []);
-
 }

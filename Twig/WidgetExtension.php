@@ -74,7 +74,7 @@ class WidgetExtension extends Twig_Extension
      */
     public function getFunctions()
     {
-        return array(
+        return [
             new \Twig_SimpleFunction(
                 'renderWidget',
                 [$this, 'renderWidget'],
@@ -116,7 +116,7 @@ class WidgetExtension extends Twig_Extension
             ]),
 
 
-        );
+        ];
     }
 
 
@@ -132,6 +132,12 @@ class WidgetExtension extends Twig_Extension
         return $widget->getSize();
     }
 
+    /**
+     * @param Twig_Environment $env
+     * @param int $size
+     *
+     * @return string
+     */
     public function getWidgetStyle(Twig_Environment $env, $size)
     {
         if ($size === 24) {
@@ -161,17 +167,17 @@ class WidgetExtension extends Twig_Extension
         $url = '';
         switch ($section) {
             case WidgetManager::ACTION_REMOVE:
-                $url = $this->router->generate('remove_widget', array(
+                $url = $this->router->generate('remove_widget', [
                     'widgetName' => $widget->getName(),
-                ));
+                ]);
                 break;
             case WidgetManager::ACTION_RESIZE:
                 $size = ($widget->getSize() === WidgetSizes::Normal) ? WidgetSizes::Full : WidgetSizes::Normal;
 
-                $url = $this->router->generate('resize_widget', array(
+                $url = $this->router->generate('resize_widget', [
                     'widgetName' => $widget->getName(),
                     'widgetSize' => $size,
-                ));
+                ]);
 
                 break;
         }
@@ -187,7 +193,11 @@ class WidgetExtension extends Twig_Extension
      */
     public function getSizeIcon(AbstractWidget $widget)
     {
-        $icon = ($widget->getSize() === WidgetSizes::Normal) ? '<i class="trinity trinity-plus" id="get-bigger"></i><i id="get-smaller" class="trinity trinity-minus" style="display: none"></i>' : '<i class="trinity trinity-minus" id="get-smaller"></i><i class="trinity trinity-plus" id="get-bigger" style="display: none"></i>';
+        $icon = ($widget->getSize() === WidgetSizes::Normal)
+            ?
+            '<i class="trinity trinity-plus" id="get-bigger"></i><i id="get-smaller" class="trinity trinity-minus" style="display: none"></i>'
+            :
+            '<i class="trinity trinity-minus" id="get-smaller"></i><i class="trinity trinity-plus" id="get-bigger" style="display: none"></i>';
 
         return $icon;
     }
@@ -201,7 +211,7 @@ class WidgetExtension extends Twig_Extension
 
     }
 
-
+    //@todo @RichardBures types?
     /**
      * @param $env
      * @param $object
@@ -217,19 +227,21 @@ class WidgetExtension extends Twig_Extension
         try {
             $result = ObjectMixin::get($object, $attribute);
         } catch (MemberAccessException $ex) {
-            $result = "";
+            $result = '';
         }
 
+        //@todo @RichardBures internal function, this is danger because of backward compatibility
         if ($this->template->hasBlock('widget_table_cell_' . $attribute)) {
-            $result = $this->template->renderBlock('widget_table_cell_' . $attribute,
-                ['value' => $result, 'row' => $object]);
-
+            $result = $this->template->renderBlock(
+                'widget_table_cell_' . $attribute,
+                ['value' => $result, 'row' => $object]
+            );
             return $result;
         } elseif ($result instanceof \DateTime) {
             $result = $this->template->renderBlock('widget_cell_datetime', ['value' => $result, 'row' => $object]);
         } elseif (is_bool($result)) {
             $result = $this->template->renderBlock('widget_cell_boolean', ['value' => $result, 'row' => $object]);
-        } elseif (Strings::startsWith($result, "http") || Strings::startsWith($result, "www")) {
+        } elseif (Strings::startsWith($result, "http") || Strings::startsWith($result, 'www')) {
             $result = $this->template->renderBlock('widget_cell_link', ['value' => $result, 'row' => $object]);
         } else {
             $result = $this->template->renderBlock('widget_cell_string', ['value' => $result, 'row' => $object]);
@@ -238,12 +250,16 @@ class WidgetExtension extends Twig_Extension
         return $result;
     }
 
-
     /**
      * @param Twig_Environment $env
      * @param WidgetsDashboard $dashboard
      * @param UserDashboardInterface $user
+     *
      * @return string
+     *
+     * @throws \Symfony\Component\OptionsResolver\Exception\InvalidOptionsException
+     * @throws \Symfony\Component\Form\Exception\LogicException
+     * @throws \Symfony\Component\Form\Exception\AlreadySubmittedException
      * @throws \Twig_Error_Syntax
      * @throws \Twig_Error_Loader
      * @throws \Trinity\Bundle\WidgetsBundle\Exception\WidgetException
@@ -265,17 +281,13 @@ class WidgetExtension extends Twig_Extension
 
         foreach ($allWidgets as $widgetName => $widget) {
             if (in_array($widgetName, $widgetsNames, false)) {
-                
                 $widgetSettings = $widgetsSettingsManager->getWidgetSettings($widgetName);
-                
-                $widgetSettings = $widgetsSettingsManager->getWidgetSettings($widgetName);
-                if(array_key_exists('inOrder', $widgetSettings)){
+                if (array_key_exists('inOrder', $widgetSettings)) {
                     $inOrder = $widgetSettings['inOrder'];
                     $showedWidgetsNames[$inOrder] = $widgetName;
-                }else{
+                } else {
                     $showedWidgetsNames[] = $widgetName;
-                }    
-
+                }
             } else {
                 $hiddenWidgetsNames[] = $widgetName;
             }
@@ -312,7 +324,9 @@ class WidgetExtension extends Twig_Extension
         $result = '';
         foreach ($widgets as $widget) {
             if (!array_key_exists('id', $widget)) {
-                throw new WidgetException("Define widgets array: [ 'id'=> 'widget-id', 'params' => ['key' => 'value'] ]");
+                throw new WidgetException(
+                    "Define widgets array: [ 'id'=> 'widget-id', 'params' => ['key' => 'value'] ]"
+                );
             }
 
             $params = [];
@@ -325,8 +339,18 @@ class WidgetExtension extends Twig_Extension
         return $result;
     }
 
-
-    public function createWidget( string $widgetName, Twig_Environment $env, UserDashboardInterface $user = null)
+    /**
+     * @param string $widgetName
+     * @param Twig_Environment $env
+     * @param UserDashboardInterface|null $user
+     *
+     * @return AbstractWidget
+     *
+     * @throws \Twig_Error_Syntax
+     * @throws \Twig_Error_Loader
+     * @throws \Trinity\Bundle\WidgetsBundle\Exception\WidgetException
+     */
+    public function createWidget(string $widgetName, Twig_Environment $env, UserDashboardInterface $user = null)
     {
         /** @var AbstractWidget $widget */
         $widget = $this->widgetManager->createWidget($widgetName, true, $user);
@@ -336,7 +360,6 @@ class WidgetExtension extends Twig_Extension
         return $widget;
     }
 
-
     /**
      * {{ renderWidget("projects_list", {"title": "Products list"}) }}
      *
@@ -345,7 +368,8 @@ class WidgetExtension extends Twig_Extension
      * @param string[] $options
      *
      * @return string
-     *
+     * @throws \Twig_Error_Syntax
+     * @throws \Twig_Error_Loader
      * @throws WidgetException
      */
     public function renderWidget(Twig_Environment $env, string $widgetName, array $options = [])
@@ -373,8 +397,9 @@ class WidgetExtension extends Twig_Extension
             }
 
             return $this->template->render($context);
-        }catch (Exception $e) {
+        } catch (Exception $e) {
 //            TODO : ????
+            //@todo @RichardBures we talk about this
         }
         return '<div>Error</div>';
     }

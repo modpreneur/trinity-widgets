@@ -8,12 +8,11 @@ namespace Trinity\Bundle\WidgetsBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Trinity\Bundle\WidgetsBundle\Exception\WidgetException;
 
-
 /**
  * Class WidgetsSettingsManager
  * @package Trinity\Bundle\WidgetsBundle\Entity
  *
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="WidgetsSettingsManagerRepository")
  */
 class WidgetsSettingsManager
 {
@@ -61,11 +60,18 @@ class WidgetsSettingsManager
         return ['none' => true];
     }
 
+
     public function clearWidgetsSettings()
     {
         $this->widgetsSettings = [];
     }
 
+
+    /**
+     * @param string $widget
+     *
+     * @throws WidgetException
+     */
     public function clearWidgetSettings($widget)
     {
         if (is_string($widget)) {
@@ -77,6 +83,8 @@ class WidgetsSettingsManager
         }
 
     }
+
+
     /**
      * @param $widget
      * @param $settings
@@ -85,10 +93,9 @@ class WidgetsSettingsManager
     public function setWidgetSettings($widget, $settings)
     {
         if (is_string($widget)) {
-            foreach($settings as $newPropertyName=>$newProperty)
-            {
-                if(array_key_exists ($widget,$this->widgetsSettings)) {
-                    if (array_key_exists ($newPropertyName, $this->widgetsSettings[$widget])) {
+            foreach ($settings as $newPropertyName => $newProperty) {
+                if (array_key_exists($widget, $this->widgetsSettings)) {
+                    if (array_key_exists($newPropertyName, $this->widgetsSettings[$widget])) {
                         foreach ($this->widgetsSettings[$widget] as $propertyName => $property) {
                             if ($propertyName === $newPropertyName) {
                                 $this->widgetsSettings[$widget][$propertyName] = $newProperty;
@@ -97,16 +104,12 @@ class WidgetsSettingsManager
                     } else {
                         $this->widgetsSettings[$widget][$newPropertyName] = $newProperty;
                     }
-                }
-                else{
-
+                } else {
                     $this->widgetsSettings[$widget]=$settings;
                 }
             }
-
         } else {
             throw new WidgetException('Widget must be string (widget name).');
         }
     }
-
 }

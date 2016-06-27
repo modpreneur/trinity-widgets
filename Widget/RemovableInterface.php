@@ -5,7 +5,6 @@
 
 namespace Trinity\Bundle\WidgetsBundle\Widget;
 
-
 /**
  * Interface RemovableInterface
  * @package Trinity\Bundle\WidgetsBundle\Widget

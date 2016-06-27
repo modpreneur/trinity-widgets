@@ -10,12 +10,12 @@ namespace Trinity\Bundle\WidgetsBundle\Widget;
  */
 abstract class AbstractSmallWidget extends AbstractWidget
 {
-    protected $template = "WidgetsBundle::widget_small_layout.html.twig";
+    protected $template = 'WidgetsBundle::widget_small_layout.html.twig';
 
     /** @var int */
     protected $size = WidgetSizes::Small;
 
-    protected $type = "static";
+    protected $type = 'static';
 
     /**
      * @param  array $attributes
@@ -36,5 +36,4 @@ abstract class AbstractSmallWidget extends AbstractWidget
      * @return array
      */
     abstract public function buildSmall(array $attributes = []);
-
 }

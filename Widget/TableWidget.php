@@ -9,7 +9,6 @@ use Trinity\Bundle\WidgetsBundle\Widget\Table\Column;
 use Trinity\Bundle\WidgetsBundle\Widget\Table\TableBody;
 use Trinity\Bundle\WidgetsBundle\Widget\Table\TableHeader;
 
-
 /**
  * Class AbstractTableWidget
  * @package Trinity\Bundle\WidgetsBundle\Widget
@@ -52,6 +51,7 @@ abstract class TableWidget extends AbstractWidget
         $this->tableBody->setData($data);
     }
 
+
     /**
      * @param array $attributes
      * @return mixed
@@ -76,6 +76,5 @@ abstract class TableWidget extends AbstractWidget
      * @param array $attributes
      * @return mixed
      */
-    public abstract function buildTable(array $attributes = []);
-
+    abstract public function buildTable(array $attributes = []);
 }

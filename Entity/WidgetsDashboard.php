@@ -3,12 +3,10 @@
  * This file is part of Trinity package.
  */
 
-
 namespace Trinity\Bundle\WidgetsBundle\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
-
 
 /**
  * Class WidgetsStorage
@@ -159,5 +157,4 @@ class WidgetsDashboard
 
         return false;
     }
-
 }

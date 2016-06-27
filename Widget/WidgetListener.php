@@ -8,7 +8,6 @@ namespace Trinity\Bundle\WidgetsBundle\Widget;
 
 use Trinity\Bundle\WidgetsBundle\Event\WidgetEvent;
 
-
 /**
  * Class WidgetListener.
  */

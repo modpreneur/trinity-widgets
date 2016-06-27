@@ -8,7 +8,6 @@ namespace Trinity\Bundle\WidgetsBundle\Event;
 use Symfony\Component\EventDispatcher\Event;
 use Trinity\Bundle\WidgetsBundle\Widget\WidgetManager;
 
-
 /**
  * Class WidgetEvent.
  */

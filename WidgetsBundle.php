@@ -9,7 +9,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Trinity\Bundle\WidgetsBundle\DependencyInjection\WidgetCompilerPass;
 
-
 /**
  * Class TrinityWidgetsBundle.
  */
@@ -31,5 +30,4 @@ class WidgetsBundle extends Bundle
 
         $container->addCompilerPass(new WidgetCompilerPass());
     }
-
 }
