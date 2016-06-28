@@ -11,8 +11,7 @@ namespace Trinity\Bundle\WidgetsBundle\Widget;
  */
 class WidgetSizes
 {
-    // @todo constant must be UPPER_CASE
-    const Small = 6;
-    const Normal = 12;
-    const Full = 24;
+    const SMALL = 6;
+    const NORMAL = 12;
+    const FULL = 24;
 }

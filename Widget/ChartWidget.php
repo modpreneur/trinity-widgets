@@ -43,4 +43,5 @@ abstract class ChartWidget extends AbstractWidget
 }
 
 //@todo @TomasJancar What you mean?
+//@todo @MartinKolek probably check return of buildChart
 //@todo - check if context is array
