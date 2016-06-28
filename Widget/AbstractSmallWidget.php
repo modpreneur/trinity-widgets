@@ -13,7 +13,7 @@ abstract class AbstractSmallWidget extends AbstractWidget
     protected $template = 'WidgetsBundle::widget_small_layout.html.twig';
 
     /** @var int */
-    protected $size = WidgetSizes::Small;
+    protected $size = WidgetSizes::SMALL;
 
     protected $type = 'static';
 

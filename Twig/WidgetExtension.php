@@ -172,7 +172,7 @@ class WidgetExtension extends Twig_Extension
                 ]);
                 break;
             case WidgetManager::ACTION_RESIZE:
-                $size = ($widget->getSize() === WidgetSizes::Normal) ? WidgetSizes::Full : WidgetSizes::Normal;
+                $size = ($widget->getSize() === WidgetSizes::NORMAL) ? WidgetSizes::FULL : WidgetSizes::NORMAL;
 
                 $url = $this->router->generate('resize_widget', [
                     'widgetName' => $widget->getName(),
@@ -193,7 +193,7 @@ class WidgetExtension extends Twig_Extension
      */
     public function getSizeIcon(AbstractWidget $widget)
     {
-        $icon = ($widget->getSize() === WidgetSizes::Normal)
+        $icon = ($widget->getSize() === WidgetSizes::NORMAL)
             ?
             '<i class="trinity trinity-plus" id="get-bigger"></i><i id="get-smaller" class="trinity trinity-minus" style="display: none"></i>'
             :

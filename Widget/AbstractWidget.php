@@ -18,7 +18,7 @@ abstract class AbstractWidget extends AbstractArrayWidget implements WidgetInter
     protected $template;
 
     /** @var int */
-    protected $size = WidgetSizes::Normal;
+    protected $size = WidgetSizes::NORMAL;
 
     /** @var  string */
     protected $title;
