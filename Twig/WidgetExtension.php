@@ -213,14 +213,14 @@ class WidgetExtension extends Twig_Extension
 
     //@todo @RichardBures types?
     /**
-     * @param $env
+     * @param Twig_Environment $env
      * @param $object
-     * @param $attribute
-     * @param $widgetName
+     * @param int $attribute
+     * @param string $widgetName
      * @param UserDashboardInterface $user
      * @return string
      */
-    public function renderTableCell($env, $object, $attribute, $widgetName, UserDashboardInterface $user)
+    public function renderTableCell(Twig_Environment $env, $object, $attribute, $widgetName, UserDashboardInterface $user)
     {
         /*$widget = */$this->createWidget($widgetName, $env, $user);
 
@@ -398,10 +398,22 @@ class WidgetExtension extends Twig_Extension
 
             return $this->template->render($context);
         } catch (Exception $e) {
-//            TODO : ????
-            //@todo @RichardBures we talk about this
+            return '<div className="row">
+                        <div className="span-none-padding-xlarge-24 margin-auto">
+                            <div className="info-empty-form">
+                                <div className="row">
+                                    <i className="trinity-info"/>
+                                </div>
+                                <div className="row">
+                                    <h2 className="warning">ERROR</h2>
+                                </div>
+                                <div className="row span-none-xlarge-10">
+                                    <p> We are sorry, this widget can\'t be displayed. </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>';
         }
-        return '<div>Error</div>';
     }
 
 
