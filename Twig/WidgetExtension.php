@@ -406,8 +406,8 @@ class WidgetExtension extends Twig_Extension
                         'gridParameters' => '',
                         'title' => 'Missing Widget',
                         'size' => WidgetSizes::NORMAL,
-                        'resizable' => true,
-                        'removable' => true,
+                        'resizable' => false,
+                        'removable' => false,
                     ]
                 );
         }
