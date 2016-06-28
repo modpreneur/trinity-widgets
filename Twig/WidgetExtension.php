@@ -398,7 +398,7 @@ class WidgetExtension extends Twig_Extension
 
             return $this->template->render($context);
         } catch (\Exception $e) {
-            return $env->loadTemplate('widget_error_layout.html.twig')
+            return $env->loadTemplate('WidgetsBundle::widget_error_layout.html.twig')
                 ->render(
                     [
                         'name' => 'Missing Widget',
