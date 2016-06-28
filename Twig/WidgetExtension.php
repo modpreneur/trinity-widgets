@@ -397,22 +397,19 @@ class WidgetExtension extends Twig_Extension
             }
 
             return $this->template->render($context);
-        } catch (Exception $e) {
-            return '<div className="row">
-                        <div className="span-none-padding-xlarge-24 margin-auto">
-                            <div className="info-empty-form">
-                                <div className="row">
-                                    <i className="trinity-info"/>
-                                </div>
-                                <div className="row">
-                                    <h2 className="warning">ERROR</h2>
-                                </div>
-                                <div className="row span-none-xlarge-10">
-                                    <p> We are sorry, this widget can\'t be displayed. </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>';
+        } catch (\Exception $e) {
+            return $env->loadTemplate('widget_error_layout.html.twig')
+                ->render(
+                    [
+                        'name' => 'Missing Widget',
+                        'routeName' => '',
+                        'gridParameters' => '',
+                        'title' => 'Missing Widget',
+                        'size' => WidgetSizes::NORMAL,
+                        'resizable' => true,
+                        'removable' => true,
+                    ]
+                );
         }
     }
 
