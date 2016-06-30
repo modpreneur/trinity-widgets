@@ -12,6 +12,7 @@ use Trinity\Bundle\WidgetsBundle\Exception\WidgetException;
  * Class WidgetsSettingsManager
  * @package Trinity\Bundle\WidgetsBundle\Entity
  *
+ * @ORM\Table(name="widgets_settings_manager")
  * @ORM\Entity(repositoryClass="WidgetsSettingsManagerRepository")
  */
 class WidgetsSettingsManager
