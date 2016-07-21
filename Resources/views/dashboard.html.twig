@@ -34,23 +34,29 @@
         <!--DESKTOP-->
         <div id="show-widgets-form" class="modal-dialog small-hidden">
             <a href="#close" title="Close" class="full-width-close"></a>
-            <div class="row">
-                <a href="#close" title="Close" class="cross-link">
-                    <i class="trinity trinity-close"></i>
-                </a>
-                <div class="span-none-padding-medium-24">
-                    <header>
-                        <h2>
-                            Dashboard - settings
-                        </h2>
-                        <p>
-                            Select your favourite widgets.
-                        </p>
-                    </header>
 
+                <div class="row relative margin-0-auto margin-top-5p" style="padding-bottom: 0">
+                    <a href="#close" title="Close" class="cross-link">
+                        <i class="trinity trinity-close"></i>
+                    </a>
+                    <div class="span-none-padding-medium-24">
+                        <header>
+                            <h2>
+                                Dashboard - settings
+                            </h2>
+                            <p>
+                                Select your favourite widgets.
+                            </p>
+                        </header>
+                    </div>
+                </div>
+
+                <div class="row margin-0-auto" style="padding-bottom: 0">
                     {{ form(form, {'action': path('widget-manage'), 'method': 'POST' } ) }}
                 </div>
+
             </div>
+
 
         </div>
     </div>
