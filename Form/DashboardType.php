@@ -94,9 +94,8 @@ class DashboardType extends AbstractType
         );
     }
 
-
-    //@todo @RichardBures getName is remove from symfony 3, this works just in symfony 2
     /**
+     * just simple method to get Name. (it does not implements method from abstract class)
      * @return string
      */
     public function getName()

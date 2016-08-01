@@ -51,8 +51,7 @@ class WidgetsController extends Controller
             /** @var EntityManager $em */
             $em = $this->get('doctrine.orm.entity_manager');
 
-//            $this->get('doctrine.orm.entity_manager.abstract');
-            
+
             /** @var array $widgets */
             $widgets = [];
             if (isset($request->request->get('dashboard')['widgets'])) {

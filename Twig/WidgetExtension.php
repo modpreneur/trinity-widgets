@@ -211,10 +211,9 @@ class WidgetExtension extends Twig_Extension
 
     }
 
-    //@todo @RichardBures types?
     /**
      * @param Twig_Environment $env
-     * @param $object
+     * @param array $object
      * @param int $attribute
      * @param string $widgetName
      * @param UserDashboardInterface $user
@@ -230,7 +229,7 @@ class WidgetExtension extends Twig_Extension
             $result = '';
         }
 
-        //@todo @RichardBures internal function, this is danger because of backward compatibility
+        //@todo @MartinKolek i removed your todo, it seems its not internal anymore
         if ($this->template->hasBlock('widget_table_cell_' . $attribute)) {
             $result = $this->template->renderBlock(
                 'widget_table_cell_' . $attribute,
