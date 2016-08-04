@@ -139,12 +139,15 @@ class WidgetExtension extends Twig_Extension
     /**
      * @param Twig_Environment $env
      * @param string $widgetName
+     *
      * @return int
+     * @throws \Twig_Error_Syntax
+     * @throws \Twig_Error_Loader
+     * @throws \Trinity\Bundle\WidgetsBundle\Exception\WidgetException
      */
     public function getWidgetSize(Twig_Environment $env, $widgetName)
     {
         $widget = $this->createWidget($widgetName, $env);
-
         return $widget->getSize();
     }
 
@@ -431,6 +434,7 @@ class WidgetExtension extends Twig_Extension
             if ($cache) {
                 $wg->set($body);
                 $wg->expiresAfter(new \DateInterval('PT10M'));
+                $cache->save($wg);
             }
 
             return $body;
