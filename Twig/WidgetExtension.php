@@ -25,6 +25,7 @@ use Trinity\Component\Utils\Exception\MemberAccessException;
 use Twig_Environment;
 use Twig_Extension;
 use Twig_Template;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 /**
  * Class WidgetExtension
@@ -45,13 +46,14 @@ class WidgetExtension extends Twig_Extension
      * @var RouterInterface
      */
     private $router;
-    /**
-     * @var RequestStack
-     */
+
+    /** @var RequestStack */
     private $requestStack;
 
+    /** @var int  */
     private $widgetLayout = 24;
 
+    /** @var int  */
     private $oddEven = 1;
 
     /**
@@ -131,6 +133,7 @@ class WidgetExtension extends Twig_Extension
 
         return $widget->getSize();
     }
+
 
     /**
      * @param Twig_Environment $env
@@ -249,6 +252,7 @@ class WidgetExtension extends Twig_Extension
         return $result;
     }
 
+
     /**
      * @param Twig_Environment $env
      * @param WidgetsDashboard $dashboard
@@ -359,6 +363,7 @@ class WidgetExtension extends Twig_Extension
         return $widget;
     }
 
+
     /**
      * {{ renderWidget("projects_list", {"title": "Products list"}) }}
      *
@@ -373,9 +378,17 @@ class WidgetExtension extends Twig_Extension
      */
     public function renderWidget(Twig_Environment $env, string $widgetName, array $options = [])
     {
+
+        $cache = new FilesystemAdapter();
+        $wg    = $cache->getItem($widgetName);
+
+        if ($wg->isHit()) {
+            return $wg->get();
+        }
+
         try {
             $widget = $this->createWidget($widgetName, $env);
-            $wb = $widget->buildWidget();
+            $wb     = $widget->buildWidget();
 
             $context = [
                 'name' => $widget->getName(),
@@ -395,34 +408,26 @@ class WidgetExtension extends Twig_Extension
                 $context = array_merge($context, $options);
             }
 
-            return $this->template->render($context);
+            $body = $this->template->render($context);
+            $wg->set($body);
+            $wg->expiresAfter(new \DateInterval('PT10M'));
+
+            return $body;
         } catch (\Exception $e) {
             return $env->loadTemplate('WidgetsBundle::widget_error_layout.html.twig')
                 ->render(
                     [
-                        'name' => 'Missing Widget',
-                        'routeName' => '',
+                        'name'           => 'Missing Widget',
+                        'routeName'      => '',
                         'gridParameters' => '',
-                        'title' => 'Missing Widget',
-                        'size' => WidgetSizes::NORMAL,
-                        'resizable' => false,
-                        'removable' => false,
+                        'title'          => 'Missing Widget',
+                        'size'           => WidgetSizes::NORMAL,
+                        'resizable'      => false,
+                        'removable'      => false,
                     ]
                 );
         }
     }
-
-
-//    /**
-//     * @param string|null $typeId
-//     *
-//     * @return string[]
-//     */
-//    public function getWidgetsByTypeId($typeId = null)
-//    {
-//        return ($this->widgetManager->getWidgetsIdsByTypeId($typeId));
-//
-//    }
 
 
     /**
