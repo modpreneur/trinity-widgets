@@ -19,6 +19,10 @@ services:
         - "@router"
         - "@request_stack"
       public: true
+
+      calls:
+        - [setCache, ['@cache.app']]
+
       tags:
         - {name: twig.extension}
 

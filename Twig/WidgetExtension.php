@@ -26,6 +26,7 @@ use Twig_Environment;
 use Twig_Extension;
 use Twig_Template;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use \Symfony\Component\Cache\Adapter\AdapterInterface;
 
 /**
  * Class WidgetExtension
@@ -56,6 +57,10 @@ class WidgetExtension extends Twig_Extension
     /** @var int  */
     private $oddEven = 1;
 
+    /** @var AdapterInterface  */
+    private $cache;
+
+
     /**
      * WidgetExtension constructor.
      * @param WidgetManager $widgetManager
@@ -65,9 +70,18 @@ class WidgetExtension extends Twig_Extension
     public function __construct(WidgetManager $widgetManager, Router $router, RequestStack $requestStack)
     {
         $this->widgetManager = $widgetManager;
-        $this->request = null;
-        $this->router = $router;
-        $this->requestStack = $requestStack;
+        $this->request       = null;
+        $this->router        = $router;
+        $this->requestStack  = $requestStack;
+    }
+
+
+    /**
+     * @param AdapterInterface $cache
+     */
+    public function setCache(AdapterInterface $cache)
+    {
+        $this->cache = $cache;
     }
 
 
@@ -81,7 +95,7 @@ class WidgetExtension extends Twig_Extension
                 'renderWidget',
                 [$this, 'renderWidget'],
                 ['is_safe' => ['html'],
-                    'needs_environment' => true]
+                 'needs_environment' => true]
             ),
             new \Twig_SimpleFunction(
                 'renderWidgets',
@@ -372,18 +386,22 @@ class WidgetExtension extends Twig_Extension
      * @param string[] $options
      *
      * @return string
+     * @throws \Psr\Cache\InvalidArgumentException
      * @throws \Twig_Error_Syntax
      * @throws \Twig_Error_Loader
      * @throws WidgetException
      */
     public function renderWidget(Twig_Environment $env, string $widgetName, array $options = [])
     {
+        $cache = $this->cache;
+        $wg    = null;
 
-        $cache = new FilesystemAdapter();
-        $wg    = $cache->getItem($widgetName);
+        if($cache){
+            $wg = $cache->getItem($widgetName);
 
-        if ($wg->isHit()) {
-            return $wg->get();
+            if ($wg->isHit()) {
+                return $wg->get();
+            }
         }
 
         try {
@@ -409,23 +427,26 @@ class WidgetExtension extends Twig_Extension
             }
 
             $body = $this->template->render($context);
-            $wg->set($body);
-            $wg->expiresAfter(new \DateInterval('PT10M'));
+
+            if ($cache) {
+                $wg->set($body);
+                $wg->expiresAfter(new \DateInterval('PT10M'));
+            }
 
             return $body;
         } catch (\Exception $e) {
             return $env->loadTemplate('WidgetsBundle::widget_error_layout.html.twig')
-                ->render(
-                    [
-                        'name'           => 'Missing Widget',
-                        'routeName'      => '',
-                        'gridParameters' => '',
-                        'title'          => 'Missing Widget',
-                        'size'           => WidgetSizes::NORMAL,
-                        'resizable'      => false,
-                        'removable'      => false,
-                    ]
-                );
+               ->render(
+                   [
+                       'name'           => 'Missing Widget',
+                       'routeName'      => '',
+                       'gridParameters' => '',
+                       'title'          => 'Missing Widget',
+                       'size'           => WidgetSizes::NORMAL,
+                       'resizable'      => false,
+                       'removable'      => false,
+                   ]
+               );
         }
     }
 
