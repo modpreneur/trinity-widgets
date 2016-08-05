@@ -21,7 +21,7 @@ services:
       public: true
 
       calls:
-        - [setCache, ['@cache.app']]
+        - [setConfig, [{"cache": {"enabled": "%widgets.cache.enabled%", "service": "@cache.app", "cache_expiration_time" : "%widgets.cache.cache_expiration_time%" }}]]
 
       tags:
         - {name: twig.extension}

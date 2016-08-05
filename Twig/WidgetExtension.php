@@ -60,6 +60,9 @@ class WidgetExtension extends Twig_Extension
     /** @var AdapterInterface  */
     private $cache;
 
+    /** @var [] */
+    private $config;
+
 
     /**
      * WidgetExtension constructor.
@@ -73,6 +76,8 @@ class WidgetExtension extends Twig_Extension
         $this->request       = null;
         $this->router        = $router;
         $this->requestStack  = $requestStack;
+
+        $this->config = [];
     }
 
 
@@ -82,6 +87,11 @@ class WidgetExtension extends Twig_Extension
     public function setCache(AdapterInterface $cache)
     {
         $this->cache = $cache;
+    }
+
+
+    public function setConfig(array $config) {
+        $this->config = $config;
     }
 
 
@@ -336,6 +346,7 @@ class WidgetExtension extends Twig_Extension
      * @param string[] $widgets
      *
      * @return string
+     * @throws \Psr\Cache\InvalidArgumentException
      *
      * @throws WidgetException
      */
@@ -396,16 +407,18 @@ class WidgetExtension extends Twig_Extension
      */
     public function renderWidget(Twig_Environment $env, string $widgetName, array $options = [])
     {
-        $cache = $this->cache;
         $wg    = null;
 
-        if($cache){
+        if ( $this->config['cache']['enabled'] === false ) {
+            $cache = null;
+        } else {
+            $cache = $this->config['cache']['service'];
             $wg = $cache->getItem($widgetName);
-
             if ($wg->isHit()) {
                 return $wg->get();
             }
         }
+
 
         try {
             $widget = $this->createWidget($widgetName, $env);
@@ -433,7 +446,7 @@ class WidgetExtension extends Twig_Extension
 
             if ($cache) {
                 $wg->set($body);
-                $wg->expiresAfter(new \DateInterval('PT10M'));
+                $wg->expiresAfter(new \DateInterval($this->config['cache']['cache_expiration_time']));
                 $cache->save($wg);
             }
 

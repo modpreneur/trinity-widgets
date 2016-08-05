@@ -10,17 +10,30 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 /**
- * This is the class that validates and merges configuration from your app/config files.
- *
- * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html#cookbook-bundles-extension-config-class}
+ * Class Configuration
+ * @package Trinity\Bundle\WidgetsBundle\DependencyInjection
  */
 class Configuration implements ConfigurationInterface
 {
     /**
      * @return TreeBuilder
+     * @throws \RuntimeException
      */
     public function getConfigTreeBuilder()
     {
-        return (new TreeBuilder());
+        $treeBuilder = new TreeBuilder();
+        $rootNode = $treeBuilder->root('widgets');
+        $rootNode
+            ->children()
+                ->arrayNode('cache')
+                ->addDefaultsIfNotSet()
+                ->children()
+                    ->booleanNode('enabled')->defaultTrue()->end()
+                    ->scalarNode('cache_expiration_time')->defaultValue('PT10M')->end()
+                    ->end()
+                ->end()
+            ->end();
+
+        return $treeBuilder;
     }
 }
