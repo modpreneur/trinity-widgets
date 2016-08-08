@@ -51,13 +51,13 @@ class WidgetExtension extends Twig_Extension
     /** @var RequestStack */
     private $requestStack;
 
-    /** @var int  */
+    /** @var int */
     private $widgetLayout = 24;
 
-    /** @var int  */
+    /** @var int */
     private $oddEven = 1;
 
-    /** @var AdapterInterface  */
+    /** @var AdapterInterface */
     private $cache;
 
     /** @var [] */
@@ -73,9 +73,9 @@ class WidgetExtension extends Twig_Extension
     public function __construct(WidgetManager $widgetManager, Router $router, RequestStack $requestStack)
     {
         $this->widgetManager = $widgetManager;
-        $this->request       = null;
-        $this->router        = $router;
-        $this->requestStack  = $requestStack;
+        $this->request = null;
+        $this->router = $router;
+        $this->requestStack = $requestStack;
 
         $this->config = [];
     }
@@ -90,7 +90,8 @@ class WidgetExtension extends Twig_Extension
     }
 
 
-    public function setConfig(array $config) {
+    public function setConfig(array $config)
+    {
         $this->config = $config;
     }
 
@@ -105,7 +106,7 @@ class WidgetExtension extends Twig_Extension
                 'renderWidget',
                 [$this, 'renderWidget'],
                 ['is_safe' => ['html'],
-                 'needs_environment' => true]
+                    'needs_environment' => true]
             ),
             new \Twig_SimpleFunction(
                 'renderWidgets',
@@ -140,7 +141,6 @@ class WidgetExtension extends Twig_Extension
                 'is_safe' => ['html'],
                 'needs_environment' => true,
             ]),
-
 
         ];
     }
@@ -251,7 +251,8 @@ class WidgetExtension extends Twig_Extension
      */
     public function renderTableCell(Twig_Environment $env, $object, $attribute, $widgetName, UserDashboardInterface $user)
     {
-        /*$widget = */$this->createWidget($widgetName, $env, $user);
+        /*$widget = */
+        $this->createWidget($widgetName, $env, $user);
 
         try {
             $result = ObjectMixin::get($object, $attribute);
@@ -296,6 +297,7 @@ class WidgetExtension extends Twig_Extension
      */
     public function renderDashboard(Twig_Environment $env, WidgetsDashboard $dashboard, UserDashboardInterface $user)
     {
+        
         $widgetsNames = $dashboard->getWidgets();
         $allWidgets = $this->widgetManager->getDashboardWidgets();
         $staticWidgets = $this->widgetManager->getStaticWidgets();
@@ -305,7 +307,6 @@ class WidgetExtension extends Twig_Extension
         }
         $hiddenWidgetsNames = [];
         $showedWidgetsNames = [];
-
         /** @var WidgetsSettingsManager $widgetsSettingsManager */
         $widgetsSettingsManager = $user->getWidgetsSettingsManager();
 
@@ -324,6 +325,7 @@ class WidgetExtension extends Twig_Extension
         }
         ksort($showedWidgetsNames);
 
+
         /** @var \Twig_TemplateInterface $template */
         $template = $env->loadTemplate('WidgetsBundle::dashboard.html.twig');
         $form = $this->widgetManager->getForm();
@@ -334,6 +336,7 @@ class WidgetExtension extends Twig_Extension
             'staticWidgets' => $staticWidgetsNames,
             'form' => $form->createView(),
             'widgetLayout' => $this->widgetLayout,
+            'globalSettings' => $widgetsSettingsManager->getWidgetSettings('globalSettings'),
         ];
         $this->widgetManager->setUser($user);
 
@@ -407,9 +410,9 @@ class WidgetExtension extends Twig_Extension
      */
     public function renderWidget(Twig_Environment $env, string $widgetName, array $options = [])
     {
-        $wg    = null;
+        $wg = null;
 
-        if ( $this->config['cache']['enabled'] === false ) {
+        if ($this->config['cache']['enabled'] === false) {
             $cache = null;
         } else {
             $cache = $this->config['cache']['service'];
@@ -422,7 +425,7 @@ class WidgetExtension extends Twig_Extension
 
         try {
             $widget = $this->createWidget($widgetName, $env);
-            $wb     = $widget->buildWidget();
+            $wb = $widget->buildWidget();
 
             $context = [
                 'name' => $widget->getName(),
@@ -449,21 +452,24 @@ class WidgetExtension extends Twig_Extension
                 $wg->expiresAfter(new \DateInterval($this->config['cache']['cache_expiration_time']));
                 $cache->save($wg);
             }
-
             return $body;
         } catch (\Exception $e) {
-            return $env->loadTemplate('WidgetsBundle::widget_error_layout.html.twig')
-               ->render(
-                   [
-                       'name'           => 'Missing Widget',
-                       'routeName'      => '',
-                       'gridParameters' => '',
-                       'title'          => 'Missing Widget',
-                       'size'           => WidgetSizes::NORMAL,
-                       'resizable'      => false,
-                       'removable'      => false,
-                   ]
-               );
+            if (!$options['globalSettings']['hideBroken']) {
+                return $env->loadTemplate('WidgetsBundle::widget_error_layout.html.twig')
+                    ->render(
+                        [
+                            'name' => 'Missing Widget',
+                            'routeName' => '',
+                            'gridParameters' => '',
+                            'title' => 'Missing Widget',
+                            'size' => WidgetSizes::NORMAL,
+                            'resizable' => false,
+                            'removable' => false,
+                        ]
+                    );
+            } else {
+                return null;
+            }
         }
     }
 

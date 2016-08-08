@@ -32,3 +32,9 @@ services:
       arguments: [ "@trinity.widgets.manager"]
       tags:
         - {name: form.type, alias: trinity_widgets_bundle_dashboard_type}
+
+    trinity.twig.extension.loader:
+        class: Twig_Extension_StringLoader
+        tags:
+             - { name: 'twig.extension' }
+

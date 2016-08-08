@@ -2,7 +2,7 @@
 
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <input type="hidden" id="render-url" data-url="{{ path('ajax_render_widgets') }}"/>
-
+    <input type="hidden" id="js-globalSettings" data-ng-scope="globalSettings" value="{{ globalSettings|json_encode }}"/>
 
     <div class="dashboard-widgets">
 
@@ -15,12 +15,13 @@
         <div class="dragable-widgets row" id="dragable-widgets" data-url="{{ path('change_order_widget',{order:'0'}) }}">
 
             {% for widget in showedWidgets %}
-
-                <div  data-widget="{{ widget }}"
-                      class="widget-field regular-widget w-{{ getWidgetSize(widget) }} {{ getWidgetStyle(getWidgetSize(widget)) }}" >
-                    {{ renderWidget(widget) }}
-                </div>
-
+                {% set renderedWidget =  renderWidget(widget,{"globalSettings": globalSettings}) %}
+                {% if renderedWidget != null %}
+                    <div  data-widget="{{ widget }}"
+                          class="widget-field regular-widget w-{{ getWidgetSize(widget) }} {{ getWidgetStyle(getWidgetSize(widget)) }}" >
+                        {{ include(template_from_string(renderedWidget)) }}
+                    </div>
+                {% endif %}
             {% endfor %}
 
         </div>

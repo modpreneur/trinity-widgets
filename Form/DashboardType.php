@@ -6,6 +6,7 @@
 namespace Trinity\Bundle\WidgetsBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -41,6 +42,7 @@ class DashboardType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $globalSettings = $this->widgetManager->getGlobalSettings();
         $builder->add(
             'widgets',
             ChoiceType::class,
@@ -49,7 +51,6 @@ class DashboardType extends AbstractType
                 'expanded' => true,
                 'multiple' => true,
                 'choices' => $this->widgetManager->getFlippedDashboardWidgets(),
-
             ]
         );
 
@@ -67,6 +68,28 @@ class DashboardType extends AbstractType
                 },
 
 
+            ]
+        );
+
+        $builder->add(
+            'hideBroken',
+            CheckboxType::class,
+            [
+                'required' => false,
+                'attr' => ['description'=>' Hide broken widgets'],
+                'data' => $globalSettings['hideBroken'],
+                'label' => '',
+            ]
+        );
+
+        $builder->add(
+            'hideEmpty',
+            CheckboxType::class,
+            [
+                'required' => false,
+                'attr'=> ['description'=>'Hide empty widgets'],
+                'data' => $globalSettings['hideEmpty'],
+                'label' => '',
             ]
         );
 

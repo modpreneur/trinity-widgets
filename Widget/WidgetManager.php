@@ -315,6 +315,7 @@ class WidgetManager
         return $widgets;
     }
 
+
     /**
      * Return widgets name
      * @return array
@@ -355,6 +356,18 @@ class WidgetManager
         return $bigWidgets;
     }
 
+    /**
+     * @return array|AbstractWidget
+     */
+    public function getGlobalSettings()
+    {
+        $user = $this->tokenStorage->getToken()->getUser();
+
+        /** @var WidgetsSettingsManager $widgetsSettingsManager */
+        $widgetsSettingsManager = $user->getWidgetsSettingsManager();
+        
+        return $widgetsSettingsManager->getWidgetSettings('globalSettings');
+    }
     /**
      * @return \Symfony\Component\Form\Form
      * @throws \Symfony\Component\Form\Exception\LogicException

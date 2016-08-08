@@ -38,14 +38,15 @@ class WidgetsController extends Controller
      */
     public function manageDashboardWidgets(Request $request)
     {
-
         $form =  $this->createForm(DashboardType::class);
         $form->handleRequest($request);
 
         if ($request->request->has('dashboard')) {
+
+            $dashboard = $request->request->get('dashboard');
             $expandedWidgets = [];
-            if (isset($request->request->get('dashboard')['expandedWidgets'])) {
-                $expandedWidgets = $request->request->get('dashboard')['expandedWidgets'];
+            if (isset($dashboard['expandedWidgets'])) {
+                $expandedWidgets = $dashboard['expandedWidgets'];
             }
 
             /** @var EntityManager $em */
@@ -54,8 +55,8 @@ class WidgetsController extends Controller
 
             /** @var array $widgets */
             $widgets = [];
-            if (isset($request->request->get('dashboard')['widgets'])) {
-                $widgets = $request->request->get('dashboard')['widgets'];
+            if (isset($dashboard['widgets'])) {
+                $widgets = $dashboard['widgets'];
             }
 
             $user = $this->getUser();
@@ -74,6 +75,7 @@ class WidgetsController extends Controller
                 }
             }
 
+
             ksort($newWidgets);
             $newWidgets = array_values($newWidgets);
 
@@ -87,6 +89,15 @@ class WidgetsController extends Controller
                 }
                 $widgetsSettingsManager->setWidgetSettings($newWidgets[$i], ['inOrder'=> $i, 'size'=> $size, ]);
             }
+
+
+            $hideBroken = (bool)(array_key_exists('hideBroken', $dashboard) && $dashboard['hideBroken']);
+            $hideEmpty = (bool)(array_key_exists('hideEmpty', $dashboard) && $dashboard['hideEmpty']);
+
+            $widgetsSettingsManager->setWidgetSettings(
+                'globalSettings',
+                ['hideBroken'=>$hideBroken, 'hideEmpty' => $hideEmpty]
+            );
 
             /** @var WidgetsDashboard $dashboard */
             $dashboard = $user->getWidgetsDashboard();

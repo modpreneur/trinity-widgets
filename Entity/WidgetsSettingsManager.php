@@ -57,11 +57,12 @@ class WidgetsSettingsManager
             throw new WidgetException('Widget must be string (widget name).');
         }
 
-        /** default settings */
+        if ($widget === 'globalSettings') {
+            return ['hideBroken'=>false, 'hideEmpty' => false];
+        }
         return ['none' => true];
     }
-
-
+    
     public function clearWidgetsSettings()
     {
         $this->widgetsSettings = [];
