@@ -243,7 +243,7 @@ class WidgetExtension extends Twig_Extension
 
     /**
      * @param Twig_Environment $env
-     * @param array $object
+     * @param mixed $object
      * @param int $attribute
      * @param string $widgetName
      * @param UserDashboardInterface $user
@@ -256,7 +256,7 @@ class WidgetExtension extends Twig_Extension
 
         try {
             $result = ObjectMixin::get($object, $attribute);
-        } catch (MemberAccessException $ex) {
+        } catch (\Exception $ex) {
             $result = '';
         }
 
