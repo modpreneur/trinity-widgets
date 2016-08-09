@@ -5,6 +5,7 @@
 
 namespace Trinity\Bundle\WidgetsBundle\Twig;
 
+use Monolog\Logger;
 use Nette\Utils\Strings;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Config\Definition\Exception\Exception;
@@ -16,8 +17,10 @@ use Trinity\Bundle\WidgetsBundle\Entity\WidgetsDashboard;
 use Trinity\Bundle\WidgetsBundle\Entity\WidgetsSettingsManager;
 use Trinity\Bundle\WidgetsBundle\Exception\WidgetException;
 use Trinity\Bundle\WidgetsBundle\Widget\AbstractWidget;
+use Trinity\Bundle\WidgetsBundle\Widget\ChartWidget;
 use Trinity\Bundle\WidgetsBundle\Widget\RemovableInterface;
 use Trinity\Bundle\WidgetsBundle\Widget\ResizableInterface;
+use Trinity\Bundle\WidgetsBundle\Widget\TableWidget;
 use Trinity\Bundle\WidgetsBundle\Widget\WidgetManager;
 use Trinity\Bundle\WidgetsBundle\Widget\WidgetSizes;
 use Trinity\Component\Utils\Utils\ObjectMixin;
@@ -63,6 +66,10 @@ class WidgetExtension extends Twig_Extension
     /** @var [] */
     private $config;
 
+    /**
+     * @var Logger
+     */
+    private $logger;
 
     /**
      * WidgetExtension constructor.
@@ -70,12 +77,17 @@ class WidgetExtension extends Twig_Extension
      * @param Router $router
      * @param RequestStack $requestStack
      */
-    public function __construct(WidgetManager $widgetManager, Router $router, RequestStack $requestStack)
-    {
+    public function __construct(
+        WidgetManager $widgetManager,
+        Router $router,
+        RequestStack $requestStack,
+        Logger $logger
+    ) {
         $this->widgetManager = $widgetManager;
         $this->request = null;
         $this->router = $router;
         $this->requestStack = $requestStack;
+        $this->logger = $logger;
 
         $this->config = [];
     }
@@ -163,12 +175,11 @@ class WidgetExtension extends Twig_Extension
 
 
     /**
-     * @param Twig_Environment $env
      * @param int $size
      *
      * @return string
      */
-    public function getWidgetStyle(Twig_Environment $env, $size)
+    public function getWidgetStyle($size)
     {
         if ($size === 24) {
             if (!($this->oddEven % 2)) {
@@ -235,28 +246,34 @@ class WidgetExtension extends Twig_Extension
 
     /**
      * @param Twig_Environment $env
-     */
-    public function widget(Twig_Environment $env)
-    {
-
-    }
-
-    /**
-     * @param Twig_Environment $env
      * @param mixed $object
      * @param int $attribute
      * @param string $widgetName
      * @param UserDashboardInterface $user
      * @return string
+     * @throws \Twig_Error_Syntax
+     * @throws \Twig_Error_Loader
+     * @throws \Trinity\Bundle\WidgetsBundle\Exception\WidgetException
      */
-    public function renderTableCell(Twig_Environment $env, $object, $attribute, $widgetName, UserDashboardInterface $user)
-    {
+    public function renderTableCell(
+        Twig_Environment $env,
+        $object,
+        $attribute,
+        $widgetName,
+        UserDashboardInterface $user
+    ) {
         /*$widget = */
-        $this->createWidget($widgetName, $env, $user);
+        $this->createWidget($widgetName, $env);
 
-        try {
-            $result = ObjectMixin::get($object, $attribute);
-        } catch (\Exception $ex) {
+        if (!is_array($object)) {
+            try {
+                $result = ObjectMixin::get($object, $attribute);
+            } catch (\Exception $ex) {
+                $result = '';
+            }
+        } elseif (array_key_exists($attribute, $object)) {
+                $result = $object[$attribute];
+        } else {
             $result = '';
         }
 
@@ -297,7 +314,8 @@ class WidgetExtension extends Twig_Extension
      */
     public function renderDashboard(Twig_Environment $env, WidgetsDashboard $dashboard, UserDashboardInterface $user)
     {
-        
+
+        $this->widgetManager->setUser($user); // set user for widget manager, so user dont have to be send in method
         $widgetsNames = $dashboard->getWidgets();
         $allWidgets = $this->widgetManager->getDashboardWidgets();
         $staticWidgets = $this->widgetManager->getStaticWidgets();
@@ -337,41 +355,12 @@ class WidgetExtension extends Twig_Extension
             'form' => $form->createView(),
             'widgetLayout' => $this->widgetLayout,
             'globalSettings' => $widgetsSettingsManager->getWidgetSettings('globalSettings'),
+            // if is globalSettings send from here, then it don't have to be asked on every renderWidget function
         ];
-        $this->widgetManager->setUser($user);
 
         return $template->render($context);
     }
-
-
-    /**
-     * @param Twig_Environment $env
-     * @param string[] $widgets
-     *
-     * @return string
-     * @throws \Psr\Cache\InvalidArgumentException
-     *
-     * @throws WidgetException
-     */
-    public function renderWidgets(Twig_Environment $env, array $widgets)
-    {
-        $result = '';
-        foreach ($widgets as $widget) {
-            if (!array_key_exists('id', $widget)) {
-                throw new WidgetException(
-                    "Define widgets array: [ 'id'=> 'widget-id', 'params' => ['key' => 'value'] ]"
-                );
-            }
-
-            $params = [];
-            if (array_key_exists('params', $widget)) {
-                $params = $widget['params'];
-            }
-            $result .= "\n" . $this->renderWidget($env, $widget['id'], $params);
-        }
-
-        return $result;
-    }
+    
 
     /**
      * @param string $widgetName
@@ -384,12 +373,12 @@ class WidgetExtension extends Twig_Extension
      * @throws \Twig_Error_Loader
      * @throws \Trinity\Bundle\WidgetsBundle\Exception\WidgetException
      */
-    public function createWidget(string $widgetName, Twig_Environment $env, UserDashboardInterface $user = null)
+    public function createWidget(string $widgetName, Twig_Environment $env)
     {
         /** @var AbstractWidget $widget */
-        $widget = $this->widgetManager->createWidget($widgetName, true, $user);
+        $widget = $this->widgetManager->createWidget($widgetName, true);
         /** @var Twig_Template $template */
-        $this->template = $template = $env->loadTemplate($widget->getTemplate());
+        $this->template = $env->loadTemplate($widget->getTemplate());
 
         return $widget;
     }
@@ -444,8 +433,16 @@ class WidgetExtension extends Twig_Extension
             if ($options && is_array($options) && count($options) > 0) {
                 $context = array_merge($context, $options);
             }
-
-            $body = $this->template->render($context);
+            
+            
+            
+            if (!$this->widgetManager->isWidgetEmpty($widget)) {
+                $body = $this->template->render($context);
+            } elseif (!$options['globalSettings']['hideEmpty']) {
+                $body = $env->loadTemplate('WidgetsBundle::widget_empty_layout.html.twig')->render($context);
+            } else {
+                return null;
+            }
 
             if ($cache) {
                 $wg->set($body);
@@ -454,6 +451,7 @@ class WidgetExtension extends Twig_Extension
             }
             return $body;
         } catch (\Exception $e) {
+            $this->logger->addError($e);
             if (!$options['globalSettings']['hideBroken']) {
                 return $env->loadTemplate('WidgetsBundle::widget_error_layout.html.twig')
                     ->render(
@@ -472,8 +470,7 @@ class WidgetExtension extends Twig_Extension
             }
         }
     }
-
-
+    
     /**
      * Returns the name of the extension.
      *
@@ -483,4 +480,5 @@ class WidgetExtension extends Twig_Extension
     {
         return 'widget_extension';
     }
+
 }

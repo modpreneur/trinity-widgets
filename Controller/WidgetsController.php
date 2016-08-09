@@ -18,6 +18,8 @@ use Trinity\Bundle\WidgetsBundle\Form\DashboardType;
 use Trinity\Bundle\WidgetsBundle\Widget\AbstractWidget;
 use Trinity\Bundle\WidgetsBundle\Widget\RemovableInterface;
 use Trinity\Bundle\WidgetsBundle\Widget\ResizableInterface;
+use Trinity\Bundle\WidgetsBundle\Widget\WidgetManager;
+use Trinity\Bundle\WidgetsBundle\Widget\WidgetSizes;
 
 /**
  * Class WidgetsController
@@ -40,81 +42,76 @@ class WidgetsController extends Controller
     {
         $form =  $this->createForm(DashboardType::class);
         $form->handleRequest($request);
+        
+        $dashboard = $request->request->get('dashboard');
+        dump($dashboard);
 
-        if ($request->request->has('dashboard')) {
+        /** @var EntityManager $em */
+        $em = $this->get('doctrine.orm.entity_manager');
 
-            $dashboard = $request->request->get('dashboard');
-            $expandedWidgets = [];
+
+        /** @var array $widgets */
+        $widgets = [];
+        $expandedWidgets = [];
+        if (isset($dashboard['widgets'])) {
+            $widgets = $dashboard['widgets'];
             if (isset($dashboard['expandedWidgets'])) {
                 $expandedWidgets = $dashboard['expandedWidgets'];
             }
+        }
 
-            /** @var EntityManager $em */
-            $em = $this->get('doctrine.orm.entity_manager');
+        $user = $this->getUser();
+        /** @var WidgetsSettingsManager $widgetsSettingsManager */
+        $widgetsSettingsManager = $user->getWidgetsSettingsManager();
+        $newWidgets = [];
+        $counter = count($widgets);
 
-
-            /** @var array $widgets */
-            $widgets = [];
-            if (isset($dashboard['widgets'])) {
-                $widgets = $dashboard['widgets'];
+        foreach ($widgets as $widget) {
+            $setting = $widgetsSettingsManager->getWidgetSettings($widget);
+            if (!array_key_exists('none', $setting)) {
+                $newWidgets[$setting['inOrder']] = $widget;
+            } else {
+                $counter++;
+                $newWidgets[$counter] = $widget;
             }
-
-            $user = $this->getUser();
-            /** @var WidgetsSettingsManager $widgetsSettingsManager */
-            $widgetsSettingsManager = $user->getWidgetsSettingsManager();
-            $newWidgets = [];
-            $counter = count($widgets);
-
-            foreach ($widgets as $widget) {
-                $setting = $widgetsSettingsManager->getWidgetSettings($widget);
-                if (!array_key_exists('none', $setting)) {
-                    $newWidgets[$setting['inOrder']] = $widget;
-                } else {
-                    $counter++;
-                    $newWidgets[$counter] = $widget;
-                }
-            }
-
-
-            ksort($newWidgets);
-            $newWidgets = array_values($newWidgets);
-
-            $widgetsSettingsManager->clearWidgetsSettings();
-
-            $newWidgetsLength = count($newWidgets);
-            for ($i = 0; $i < $newWidgetsLength; $i++) {
-                $size = 12;
-                if (in_array($newWidgets[$i], $expandedWidgets, false)) {
-                    $size = 24;
-                }
-                $widgetsSettingsManager->setWidgetSettings($newWidgets[$i], ['inOrder'=> $i, 'size'=> $size, ]);
-            }
-
-
-            $hideBroken = (bool)(array_key_exists('hideBroken', $dashboard) && $dashboard['hideBroken']);
-            $hideEmpty = (bool)(array_key_exists('hideEmpty', $dashboard) && $dashboard['hideEmpty']);
-
-            $widgetsSettingsManager->setWidgetSettings(
-                'globalSettings',
-                ['hideBroken'=>$hideBroken, 'hideEmpty' => $hideEmpty]
-            );
-
-            /** @var WidgetsDashboard $dashboard */
-            $dashboard = $user->getWidgetsDashboard();
-            $dashboard->setWidgets($widgets);
-
-            try {
-                $em->persist($dashboard);
-                $em->persist($widgetsSettingsManager);
-                $em->flush();
-            } catch (Exception $e) {
-                return new JsonResponse(['error'=>'Widgets could not be saved'], 400);
-            }
-            return new JsonResponse(['message'=>'success update','widgets'=>$form->getData()['widgets']], 200);
         }
 
 
-        return new JsonResponse(['error'=>'Widgets could not be saved'], 400);
+        ksort($newWidgets);
+        $newWidgets = array_values($newWidgets);
+
+        $widgetsSettingsManager->clearWidgetsSettings();
+
+        $newWidgetsLength = count($newWidgets);
+        for ($i = 0; $i < $newWidgetsLength; $i++) {
+            $size = 12;
+            if (in_array($newWidgets[$i], $expandedWidgets, false)) {
+                $size = 24;
+            }
+            $widgetsSettingsManager->setWidgetSettings($newWidgets[$i], ['inOrder'=> $i, 'size'=> $size, ]);
+        }
+
+
+        $hideBroken = (bool)(array_key_exists('hideBroken', $dashboard) && $dashboard['hideBroken']);
+        $hideEmpty = (bool)(array_key_exists('hideEmpty', $dashboard) && $dashboard['hideEmpty']);
+
+        $widgetsSettingsManager->setWidgetSettings(
+            'globalSettings',
+            ['hideBroken'=>$hideBroken, 'hideEmpty' => $hideEmpty]
+        );
+
+        /** @var WidgetsDashboard $dashboard */
+        $dashboard = $user->getWidgetsDashboard();
+        $dashboard->setWidgets($widgets);
+
+        try {
+            $em->persist($dashboard);
+            $em->persist($widgetsSettingsManager);
+            $em->flush();
+        } catch (Exception $e) {
+            return new JsonResponse(['error'=>'Widgets could not be saved'], 400);
+        }
+        return new JsonResponse(['message'=>'success update','widgets'=>$form->getData()['widgets']], 200);
 
     }
 
@@ -159,27 +156,25 @@ class WidgetsController extends Controller
     public function removeAction($widgetName)
     {
 
+        /** @var EntityManager $em */
+        $em = $this->get('doctrine.orm.entity_manager');
+
+        /** @var WidgetsDashboard $dashboard */
+        $dashboard = $this->getUser()->getWidgetsDashboard();
+
+        /** @var WidgetsSettingsManager $widgetsSettingsManager */
+        $widgetsSettingsManager = $this->getUser()->getWidgetsSettingsManager();
+
+        $widgetsSettingsManager->clearWidgetSettings($widgetName);
+
+        if (!$dashboard->removeWidget($widgetName)) {
+            return new JsonResponse(['error' => 'Widget could not be deleted'], 400);
+        }
+
         try {
-            /** @var EntityManager $em */
-            $em = $this->get('doctrine.orm.entity_manager');
-
-            /** @var WidgetsDashboard $dashboard */
-            $dashboard = $this->getUser()->getWidgetsDashboard();
-
-            /** @var WidgetsSettingsManager $widgetsSettingsManager */
-            $widgetsSettingsManager = $this->getUser()->getWidgetsSettingsManager();
-
-            $widgetsSettingsManager->clearWidgetSettings($widgetName);
-
-            if (!$dashboard->removeWidget($widgetName)) {
-                return new JsonResponse(['error' => 'Widget could not be deleted'], 400);
-            }
-
             $em->persist($dashboard);
             $em->persist($widgetsSettingsManager);
             $em->flush();
-
-
         } catch (Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }
@@ -232,34 +227,65 @@ class WidgetsController extends Controller
      */
     private function ajaxRenderWidget($widgetName)
     {
-        $widgetManager = $this->get('trinity.widgets.manager');
+        /** @var WidgetsSettingsManager $widgetSettingsManager */
+        $widgetSettingsManager = $this->getUser()->getWidgetsSettingsManager();
+        /** @var \Twig_Environment $twig */
+        $twig = $this->get('twig');
+        try {
+            /** @var WidgetManager $widgetManager */
+            $widgetManager = $this->get('trinity.widgets.manager');
 
-        /** @var AbstractWidget $widget */
-        $widget = $widgetManager->createWidget($widgetName, true, $this->getUser());
-        $size = $widget->getSize();
-        $widgetSettings = $this->getUser()->getWidgetsSettingsManager()->getWidgetSettings($widgetName);
+            /** @var AbstractWidget $widget */
+            $widget = $widgetManager->createWidget($widgetName, true);
+            $size = $widget->getSize();
+            $widgetSettings = $widgetSettingsManager->getWidgetSettings($widgetName);
 
-        if (array_key_exists('size', $widgetSettings)) {
-            $size = $widgetSettings['size'];
+            if (array_key_exists('size', $widgetSettings)) {
+                $size = $widgetSettings['size'];
+            }
+            /** @var \Twig_TemplateInterface $template */
+            $template = $widget->getTemplate();
+            $wb = $widget->buildWidget();
+            $context = [
+                'name' => $widget->getName(),
+                'routeName' => $widget->getRouteName(),
+                'gridParameters' => $widget->getGridParameters(),
+                'widget' => $widget,
+                'title' => $widget->getTitle(),
+                'size' => $size,
+                'resizable' => $widget instanceof ResizableInterface,
+                'removable' => $widget instanceof RemovableInterface,
+            ];
+            if ($wb && is_array($wb)) {
+                $context = array_merge($context, $wb);
+            }
+
+            if (!$widgetManager->isWidgetEmpty($widget)) {
+                return $this->renderView($template, $context);
+            } elseif (!$widgetSettingsManager->getWidgetSettings('globalSettings')['hideEmpty']) {
+                $template = $twig->loadTemplate('WidgetsBundle::widget_empty_layout.html.twig');
+                return $this->renderView($template, $context);
+            } else {
+                return null;
+            }
+        } catch (\Exception $e) {
+            $this->get('logger')->addError($e);
+            
+            if (!$widgetSettingsManager->getWidgetSettings('globalSettings')['hideBroken']) {
+                $template = $twig->loadTemplate('WidgetsBundle::widget_error_layout.html.twig');
+                return $this->renderView($template, [
+                    'name' => 'Missing Widget',
+                    'routeName' => '',
+                    'gridParameters' => '',
+                    'title' => 'Missing Widget',
+                    'size' => WidgetSizes::NORMAL,
+                    'resizable' => false,
+                    'removable' => false,
+                ]);
+            } else {
+                return null;
+            }
         }
-        /** @var \Twig_TemplateInterface $template */
-        $template = $widget->getTemplate();
-        $wb = $widget->buildWidget();
-        $context = [
-            'name' => $widget->getName(),
-            'routeName' => $widget->getRouteName(),
-            'gridParameters' => $widget->getGridParameters(),
-            'widget' => $widget,
-            'title' => $widget->getTitle(),
-            'size' => $size,
-            'resizable' => $widget instanceof ResizableInterface,
-            'removable' => $widget instanceof RemovableInterface,
-        ];
-        if ($wb && is_array($wb)) {
-            $context = array_merge($context, $wb);
-        }
-        
-        return $this->renderView($template, $context);
     }
 
     /**
@@ -287,9 +313,14 @@ class WidgetsController extends Controller
 
         $widgetsHTML = [];
         foreach ($orderedWidgetsNames as $widgetName) {
-            $widgetsHTML[$widgetName] = $this->ajaxRenderWidget($widgetName);
+            $renderedWidget = $this->ajaxRenderWidget($widgetName);
+            if ($renderedWidget !== null) {
+                $widgetsHTML[$widgetName] = $renderedWidget;
+            }
         }
 
         return new JsonResponse(['message'=>'test', 'widgets'=> $widgetsHTML], 200);
     }
+
+   
 }

@@ -1,0 +1,27 @@
+{% extends "WidgetsBundle::widget_layout.html.twig" %}
+
+{% block widget_contnet %}
+    {% if empty is defined and empty.type ==  'HTML' %}
+        {{ empty.content }}
+    {% else %}
+        <div class="row">
+            <div class="span-none-padding-xlarge-24 margin-auto">
+                <div class="info-empty-form">
+                    <div class="row">
+                        <i class="trinity-info"></i>
+                    </div>
+                    <div class="row">
+                        <h2 class="warning">NO DATA</h2>
+                    </div>
+                    <div class="row span-none-xlarge-10">
+                        {% if empty is defined and empty.type == 'message' %}
+                            <p>{{ empty.content }}</p>
+                        {% else %}
+                        <p>There is nothing to show</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

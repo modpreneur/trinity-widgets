@@ -100,10 +100,9 @@ class WidgetManager
         }
 
         $redirectUrl = $this->getCurrentUri();
+        $user = $this->getUser();
 
-        if ($this->tokenStorage && $this->tokenStorage->getToken()) {
-            $user = $this->tokenStorage->getToken()->getUser();
-
+        if ($user !== null) {
             if (!($user instanceof UserDashboardInterface)) {
                 return;
             }
@@ -160,7 +159,7 @@ class WidgetManager
 
         $request = $this->requestStack->getCurrentRequest();
 
-        if($request) {
+        if ($request) {
             foreach ($choices as $hash) {
                 if ($request->get($hash)) {
                     $this->requestData[$hash] = $request->get($hash);
@@ -193,28 +192,27 @@ class WidgetManager
      * @return AbstractWidget
      * @throws WidgetException
      */
-    public function createWidget($name, $clone = true, $user=null)
+    public function createWidget($name, $clone = true, UserDashboardInterface $user = null)
     {
         /** @var AbstractWidget $widget */
         $widget = $clone ? clone $this->getWidget($name) : $this->getWidget($name);
 
         $widgetManager = null;
-        $widgetSettings = [];
 
-        $user = $this->getUser();
-
-        if($user !== null) {
+        if ($user === null) {
+            $user = $this->getUser();
+        }
+        if ($user !== null) {
             $widgetManager = $user->getWidgetsSettingsManager();
             $widgetSettings = $widgetManager->getWidgetSettings($name);
-        }
-
-
-        if (array_key_exists('size', $widgetSettings)) {
-            $widget->setSize( (int)$widgetSettings['size']);
+            if (array_key_exists('size', $widgetSettings)) {
+                $widget->setSize((int)$widgetSettings['size']);
+            }
         }
 
         return $widget;
     }
+
 
 
     /**
@@ -291,6 +289,12 @@ class WidgetManager
      */
     public function getUser()
     {
+        if ($this->user === null) {
+            $token = $this->tokenStorage->getToken();
+            if ($token !== null) {
+                return $this->tokenStorage->getToken()->getUser();
+            }
+        }
         return $this->user;
     }
 
@@ -341,7 +345,7 @@ class WidgetManager
     }
 
     public function getBigWidgets(){
-        $user = $this->tokenStorage->getToken()->getUser();
+        $user = $this->getUser();
 
         /** @var WidgetsSettingsManager $widgetsSettingsManager */
         $widgetsSettingsManager = $user->getWidgetsSettingsManager();
@@ -356,12 +360,39 @@ class WidgetManager
         return $bigWidgets;
     }
 
+    public function isWidgetEmpty($widget)
+    {
+        if ($widget instanceof TableWidget) {
+            $wb = $widget->buildWidget();
+            return !($wb['body']);
+        } elseif ($widget instanceof ChartWidget) {
+            $wb = $widget->buildWidget();
+            if (array_key_exists('data', $wb)) {
+                $data = $wb['data'];
+                array_shift($data);
+                foreach ($data as $item) {
+                    array_shift($item);
+                    foreach ($item as $val) {
+                        if ($val) {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            } else {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * @return array|AbstractWidget
      */
     public function getGlobalSettings()
     {
-        $user = $this->tokenStorage->getToken()->getUser();
+        $user = $this->getUser();
 
         /** @var WidgetsSettingsManager $widgetsSettingsManager */
         $widgetsSettingsManager = $user->getWidgetsSettingsManager();
@@ -382,7 +413,7 @@ class WidgetManager
         $form->handleRequest($request);
 
         /** @var UserDashboardInterface $user */
-        $user = $this->tokenStorage->getToken()->getUser();
+        $user = $this->getUser();
 
 
         /** @var WidgetsDashboard $dashboard */
@@ -396,7 +427,6 @@ class WidgetManager
             $this->em->flush();
 
             $this->redirect = true;
-
         } else {
             $form->setData(['widgets' => $dashboard->getWidgets()]);
         }

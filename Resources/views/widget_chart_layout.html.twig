@@ -6,12 +6,8 @@
 
     </div>
 
-    {% if data is defined %}
     <input type='hidden' class="chart-data-translator" data-type="chart"
             data-chart-type="{{ chartType }}" data-chart-data="{{ data|json_encode }}"
             data-name="{{ widget.name }}" data-chart-options="{{ options|json_encode }}"/>
     <input type='hidden' id="chart-{{ widget.name }}"/>
-    {% elseif empty is defined%}
-        <input type='hidden' class="empty-chart" data-content="{{ empty|json_encode }}"/>
-    {% endif%}
 {% endblock %}

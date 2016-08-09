@@ -18,6 +18,7 @@ services:
         - "@trinity.widgets.manager"
         - "@router"
         - "@request_stack"
+        - "@logger"
       public: true
 
       calls:

@@ -41,7 +41,3 @@ abstract class ChartWidget extends AbstractWidget
     abstract public function buildChart(array $attributes = []);
 
 }
-
-//@todo @TomasJancar What you mean?
-//@todo @MartinKolek probably check return of buildChart
-//@todo - check if context is array

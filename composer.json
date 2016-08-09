@@ -27,6 +27,7 @@
     "symfony/framework-bundle": "~2.8|~3.0",
     "symfony/http-foundation": "~2.8|~3.0",
     "symfony/http-kernel": "~2.8|~3.0",
+    "symfony/monolog-bundle": "~2.8",
     "symfony/routing": "~2.8|~3.0",
     "symfony/security": "~2.8|~3.0",
     "doctrine/common": "~2.5",
