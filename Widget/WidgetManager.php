@@ -360,31 +360,20 @@ class WidgetManager
         return $bigWidgets;
     }
 
+    /**
+     * @param AbstractWidget $widget
+     * @return bool
+     */
     public function isWidgetEmpty($widget)
     {
+
+        $wb = $widget->buildWidget();
         if ($widget instanceof TableWidget) {
-            $wb = $widget->buildWidget();
-            return !($wb['body']);
+            return !$wb['body'];
         } elseif ($widget instanceof ChartWidget) {
-//            $wb = $widget->buildWidget();
-//            if (array_key_exists('data', $wb)) {
-//                $data = $wb['data'];
-//                array_shift($data);
-//                foreach ($data as $item) {
-//                    array_shift($item);
-//                    foreach ($item as $val) {
-//                        if ($val) {
-//                            return false;
-//                        }
-//                    }
-//                }
-//                return true;
-//            } else {
-//                return true;
-//            }
+            return !array_key_exists('chart', $wb);
         }
 
-        return false;
     }
 
     /**
