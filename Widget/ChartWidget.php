@@ -40,4 +40,35 @@ abstract class ChartWidget extends AbstractWidget
      */
     abstract public function buildChart(array $attributes = []);
 
+    /**
+     * @param string $phpFormat
+     * @return string
+     */
+    protected function formatDateTime(string $phpFormat){
+        $formats = [
+            'd' => '%d',
+            'D' => '%a',
+            'm' => '%m',
+            'Y' => '%Y',
+            'j' => '%e',
+            'F' => '%B',
+            'n' => '%_I',
+            'h' => '%I',
+            'i' => '%M',
+            's' => '%S',
+            'A' => '%p',
+            'H' => '%H',
+        ];
+
+        $d3Format = "";
+        $chars = str_split($phpFormat);
+        foreach ($chars as $char) {
+            if (array_key_exists($char, $formats)) {
+                $d3Format .= $formats[$char];
+            } else {
+                $d3Format .= $char;
+            }
+        }
+        return $d3Format;
+    }
 }

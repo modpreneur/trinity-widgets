@@ -1,5 +1,4 @@
 {% block dashboard %}
-
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <input type="hidden" id="render-url" data-url="{{ path('ajax_render_widgets') }}"/>
     <input type="hidden" id="js-globalSettings" data-ng-scope="globalSettings" value="{{ globalSettings|json_encode }}"/>

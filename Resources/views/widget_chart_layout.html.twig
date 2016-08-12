@@ -7,7 +7,6 @@
     </div>
 
     <input type='hidden' class="chart-data-translator" data-type="chart"
-            data-chart-type="{{ chartType }}" data-chart-data="{{ data|json_encode }}"
-            data-name="{{ widget.name }}" data-chart-options="{{ options|json_encode }}"/>
+           data-chart="{{ chart|json_encode }}" data-name="{{ widget.name }}"/>
     <input type='hidden' id="chart-{{ widget.name }}"/>
 {% endblock %}

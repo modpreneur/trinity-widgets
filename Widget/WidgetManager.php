@@ -366,22 +366,22 @@ class WidgetManager
             $wb = $widget->buildWidget();
             return !($wb['body']);
         } elseif ($widget instanceof ChartWidget) {
-            $wb = $widget->buildWidget();
-            if (array_key_exists('data', $wb)) {
-                $data = $wb['data'];
-                array_shift($data);
-                foreach ($data as $item) {
-                    array_shift($item);
-                    foreach ($item as $val) {
-                        if ($val) {
-                            return false;
-                        }
-                    }
-                }
-                return true;
-            } else {
-                return true;
-            }
+//            $wb = $widget->buildWidget();
+//            if (array_key_exists('data', $wb)) {
+//                $data = $wb['data'];
+//                array_shift($data);
+//                foreach ($data as $item) {
+//                    array_shift($item);
+//                    foreach ($item as $val) {
+//                        if ($val) {
+//                            return false;
+//                        }
+//                    }
+//                }
+//                return true;
+//            } else {
+//                return true;
+//            }
         }
 
         return false;
