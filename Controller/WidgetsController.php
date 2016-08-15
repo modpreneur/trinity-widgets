@@ -44,7 +44,6 @@ class WidgetsController extends Controller
         $form->handleRequest($request);
         
         $dashboard = $request->request->get('dashboard');
-        dump($dashboard);
 
         /** @var EntityManager $em */
         $em = $this->get('doctrine.orm.entity_manager');
