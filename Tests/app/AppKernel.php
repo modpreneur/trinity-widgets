@@ -4,7 +4,6 @@
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
 
-
 /**
  * Class AppKernel.
  */
@@ -15,18 +14,20 @@ class AppKernel extends Kernel
      */
     public function registerBundles()
     {
-        return array(
+        return [
             new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new \Trinity\Bundle\WidgetsBundle\WidgetsBundle(),
             new \Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new \Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
             new \Symfony\Bundle\SecurityBundle\SecurityBundle(),
-        );
+            new \Symfony\Bundle\MonologBundle\MonologBundle(),
+        ];
     }
-
 
     /**
      * @param LoaderInterface $loader
+     *
+     * @throws \Exception
      */
     public function registerContainerConfiguration(LoaderInterface $loader)
     {

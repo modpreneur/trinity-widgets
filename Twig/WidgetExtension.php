@@ -8,7 +8,6 @@ namespace Trinity\Bundle\WidgetsBundle\Twig;
 use Monolog\Logger;
 use Nette\Utils\Strings;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
-use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
@@ -17,18 +16,14 @@ use Trinity\Bundle\WidgetsBundle\Entity\WidgetsDashboard;
 use Trinity\Bundle\WidgetsBundle\Entity\WidgetsSettingsManager;
 use Trinity\Bundle\WidgetsBundle\Exception\WidgetException;
 use Trinity\Bundle\WidgetsBundle\Widget\AbstractWidget;
-use Trinity\Bundle\WidgetsBundle\Widget\ChartWidget;
 use Trinity\Bundle\WidgetsBundle\Widget\RemovableInterface;
 use Trinity\Bundle\WidgetsBundle\Widget\ResizableInterface;
-use Trinity\Bundle\WidgetsBundle\Widget\TableWidget;
 use Trinity\Bundle\WidgetsBundle\Widget\WidgetManager;
 use Trinity\Bundle\WidgetsBundle\Widget\WidgetSizes;
 use Trinity\Component\Utils\Utils\ObjectMixin;
-use Trinity\Component\Utils\Exception\MemberAccessException;
 use Twig_Environment;
 use Twig_Extension;
 use Twig_Template;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use \Symfony\Component\Cache\Adapter\AdapterInterface;
 
 /**
@@ -46,9 +41,7 @@ class WidgetExtension extends Twig_Extension
     /** @var  Twig_Template */
     private $template;
 
-    /**
-     * @var RouterInterface
-     */
+    /** @var RouterInterface */
     private $router;
 
     /** @var RequestStack */
@@ -66,16 +59,16 @@ class WidgetExtension extends Twig_Extension
     /** @var [] */
     private $config;
 
-    /**
-     * @var Logger
-     */
+    /** @var Logger */
     private $logger;
 
     /**
      * WidgetExtension constructor.
+     *
      * @param WidgetManager $widgetManager
      * @param Router $router
      * @param RequestStack $requestStack
+     * @param Logger $logger
      */
     public function __construct(
         WidgetManager $widgetManager,
@@ -101,7 +94,9 @@ class WidgetExtension extends Twig_Extension
         $this->cache = $cache;
     }
 
-
+    /**
+     * @param array $config
+     */
     public function setConfig(array $config)
     {
         $this->config = $config;
@@ -223,7 +218,6 @@ class WidgetExtension extends Twig_Extension
                 break;
         }
 
-
         return $url;
     }
 
@@ -277,7 +271,7 @@ class WidgetExtension extends Twig_Extension
             $result = '';
         }
 
-        //@todo @MartinKolek i removed your todo, it seems its not internal anymore
+        //TODO internal function
         if ($this->template->hasBlock('widget_table_cell_' . $attribute)) {
             $result = $this->template->renderBlock(
                 'widget_table_cell_' . $attribute,

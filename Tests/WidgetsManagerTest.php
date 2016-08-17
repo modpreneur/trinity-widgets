@@ -8,9 +8,6 @@ namespace Trinity\Bundle\WidgetsBundle\Tests;
 
 use Symfony\Bridge\Twig\Extension\RoutingExtension;
 use Symfony\Bundle\FrameworkBundle\Templating\GlobalVariables;
-use Symfony\Component\Routing\Exception\InvalidParameterException;
-use Symfony\Component\Routing\Exception\MissingMandatoryParametersException;
-use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RequestContext;
 use Trinity;
@@ -18,7 +15,6 @@ use Twig_Environment;
 use Twig_Extension_Debug;
 use Twig_Extension_StringLoader;
 use Twig_Loader_Filesystem;
-
 
 /**
  * Class WidgetsManagerTest.
@@ -33,7 +29,7 @@ class WidgetsManagerTest extends BaseTest
     public function testManager()
     {
         $manager = $this->getManager();
-        $this->assertNotNull($manager->createWidget('testWidget'));
+        static::assertNotNull($manager->createWidget('testWidget'));
     }
 
 
@@ -52,13 +48,13 @@ class WidgetsManagerTest extends BaseTest
     public function testRenderWidget()
     {
         $twig = $this->getTwig();
-        $manager = $this->getManager();
+//        $manager = $this->getManager();
 
         $template = $twig->loadTemplate('index.html.twig');
         $result   = $template->render(['app' => 1]);
         
-        $this->assertContains('Non define', $result);
-        $this->assertContains('Test widget', $result);
+        static::assertContains('Non define', $result);
+        static::assertContains('Test widget', $result);
     }
 
 
@@ -69,7 +65,7 @@ class WidgetsManagerTest extends BaseTest
     {
         $loader = new Twig_Loader_Filesystem([__DIR__.'/templates', __DIR__.'/../Resources/views/']);
 
-        $twig = new Twig_Environment($loader, array('cache' => false, 'debug' => true));
+        $twig = new Twig_Environment($loader, ['cache' => false, 'debug' => true]);
         $twig->addExtension(new Twig_Extension_Debug());
         $twig->addExtension(new Twig_Extension_StringLoader());
         $twig->addExtension(new RoutingExtension(new class () implements UrlGeneratorInterface{
@@ -85,9 +81,9 @@ class WidgetsManagerTest extends BaseTest
                 // TODO: Implement getContext() method.
             }
 
-            public function generate($name, $parameters = array(), $referenceType = self::ABSOLUTE_PATH)
+            public function generate($name, $parameters = [], $referenceType = self::ABSOLUTE_PATH)
             {
-               return "";
+                return '';
             }
         }));
         $twig->addExtension($this->getContainer()->get('trinity.widgets.extension'));

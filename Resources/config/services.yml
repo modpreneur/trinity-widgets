@@ -20,13 +20,10 @@ services:
         - "@request_stack"
         - "@logger"
       public: true
-
       calls:
         - [setConfig, [{"cache": {"enabled": "%widgets.cache.enabled%", "service": "@cache.app", "cache_expiration_time" : "%widgets.cache.cache_expiration_time%" }}]]
-
       tags:
         - {name: twig.extension}
-
 
     trinity.widgets.dashboard.form.dashboard_type:
       class: Trinity\Bundle\WidgetsBundle\Form\DashboardType

@@ -59,6 +59,15 @@ security:
         pattern: ^/(_(profiler|wdt)|css|images|js)/
         security: false
 
+monolog:
+    handlers:
+        console:
+            type:                console
+            verbosity_levels:
+                VERBOSITY_NORMAL:       WARNING
+                VERBOSITY_VERBOSE:      NOTICE
+                VERBOSITY_VERY_VERBOSE: INFO
+                VERBOSITY_DEBUG:        DEBUG
 
 services:
    trinity.widget.widget:
