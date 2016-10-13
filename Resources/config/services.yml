@@ -8,6 +8,7 @@ services:
         - "@doctrine.orm.entity_manager"
         - "@form.factory"
         - "@request_stack"
+      lazy: true  
       tags:
          - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
 
