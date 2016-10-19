@@ -23,7 +23,7 @@
                 {% if removable %}
                     {#widgetCloser is use by JS#}
                     {% if app.user %}
-                        <a class="close widgetCloser" href="{{ getWidgetUrl('remove', widget, app.user) }}">
+                        <a class="close widgetCloser" id="close-{{ title | trim('-') }}" href="{{ getWidgetUrl('remove', widget, app.user) }}">
                             <i class="trinity trinity-pin"></i>
                         </a>
                     {% endif %}
@@ -31,7 +31,7 @@
             {% endblock %}
             {% block widget_resize %}
                 {% if resizable %}
-                    <a class="close widgetResizer" href="{{ getWidgetUrl('resize', widget, app.user) }}">
+                    <a class="close widgetResizer" id="resize-{{ title | trim('-') }}" href="{{ getWidgetUrl('resize', widget, app.user) }}">
                         {% if size == 24 %}
                             <i class="trinity trinity-arrow-right rotate-180 color-white"></i>
                         {% else %}
@@ -40,7 +40,7 @@
                     </a>
                 {% endif %}
             {% endblock %}
-            <div class="handle"></div>
+            <div class="handle" id="handle-{{ title | trim('-') }}" ></div>
 
         </header>
 
