@@ -1,8 +1,8 @@
 {% block grid %}
 
     {% block widget_start %}
-        <div class="span-none-padding-large-{{ size }}">
-        <section class="trinity-widget">
+        <div class="span-none-padding-large-{{ size }}" id="widget-section-{{ title | replace({' ': "-"}) }}">
+        <section class="trinity-widget" >
     {% endblock %}
 
     {% block widget_header %}
@@ -23,7 +23,7 @@
                 {% if removable %}
                     {#widgetCloser is use by JS#}
                     {% if app.user %}
-                        <a class="close widgetCloser" id="close-{{ title | trim(' ') }}" href="{{ getWidgetUrl('remove', widget, app.user) }}">
+                        <a class="close widgetCloser" id="close-{{ title | replace({' ': "-"}) }}" href="{{ getWidgetUrl('remove', widget, app.user) }}">
                             <i class="trinity trinity-pin"></i>
                         </a>
                     {% endif %}
@@ -31,16 +31,16 @@
             {% endblock %}
             {% block widget_resize %}
                 {% if resizable %}
-                    <a class="close widgetResizer" id="resize-{{ title | trim(' ') }}" href="{{ getWidgetUrl('resize', widget, app.user) }}">
+                    <a class="close widgetResizer" id="resize-{{ title | replace({' ': "-"}) }}" href="{{ getWidgetUrl('resize', widget, app.user) }}">
                         {% if size == 24 %}
-                            <i class="trinity trinity-arrow-right rotate-180 color-white"></i>
+                            <i class="trinity trinity-arrow-right color-white rotate-180" id="resize-icon-{{ title | replace({' ': "-"}) }}"></i>
                         {% else %}
-                            <i class="trinity trinity-arrow-right color-white"></i>
+                            <i class="trinity trinity-arrow-right color-white" id="resize-icon-{{ title | replace({' ': "-"}) }}"></i>
                         {% endif %}
                     </a>
                 {% endif %}
             {% endblock %}
-            <div class="handle" id="handle-{{ title | trim(' ') }}" ></div>
+            <div class="handle" id="handle-{{ title | replace({' ': "-"}) }}" ></div>
 
         </header>
 
@@ -48,7 +48,7 @@
 
 
     {% block widget_contnet_wrapper %}
-        <main class="row content-box">
+        <main class="row content-box" ">
             <div class="content">
                 {{ block('widget_contnet') }}
             </div>
