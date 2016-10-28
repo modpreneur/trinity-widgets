@@ -71,16 +71,16 @@ class DashboardType extends AbstractType
             ]
         );
 
-        $builder->add(
-            'hideBroken',
-            CheckboxType::class,
-            [
-                'required' => false,
-                'attr' => ['description'=>' Hide broken widgets'],
-                'data' => $globalSettings['hideBroken'],
-                'label' => '',
-            ]
-        );
+//        $builder->add(
+//            'hideBroken',
+//            CheckboxType::class,
+//            [
+//                'required' => false,
+//                'attr' => ['description'=>' Hide broken widgets'],
+//                'data' => $globalSettings['hideBroken'],
+//                'label' => '',
+//            ]
+//        );
 
         $builder->add(
             'hideEmpty',
