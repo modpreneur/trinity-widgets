@@ -78,7 +78,8 @@ class WidgetManager
         EntityManager $em,
         FormFactoryInterface $formFactory,
         RequestStack $requestStack
-    ) {
+    )
+    {
         $this->router = $router;
         $this->tokenStorage = $tokenStorage;
         $this->em = $em;
@@ -143,7 +144,7 @@ class WidgetManager
     {
         $request = $this->requestStack->getCurrentRequest();
         if ($request) {
-            return $request->getScheme().'://'.$request->getHttpHost().$request->getBaseUrl().$request->getPathInfo();
+            return $request->getScheme() . '://' . $request->getHttpHost() . $request->getBaseUrl() . $request->getPathInfo();
         }
 
         return null;
@@ -212,7 +213,6 @@ class WidgetManager
 
         return $widget;
     }
-
 
 
     /**
@@ -344,17 +344,19 @@ class WidgetManager
 
     }
 
-    public function getBigWidgets(){
+    public function getBigWidgets()
+    {
         $user = $this->getUser();
 
         /** @var WidgetsSettingsManager $widgetsSettingsManager */
         $widgetsSettingsManager = $user->getWidgetsSettingsManager();
         $bigWidgets = [];
         foreach ($this->widgets as $item) {
-            $widgetSetting =$widgetsSettingsManager->getWidgetSettings($item->getName());
-            if(array_key_exists ( 'size' , $widgetSetting ) && $widgetSetting['size'] === 24)
-            {
-                $bigWidgets[]=$item->getName();
+            $widgetSetting = $widgetsSettingsManager->getWidgetSettings($item->getName());
+            if (array_key_exists('size', $widgetSetting) &&
+                ($widgetSetting['size'] === '24' || $widgetSetting['size'] === 24)
+            ) { // todo find out why size changet from int to string or whot is going there now
+                $bigWidgets[] = $item->getName();
             }
         }
         return $bigWidgets;
@@ -385,9 +387,10 @@ class WidgetManager
 
         /** @var WidgetsSettingsManager $widgetsSettingsManager */
         $widgetsSettingsManager = $user->getWidgetsSettingsManager();
-        
+
         return $widgetsSettingsManager->getWidgetSettings('globalSettings');
     }
+
     /**
      * @return \Symfony\Component\Form\Form
      * @throws \Symfony\Component\Form\Exception\LogicException
