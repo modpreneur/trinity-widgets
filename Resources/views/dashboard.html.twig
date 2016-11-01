@@ -52,7 +52,25 @@
                 </div>
 
                 <div class="row margin-0-auto" style="padding-bottom: 0">
-                    {{ form(form, {'action': path('widget-manage'), 'method': 'POST' } ) }}
+                    {#{{ form(form, {'action': path('widget-manage'), 'method': 'POST' } ) }}#}
+                    {{ form_start(form, {'action': path('widget-manage'), 'method': 'POST' }) }}
+                    <div id="dashboard">
+                        {{ form_row(form.widgets) }}
+                        {{ form_row(form.expandedWidgets) }}
+
+                        <div class="span-xlarge-24 span-large-24 span-medium-24 span-small-24 span-mini-24">
+                            <div class="span-none-padding-xlarge-1 span-none-padding-large-1 span-none-padding-medium-1 form-left margin-right-5">
+                                {{ form_widget(form.hideEmpty) }}
+                            </div>
+                            <div class="span-none-padding-xlarge-9 span-none-padding-large-16 span-none-padding-medium-16 form-right">
+                                {{ form_label(form.hideEmpty) }}
+                            </div>
+                        </div>
+
+                        {{ form_row(form.submit) }}
+                    </div>
+
+                    {{ form_end(form) }}
                 </div>
 
             </div>

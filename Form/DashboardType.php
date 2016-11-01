@@ -87,9 +87,9 @@ class DashboardType extends AbstractType
             CheckboxType::class,
             [
                 'required' => false,
-                'attr'=> ['description'=>'Hide empty widgets'],
+//                'attr'=> ['description'=>'Hide empty widgets'],
                 'data' => $globalSettings['hideEmpty'],
-                'label' => '',
+                'label' => 'Hide empty widgets',
             ]
         );
 
