@@ -272,7 +272,7 @@ class WidgetExtension extends Twig_Extension
         }
 
         //TODO internal function
-        if ($this->template->hasBlock('widget_table_cell_' . $attribute)) {
+        if ($this->template->hasBlock('widget_table_cell_' . $attribute, [])) {
             $result = $this->template->renderBlock(
                 'widget_table_cell_' . $attribute,
                 ['value' => $result, 'row' => $object]
