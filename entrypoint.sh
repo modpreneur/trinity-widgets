@@ -4,4 +4,6 @@ composer update
 
 phpunit
 
-#while true; do sleep 1000; done
+phpstan analyse Controller/ DataFixtures/ DependencyInjection/ Entity/ Event/ Exception/ Form/ Tests/ Twig/ Widget/ --level=4
+
+tail -f /dev/null
