@@ -1,9 +1,9 @@
 #!/bin/bash sh
 
-#composer update
+composer update
 
-#phpunit
+phpunit
 
-#phpstan analyse Controller/ DataFixtures/ DependencyInjection/ Entity/ Event/ Exception/ Form/ Tests/ Twig/ Widget/ --level=4
+phpstan analyse Controller/ DataFixtures/ DependencyInjection/ Entity/ Event/ Exception/ Form/ Tests/ Twig/ Widget/ --level=4
 
-tail -f /dev/null
+#tail -f /dev/null
