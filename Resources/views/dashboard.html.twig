@@ -27,54 +27,40 @@
     </div>
 
 
-    <div class="people-item">
-        <a href="#show-widgets-form" class="modal-a button button-secondary">MODAL</a>
-
-        <!--DESKTOP-->
-        <div id="show-widgets-form" class="modal-dialog small-hidden">
-            <a href="#close" title="Close" class="full-width-close"></a>
-
-                <div class="row relative margin-0-auto margin-top-5p" style="padding-bottom: 0">
-                    <a href="#close" title="Close" class="cross-link">
-                        <i class="trinity trinity-close"></i>
-                    </a>
-                    <div class="span-none-padding-medium-24">
-                        <header>
-                            <h2>
-                                Dashboard - settings
-                            </h2>
-                            <p>
-                                Select your favourite widgets.
-                            </p>
-                        </header>
-                    </div>
+    <input type="checkbox" id="modal-01" hidden class="modal-input">
+    <label for="modal-01" id="show-widgets-form" class="modal-label button button-primary">Modal</label>
+    <div class="modal-wrapper">
+        <label for="modal-01" class="modal-close-full-width"></label>
+        <div class="modal-content">
+            <label for="modal-01" class="modal-close">
+                <i class="trinity trinity-close"></i>
+            </label>
+            <div class="row">
+                <div class="grid-auto">
+                    <h2>Dashboard - settings</h2>
+                    <p>Select your favorite widgets</p>
                 </div>
+            </div>
+            <div id="show-widgets-form" class="row">
+                {{ form_start(form, {'action': path('widget-manage'), 'method': 'POST' }) }}
+                <div id="dashboard">
+                    {{ form_row(form.widgets) }}
+                    {{ form_row(form.expandedWidgets) }}
 
-                <div class="row margin-0-auto" style="padding-bottom: 0">
-                    {#{{ form(form, {'action': path('widget-manage'), 'method': 'POST' } ) }}#}
-                    {{ form_start(form, {'action': path('widget-manage'), 'method': 'POST' }) }}
-                    <div id="dashboard">
-                        {{ form_row(form.widgets) }}
-                        {{ form_row(form.expandedWidgets) }}
-
-                        <div class="span-xlarge-24 span-large-24 span-medium-24 span-small-24 span-mini-24 padding-bottom-10 padding-left-10">
-                            <div class="span-none-padding-xlarge-1 span-none-padding-large-1 span-none-padding-medium-1 form-left margin-right-5">
-                                {{ form_widget(form.hideEmpty) }}
-                            </div>
-                            <div class="span-none-padding-xlarge-9 span-none-padding-large-16 span-none-padding-medium-16 form-right">
-                                {{ form_label(form.hideEmpty) }}
-                            </div>
+                    <div class="">
+                        <div class="">
+                            {{ form_widget(form.hideEmpty) }}
                         </div>
+                        <div class="">
+                            {{ form_label(form.hideEmpty) }}
+                        </div>
+                    </div>
 
                         {{ form_row(form.submit) }}
-                    </div>
-
-                    {{ form_end(form) }}
                 </div>
 
+                {{ form_end(form) }}
             </div>
-
-
         </div>
     </div>
 
