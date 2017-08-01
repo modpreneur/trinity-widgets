@@ -5,7 +5,7 @@
         {{ empty.content }}
     {% else %}
         <div class="row">
-            <div class="span-none-padding-xlarge-24 margin-auto">
+            <div class="xlarge-24 margin-auto">
                 <div class="info-empty-form">
                     <div class="row">
                         <i class="trinity-info"></i>
@@ -13,7 +13,7 @@
                     <div class="row">
                         <h2 class="warning">NO DATA</h2>
                     </div>
-                    <div class="row span-none-xlarge-10">
+                    <div class="row xlarge-10">
                         {% if empty is defined and empty.type == 'message' %}
                             <p>{{ empty.content }}</p>
                         {% else %}
