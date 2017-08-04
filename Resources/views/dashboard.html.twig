@@ -6,7 +6,7 @@
 
         <div class="small-widgets row">
             {% for widget in staticWidgets %}
-                <div  data-widget="{{ widget }}" class="widget-field small-widget">{{ renderWidget(widget) }} </div>
+                <div  data-widget="{{ widget }}" class="widget-field grid medium-6">{{ renderWidget(widget) }} </div>
             {% endfor %}
         </div>
 
@@ -21,9 +21,7 @@
                     </div>
                 {% endif %}
             {% endfor %}
-
         </div>
-
     </div>
 
 
