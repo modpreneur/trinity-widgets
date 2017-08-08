@@ -16,7 +16,7 @@
                 {% set renderedWidget =  renderWidget(widget,{"globalSettings": globalSettings}) %}
                 {% if renderedWidget != null %}
                     <div  data-widget="{{ widget }}"
-                          class="widget-field regular-widget w-{{ getWidgetSize(widget) }} {{ getWidgetStyle(getWidgetSize(widget)) }}" >
+                          class="grid medium-{{ getWidgetSize(widget) }} widget-field regular-widget w-{{ getWidgetSize(widget) }} {{ getWidgetStyle(getWidgetSize(widget)) }}" >
                         {{ include(template_from_string(renderedWidget)) }}
                     </div>
                 {% endif %}
@@ -26,7 +26,7 @@
 
 
     <input type="checkbox" id="modal-01" hidden class="modal-input">
-    <label for="modal-01" id="show-widgets-form" class="modal-label button button-primary">Modal</label>
+    <label for="modal-01" i d="show-widgets-form" class="modal-label button button-primary">Modal</label>
     <div class="modal-wrapper">
         <label for="modal-01" class="modal-close-full-width"></label>
         <div class="modal-content">
