@@ -16,7 +16,7 @@
                 {% set renderedWidget =  renderWidget(widget,{"globalSettings": globalSettings}) %}
                 {% if renderedWidget != null %}
                     <div  data-widget="{{ widget }}"
-                          class="widget-field regular-widget w-{{ getWidgetSize(widget) }} {{ getWidgetStyle(getWidgetSize(widget)) }}" >
+                          class="grid widget-field regular-widget w-{{ getWidgetSize(widget) }} {{ getWidgetStyle(getWidgetSize(widget)) }}" >
                         {{ include(template_from_string(renderedWidget)) }}
                     </div>
                 {% endif %}
@@ -27,12 +27,12 @@
     </div>
 
 
-    <input type="checkbox" id="modal-01" hidden class="modal-input">
-    <label for="modal-01" id="show-widgets-form" class="modal-label button button-primary">Modal</label>
+    <input type="checkbox" id="modal-02" hidden class="modal-input">
+    <label for="modal-02" id="show-widgets-form" class="modal-label button button-primary">Modal</label>
     <div class="modal-wrapper">
-        <label for="modal-01" class="modal-close-full-width"></label>
+        <label for="modal-02" class="modal-close-full-width"></label>
         <div class="modal-content">
-            <label for="modal-01" class="modal-close">
+            <label for="modal-02" class="modal-close">
                 <i class="trinity trinity-close"></i>
             </label>
             <div class="row">
@@ -47,11 +47,11 @@
                     {{ form_row(form.widgets) }}
                     {{ form_row(form.expandedWidgets) }}
 
-                    <div class="">
-                        <div class="">
+                    <div class="large-24">
+                        <div class="large-24">
                             {{ form_widget(form.hideEmpty) }}
                         </div>
-                        <div class="">
+                        <div class="large-24">
                             {{ form_label(form.hideEmpty) }}
                         </div>
                     </div>
