@@ -1,21 +1,26 @@
 language: php
+
 php:
-- '7.0'
+- '7.1'
+
 before_script:
 - phpenv config-add travis.ini
-- if [[ $TRAVIS_PHP_VERSION = 7.* ]] ; then pecl config-set preferred_state beta;
-  echo yes | pecl install apcu; fi;
+- if [[ $TRAVIS_PHP_VERSION = 7.* ]] ; then pecl config-set preferred_state beta; echo yes | pecl install -f apcu; fi;
 - composer install
+
 script:
 - phpunit --coverage-clover build/logs/clover.xml
+
 notifications:
   hipchat:
     rooms:
       secure: uE5V3wWWpa0/W+9GpRNem4Ntt50j5AaW/n3H6aq48vg+8pz0GjJ9ZETqIaXpdxypO5bytp39FFrhqBuLUl1WvbiC7JClphCmXF0wGMRR5SHWiwf4o9R2BAFjj29U/UJ8CEdiW/Xqm8fGEpC4Kkd3FvYh1c6a4r5zHiZSXVbElSVPwFrS1nlo+liqZs/WVmp52FLnTTZXJr9581x3zAlelurxY4Wcqxev3FgpcG3EnjYiS3MpTUQH/7VWovMWD+lxc4EuZG1UJWyYfw+PxntTQ+mSSzL1En5PvBjqd9IMdSfdWETqW6WCS6fSdxn8xfA5HYsXzJG05gIRq4VeDGWAoaLW6IBCO6O91AE7bDaDSbrjM5QMLosAYEy4uo1SpS2TtC885jzN0C0ps3MK+ZHPYZBnyXY8lgLhLC7FcMYp+hTsznwvfaYMGj2eBU2eXbDUdThXgUzuEKFgmWHQkKwdRxkKTrlgYETnujmc8lrOrB5rShIE0eUUDSmyYhOGq9FGQqbAu6t+Bjw4gY4XvK1z39CEWIU61ihsZoNmd1D7cDdgD0eewX0SXP4Lh+WyfTUh3l48JRL9bOVDtta9xEmqoQBoPQl80FZKQGUN9MzyPF/9Vp5DlGuZPclLf/v6cYPL0XAROoEuzl0yOsn99I6Sz5rd0LLfb3F8EJUBnECG6Kc=
     on_success: never
     on_failure: always
+
 after_success:
 - sh -c 'php vendor/bin/coveralls -v'
+
 cache:
   directories:
   - $HOME/.composer/cache

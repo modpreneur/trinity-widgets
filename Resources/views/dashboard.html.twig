@@ -6,7 +6,7 @@
 
         <div class="small-widgets row">
             {% for widget in staticWidgets %}
-                <div  data-widget="{{ widget }}" class="widget-field small-widget">{{ renderWidget(widget) }} </div>
+                <div  data-widget="{{ widget }}" class="widget-field grid medium-6">{{ renderWidget(widget) }} </div>
             {% endfor %}
         </div>
 
@@ -16,14 +16,12 @@
                 {% set renderedWidget =  renderWidget(widget,{"globalSettings": globalSettings}) %}
                 {% if renderedWidget != null %}
                     <div  data-widget="{{ widget }}"
-                          class="grid widget-field regular-widget w-{{ getWidgetSize(widget) }} {{ getWidgetStyle(getWidgetSize(widget)) }}" >
+                          class="grid medium-{{ getWidgetSize(widget) }} widget-field regular-widget w-{{ getWidgetSize(widget) }} {{ getWidgetStyle(getWidgetSize(widget)) }}" >
                         {{ include(template_from_string(renderedWidget)) }}
                     </div>
                 {% endif %}
             {% endfor %}
-
         </div>
-
     </div>
 
 
