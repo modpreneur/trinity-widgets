@@ -34,15 +34,25 @@
         <div class="modal-content">
             <div class="row">
                 <div class="grid-auto">
-                    <h2>Dashboard - settings</h2>
+                    <h3>Dashboard - settings</h3>
                     <p>Select your favorite widgets</p>
                 </div>
             </div>
-            <div id="show-widgets-form" class="row">
+            <div id="show-widgets-form">
                 {{ form_start(form, {'action': path('widget-manage'), 'method': 'POST' }) }}
                 <div id="dashboard">
-                    {{ form_row(form.widgets) }}
-                    {{ form_row(form.expandedWidgets) }}
+                    <div class="row">
+                        <div class="grid medium-20 small-18 mini-20">
+                            <div class="left">
+                                {{ form_row(form.widgets) }}
+                            </div>
+                        </div>
+                        <div class="grid medium-4 small-6 mini-2">
+                            <div class="right">
+                                {{ form_row(form.expandedWidgets) }}
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="large-24">
                         <div class="large-24">
@@ -53,7 +63,9 @@
                         </div>
                     </div>
 
+                    <div class="modal-footer">
                         {{ form_row(form.submit) }}
+                    </div>
                 </div>
 
                 {{ form_end(form) }}
