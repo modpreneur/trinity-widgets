@@ -61,6 +61,7 @@ class DashboardType extends AbstractType
                 'required' => true,
                 'expanded' => true,
                 'multiple' => true,
+                'label' => 'Expanded',
                 'data' => $this->widgetManager->getBigWidgets(),
                 'choices' => $this->widgetManager->getFlippedDashboardWidgets(),
                 'choice_label' => function () {
@@ -90,6 +91,7 @@ class DashboardType extends AbstractType
 //                'attr'=> ['description'=>'Hide empty widgets'],
                 'data' => $globalSettings['hideEmpty'],
                 'label' => 'Hide empty widgets',
+                'attr' => ['disable_widget_label' => true]
             ]
         );
 

@@ -4,20 +4,16 @@
     {% if empty is defined and empty.type ==  'HTML' %}
         {{ empty.content }}
     {% else %}
-        <div class="row">
-            <div class="xlarge-24 margin-auto">
-                <div class="info-empty-form">
-                    <div class="row">
-                        <i class="trinity-info"></i>
-                    </div>
-                    <div class="row">
-                        <h2 class="warning">NO DATA</h2>
-                    </div>
-                    <div class="row xlarge-10">
+        <div class="text-center">
+            <div class="info-empty-form">
+                <div class="medium-12 margin-auto text-center">
+                    <img src="{{ asset('img/no-data.png') }}" alt="no data" class="img-responsive">
+                    <div class="margin-top-20">
+                        <h2>Here are no results</h2>
                         {% if empty is defined and empty.type == 'message' %}
                             <p>{{ empty.content }}</p>
                         {% else %}
-                        <p>There is nothing to show</p>
+                            <p>There is nothing to show</p>
                         {% endif %}
                     </div>
                 </div>

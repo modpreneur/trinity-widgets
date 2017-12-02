@@ -16,7 +16,7 @@
                 {% set renderedWidget =  renderWidget(widget,{"globalSettings": globalSettings}) %}
                 {% if renderedWidget != null %}
                     <div  data-widget="{{ widget }}"
-                          class="widget-field regular-widget w-{{ getWidgetSize(widget) }} {{ getWidgetStyle(getWidgetSize(widget)) }}" >
+                          class="grid medium-{{ getWidgetSize(widget) }} widget-field regular-widget w-{{ getWidgetSize(widget) }} {{ getWidgetStyle(getWidgetSize(widget)) }}" >
                         {{ include(template_from_string(renderedWidget)) }}
                     </div>
                 {% endif %}
@@ -25,36 +25,47 @@
     </div>
 
 
-    <input type="checkbox" id="modal-01" hidden class="modal-input">
-    <label for="modal-01" id="show-widgets-form" class="modal-label button button-primary">Modal</label>
+    <input type="checkbox" id="modal-widgets" hidden class="modal-input">
     <div class="modal-wrapper">
-        <label for="modal-01" class="modal-close-full-width"></label>
+        <label for="modal-widgets" class="modal-close-full-width"></label>
+        <label for="modal-search" class="modal-close-button button button-close">
+            <i class="mdi mdi-close-circle"></i> <span>Close</span>
+        </label>
         <div class="modal-content">
-            <label for="modal-01" class="modal-close">
-                <i class="trinity trinity-close"></i>
-            </label>
             <div class="row">
                 <div class="grid-auto">
-                    <h2>Dashboard - settings</h2>
+                    <h3>Dashboard - settings</h3>
                     <p>Select your favorite widgets</p>
                 </div>
             </div>
-            <div id="show-widgets-form" class="row">
+            <div id="show-widgets-form">
                 {{ form_start(form, {'action': path('widget-manage'), 'method': 'POST' }) }}
                 <div id="dashboard">
-                    {{ form_row(form.widgets) }}
-                    {{ form_row(form.expandedWidgets) }}
+                    <div class="row">
+                        <div class="grid medium-20 small-18 mini-20">
+                            <div class="left">
+                                {{ form_row(form.widgets) }}
+                            </div>
+                        </div>
+                        <div class="grid medium-4 small-6 mini-2">
+                            <div class="right">
+                                {{ form_row(form.expandedWidgets) }}
+                            </div>
+                        </div>
+                    </div>
 
-                    <div class="">
-                        <div class="">
+                    <div class="large-24">
+                        <div class="large-24">
                             {{ form_widget(form.hideEmpty) }}
                         </div>
-                        <div class="">
+                        <div class="large-24">
                             {{ form_label(form.hideEmpty) }}
                         </div>
                     </div>
 
+                    <div class="modal-footer">
                         {{ form_row(form.submit) }}
+                    </div>
                 </div>
 
                 {{ form_end(form) }}
